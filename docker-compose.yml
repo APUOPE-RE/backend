@@ -1,6 +1,7 @@
 version: "3.9"
 name: "apuope-re"
 services:
+  # @TODO: Database credentials should be passed as environment variables
   apuopere-backend:
     container_name: apuopere-backend
     build: .
@@ -8,3 +9,20 @@ services:
       - "8080:8080"
     volumes:
       - ./logs:/app/logs
+    depends_on:
+      - apuopere-database
+
+  # @TODO: We should use GitHub secrets to store the database credentials
+  apuopere-database:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: apuope_db
+      POSTGRES_USER: apuope_user
+      POSTGRES_PASSWORD: apuope_password
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
