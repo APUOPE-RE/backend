@@ -1,0 +1,10 @@
+version: "3.9"
+name: "apuope-re"
+services:
+  apuopere-backend:
+    container_name: apuopere-backend
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./logs:/app/logs
