@@ -1,4 +1,4 @@
-package com.apuope.apuope_re.types;
+package com.apuope.apuope_re.dto;
 
 public class UserCredentials {
     public String email;

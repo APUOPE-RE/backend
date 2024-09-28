@@ -2,7 +2,7 @@ package com.apuope.apuope_re.services;
 
 import com.apuope.apuope_re.entities.User;
 import com.apuope.apuope_re.repositories.UserRepository;
-import com.apuope.apuope_re.types.UserCredentials;
+import com.apuope.apuope_re.dto.UserCredentials;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
