@@ -31,8 +31,7 @@ class LogInServiceTest {
     @Test
     void testLoginSuccess() {
         User mockUser = Mockito.mock(User.class);
-        when(userRepository.findByEmail("test@success.com")).thenReturn(Optional.of(mockUser));
-        when(mockUser.getPasswordHash()).thenReturn("password123");
+        when(userRepository.findByEmailAndPasswordHash("test@success.com", "password123")).thenReturn(Optional.of(mockUser));
 
         UserCredentials userCredentials = new UserCredentials("test@success.com", "password123");
         boolean result = logInService.validateUser(userCredentials);
@@ -42,7 +41,7 @@ class LogInServiceTest {
     @Test
     void testLoginFailure() {
         User mockUser = new User();
-        when(userRepository.findByEmail("test@failure.com")).thenReturn(Optional.empty());
+        when(userRepository.findByEmailAndPasswordHash("test@failure.com", "password123")).thenReturn(Optional.empty());
 
         UserCredentials userCredentials = new UserCredentials("test@failure.com", "password123");
         boolean result = logInService.validateUser(userCredentials);

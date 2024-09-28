@@ -13,11 +13,12 @@ public class LogInService {
     private UserRepository userRepository;
 
     public boolean validateUser(UserCredentials userCredentials) {
-        Optional<User> userOpt = userRepository.findByEmail(userCredentials.getEmail());
+        Optional<User> userOpt =
+                userRepository.findByEmailAndPasswordHash(userCredentials.getEmail(),
+                        userCredentials.getPasswordHash());
 
         if (userOpt.isPresent()) {
-            User user = userOpt.get();
-            return user.getPasswordHash().equals(userCredentials.getPassword());
+            return true;
         } else {
             System.out.println("No user found with email: " + userCredentials.email);
             return false;

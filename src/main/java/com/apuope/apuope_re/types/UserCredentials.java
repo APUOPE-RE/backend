@@ -2,11 +2,11 @@ package com.apuope.apuope_re.types;
 
 public class UserCredentials {
     public String email;
-    public String password;
+    public String passwordHash;
 
-    public UserCredentials(String email, String password){
+    public UserCredentials(String email, String passwordHash) {
         this.email = email;
-        this.password = password;
+        this.passwordHash = passwordHash;
     }
 
     public String getEmail() {
@@ -17,11 +17,11 @@ public class UserCredentials {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
+    public String getPasswordHash() {
+        return passwordHash;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 }
