@@ -23,7 +23,7 @@ public class LogInController {
             return ResponseEntity.ok(true);
         }
         else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
+            return ResponseEntity.ok(false);
         }
     }
 }
