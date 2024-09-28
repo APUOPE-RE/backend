@@ -18,7 +18,7 @@ public class LogInController {
 
     @PostMapping(value = "/Login")
     public ResponseEntity<Boolean> validateUser(@RequestBody UserCredentials input) {
-        boolean valid = logInService.ValidateUser(input);
+        boolean valid = logInService.validateUser(input);
         if (valid){
             return ResponseEntity.ok(true);
         }

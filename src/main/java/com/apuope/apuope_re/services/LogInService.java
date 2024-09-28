@@ -12,7 +12,7 @@ public class LogInService {
     @Autowired
     private UserRepository userRepository;
 
-    public boolean ValidateUser(UserCredentials userCredentials) {
+    public boolean validateUser(UserCredentials userCredentials) {
         Optional<User> userOpt = userRepository.findByEmail(userCredentials.getEmail());
 
         if (userOpt.isPresent()) {

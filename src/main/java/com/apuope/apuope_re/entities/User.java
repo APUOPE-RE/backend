@@ -21,7 +21,7 @@ public class User {
     public User() {
     }
 
-    public Integer getId(){
+    public Integer getId() {
         return id;
     }
 
@@ -29,23 +29,23 @@ public class User {
         return uuid;
     }
 
-    public String getUsername(){
+    public String getUsername() {
         return username;
     }
 
-    public String getEmail(){
+    public String getEmail() {
         return email;
     }
 
-    public String getPasswordHash(){
+    public String getPasswordHash() {
         return passwordHash;
     }
 
-    public Timestamp getCreated(){
+    public Timestamp getCreated() {
         return created;
     }
 
-    public Timestamp getUpdated(){
+    public Timestamp getUpdated() {
         return updated;
     }
 
