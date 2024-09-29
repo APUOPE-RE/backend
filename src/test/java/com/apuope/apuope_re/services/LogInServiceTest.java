@@ -17,14 +17,13 @@ import static org.mockito.Mockito.when;
 
 class LogInServiceTest {
     @Mock
-    private UserRepository userRepository;  // Mock the repository
+    private UserRepository userRepository;
 
     @InjectMocks
-    private LogInService logInService;  // Inject mock repository into the service
+    private LogInService logInService;
 
     @BeforeEach
     void setUp() {
-        // Initialize the mocks before each test
         MockitoAnnotations.openMocks(this);
     }
 
