@@ -6,6 +6,7 @@ package com.apuope.apuope_re.jooq.tables;
 
 import com.apuope.apuope_re.jooq.Apuope;
 import com.apuope.apuope_re.jooq.Keys;
+import com.apuope.apuope_re.jooq.tables.Session.SessionPath;
 import com.apuope.apuope_re.jooq.tables.records.UsersRecord;
 
 import java.time.LocalDateTime;
@@ -15,10 +16,14 @@ import java.util.List;
 
 import org.jooq.Condition;
 import org.jooq.Field;
+import org.jooq.ForeignKey;
 import org.jooq.Identity;
+import org.jooq.InverseForeignKey;
 import org.jooq.Name;
+import org.jooq.Path;
 import org.jooq.PlainSQL;
 import org.jooq.QueryPart;
+import org.jooq.Record;
 import org.jooq.SQL;
 import org.jooq.Schema;
 import org.jooq.Select;
@@ -117,6 +122,39 @@ public class Users extends TableImpl<UsersRecord> {
         this(DSL.name("users"), null);
     }
 
+    public <O extends Record> Users(Table<O> path, ForeignKey<O, UsersRecord> childPath, InverseForeignKey<O, UsersRecord> parentPath) {
+        super(path, childPath, parentPath, USERS);
+    }
+
+    /**
+     * A subtype implementing {@link Path} for simplified path-based joins.
+     */
+    public static class UsersPath extends Users implements Path<UsersRecord> {
+
+        private static final long serialVersionUID = 1L;
+        public <O extends Record> UsersPath(Table<O> path, ForeignKey<O, UsersRecord> childPath, InverseForeignKey<O, UsersRecord> parentPath) {
+            super(path, childPath, parentPath);
+        }
+        private UsersPath(Name alias, Table<UsersRecord> aliased) {
+            super(alias, aliased);
+        }
+
+        @Override
+        public UsersPath as(String alias) {
+            return new UsersPath(DSL.name(alias), this);
+        }
+
+        @Override
+        public UsersPath as(Name alias) {
+            return new UsersPath(alias, this);
+        }
+
+        @Override
+        public UsersPath as(Table<?> alias) {
+            return new UsersPath(alias.getQualifiedName(), this);
+        }
+    }
+
     @Override
     public Schema getSchema() {
         return aliased() ? null : Apuope.APUOPE;
@@ -135,6 +173,19 @@ public class Users extends TableImpl<UsersRecord> {
     @Override
     public List<UniqueKey<UsersRecord>> getUniqueKeys() {
         return Arrays.asList(Keys.USERS_EMAIL_KEY, Keys.USERS_USERNAME_KEY, Keys.USERS_UUID_KEY);
+    }
+
+    private transient SessionPath _session;
+
+    /**
+     * Get the implicit to-many join path to the <code>apuope.session</code>
+     * table
+     */
+    public SessionPath session() {
+        if (_session == null)
+            _session = new SessionPath(this, null, Keys.SESSION__FK_ACCOUNT.getInverseKey());
+
+        return _session;
     }
 
     @Override

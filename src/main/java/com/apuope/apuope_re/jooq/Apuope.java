@@ -4,6 +4,7 @@
 package com.apuope.apuope_re.jooq;
 
 
+import com.apuope.apuope_re.jooq.tables.Session;
 import com.apuope.apuope_re.jooq.tables.Users;
 
 import java.util.Arrays;
@@ -28,6 +29,11 @@ public class Apuope extends SchemaImpl {
     public static final Apuope APUOPE = new Apuope();
 
     /**
+     * The table <code>apuope.session</code>.
+     */
+    public final Session SESSION = Session.SESSION;
+
+    /**
      * The table <code>apuope.users</code>.
      */
     public final Users USERS = Users.USERS;
@@ -48,6 +54,7 @@ public class Apuope extends SchemaImpl {
     @Override
     public final List<Table<?>> getTables() {
         return Arrays.asList(
+            Session.SESSION,
             Users.USERS
         );
     }

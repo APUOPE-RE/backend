@@ -101,7 +101,7 @@
 
 	<profiles>
 		<profile>
-			<id>local</id>
+			<id>jooq-codegen</id>
 			<properties>
 				<jdbc>jdbc:postgresql://localhost:5434/apuope_db</jdbc>
 				<db.user>apuope_user</db.user>
@@ -135,7 +135,7 @@
 							<configuration>
 								<jdbc>
 									<driver>org.postgresql.Driver</driver>
-									<url>$jdbc:postgresql://localhost:5434/apuope_db</url>
+									<url>jdbc:postgresql://localhost:5434/apuope_db</url>
 									<user>apuope_user</user>
 									<password>apuope_password</password>
 								</jdbc>
