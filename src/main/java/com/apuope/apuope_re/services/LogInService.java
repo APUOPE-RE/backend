@@ -22,6 +22,7 @@ public class LogInService {
                         userCredentials.getPasswordHash(), this.dslContext);
 
         if (userOpt.isPresent()) {
+            userRepository.addSession(userOpt.get().getId(), this.dslContext);
             return true;
         } else {
             System.out.println("No user found with email: " + userCredentials.email);
