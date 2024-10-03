@@ -21,7 +21,9 @@ public class RegistrationController {
     @PostMapping(value = "/register")
     public ResponseEntity<ResponseData<String>> validateUser(@RequestBody RegistrationData input) throws MessagingException {
         ResponseData<String> response = registrationService.registerUser(input);
-        emailService.sendVerification(input.getEmail());
+        if (response.getSuccess()) {
+            emailService.sendVerification(input.getEmail());
+        }
         return ResponseEntity.ok(response);
     }
 }
