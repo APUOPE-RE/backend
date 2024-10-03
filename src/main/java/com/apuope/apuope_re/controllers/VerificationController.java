@@ -17,7 +17,6 @@ public class VerificationController {
 
     @GetMapping(value = "/verify/{uuid}")
     public ResponseEntity<ResponseData<String>> verifyAccount(@PathVariable("uuid") UUID uuid) {
-        ResponseData<String> s = verificationService.verifyUser(uuid);
         return ResponseEntity.ok(verificationService.verifyUser(uuid));
     }
 }
