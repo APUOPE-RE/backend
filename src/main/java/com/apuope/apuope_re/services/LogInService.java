@@ -1,7 +1,7 @@
 package com.apuope.apuope_re.services;
 
 import com.apuope.apuope_re.dto.ResponseData;
-import com.apuope.apuope_re.entities.User;
+import com.apuope.apuope_re.jooq.tables.records.UsersRecord;
 import com.apuope.apuope_re.repositories.UserRepository;
 import com.apuope.apuope_re.dto.UserCredentials;
 import org.jooq.DSLContext;
@@ -19,7 +19,7 @@ public class LogInService {
     }
 
     public ResponseData<String> validateUser(UserCredentials userCredentials) {
-        Optional<User> userOpt =
+        Optional<UsersRecord> userOpt =
                 userRepository.findByEmailAndPasswordHash(userCredentials.getEmail(),
                         userCredentials.getPasswordHash(), this.dslContext);
 

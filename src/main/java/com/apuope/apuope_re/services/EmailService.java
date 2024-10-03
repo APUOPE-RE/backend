@@ -1,57 +1,59 @@
 package com.apuope.apuope_re.services;
 
-import com.apuope.apuope_re.dto.EmailDetails;
+import com.apuope.apuope_re.jooq.tables.records.UsersRecord;
+import com.apuope.apuope_re.repositories.UserRepository;
+import org.jooq.DSLContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import jakarta.mail.*;
 import jakarta.mail.internet.*;
-import java.util.Properties;
+
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.mail.javamail.JavaMailSender;
 
 @Service
 public class EmailService {
+    @Autowired
+    private JavaMailSender mailSender;
+    private final DSLContext dslContext;
+    private final UserRepository userRepository;
 
-    public void sendVerification() {
-        // Recipient's email
-        String to = "address-here@tuni.fi"; // Replace with recipient's email
+    public EmailService(DSLContext dslContext, UserRepository userRepository) {
+        this.dslContext = dslContext;
+        this.userRepository = userRepository;
+    }
 
-        // Sender's email (Gmail)
-        String from = "address-here@gmail.com"; // Your Gmail address
-        final String username = "address-here@gmail.com"; // Your Gmail username
-        final String appPassword = "app-password-here"; // App password if using 2FA
+    public void sendVerification(String to) throws MessagingException {
+        System.out.println(to);
+        Optional<UsersRecord> userByEmail = userRepository.findByEmail(to, this.dslContext);
 
-        // Gmail SMTP server details
-        String host = "smtp.gmail.com";
+        if (userByEmail.isPresent()) {
+            System.out.println(userByEmail.get().getEmail());
+            System.out.println(userByEmail.get().getUuid());
+            UUID uuid = userByEmail.get().getUuid();
+            System.out.println(uuid);
 
-        // Set properties for the SMTP server
-        Properties properties = new Properties();
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.starttls.enable", "true"); // Enable STARTTLS
-        properties.put("mail.smtp.host", host);
-        properties.put("mail.smtp.port", "587"); // Use port 587 for TLS
-        properties.put("mail.smtp.ssl.trust", host); // Trust the Gmail SMTP server
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper mimeMessage = new MimeMessageHelper(message, true);
 
-        // Get a Session object and authenticate using the app password
-        Session session = Session.getInstance(properties, new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(username, appPassword); // App Password
-            }
-        });
+            mimeMessage.setTo(to);
+            mimeMessage.setSubject("Verify your APUOPE-RE account");
+            String htmlContent = "Thank you for creating an account with APUOPE-RE learning " +
+                    "assistant!<br>" + "Please verify your account to complete your registration" + ".<br>" + "Simply click the link below to verify your account:<br><br>" + "<a" + " href=\"http://localhost:3000/login?token=" + uuid + "\">Verify Your " + "Account</a><br><br>" + "If the link above does not work, copy and paste the " + "following URL into your browser: " + "http://localhost:3000/login?token=" + uuid + "<br><br>" + "If you did not sign up for an account with us, please ignore " + "this email" + ".<br><br>" + "Thank you,<br>" + "The APUOPE-RE Team<br>" + "<a href=\"http://localhost:3000/login\">login</a>";
 
-        try {
-            // Create the message
-            Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(from)); // Sender's email
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to)); // Recipient's email
-            message.setSubject("Test Email from Java Program"); // Email subject
-            message.setText("This is a test email sent using Jakarta Mail API via Gmail SMTP server."); // Email body
+            mimeMessage.setText(htmlContent, true);
+            mimeMessage.setFrom("mail.apuopere@gmail.com"); // Optional, depending on the setup
 
-            // Send the message
-            Transport.send(message);
-            System.out.println("Email sent successfully!");
+            mailSender.send(message);
 
-        } catch (MessagingException e) {
-            e.printStackTrace();
+            System.out.println("Mail sent successfully!");
+        } else {
+            System.out.println("No user with given email found from database.");
         }
+
     }
 }

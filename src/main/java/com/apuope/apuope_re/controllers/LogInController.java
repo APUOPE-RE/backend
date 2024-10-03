@@ -14,7 +14,7 @@ public class LogInController {
     @Autowired
     private LogInService logInService;
 
-    @PostMapping(value = "/Login")
+    @PostMapping(value = "/login")
     public ResponseEntity<ResponseData<String>> validateUser(@RequestBody UserCredentials input) {
         return ResponseEntity.ok(logInService.validateUser(input));
     }
