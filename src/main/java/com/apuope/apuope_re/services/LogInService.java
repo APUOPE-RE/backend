@@ -1,6 +1,7 @@
 package com.apuope.apuope_re.services;
 
-import com.apuope.apuope_re.entities.User;
+import com.apuope.apuope_re.dto.ResponseData;
+import com.apuope.apuope_re.jooq.tables.records.UsersRecord;
 import com.apuope.apuope_re.repositories.UserRepository;
 import com.apuope.apuope_re.dto.UserCredentials;
 import org.jooq.DSLContext;
@@ -11,22 +12,22 @@ import java.util.Optional;
 public class LogInService {
     private final DSLContext dslContext;
     private final UserRepository userRepository;
+
     public LogInService(DSLContext dslContext, UserRepository userRepository) {
         this.dslContext = dslContext;
         this.userRepository = userRepository;
     }
 
-    public boolean validateUser(UserCredentials userCredentials) {
-        Optional<User> userOpt =
+    public ResponseData<String> validateUser(UserCredentials userCredentials) {
+        Optional<UsersRecord> userOpt =
                 userRepository.findByEmailAndPasswordHash(userCredentials.getEmail(),
                         userCredentials.getPasswordHash(), this.dslContext);
 
         if (userOpt.isPresent()) {
             userRepository.addSession(userOpt.get().getId(), this.dslContext);
-            return true;
+            return new ResponseData<>(true, "");
         } else {
-            System.out.println("No user found with email: " + userCredentials.email);
-            return false;
+            return new ResponseData<>(false, "Invalid credentials. Please try again.");
         }
     }
 

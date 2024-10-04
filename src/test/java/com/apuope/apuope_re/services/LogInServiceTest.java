@@ -1,12 +1,10 @@
 package com.apuope.apuope_re.services;
 
+import com.apuope.apuope_re.dto.ResponseData;
 import com.apuope.apuope_re.repositories.UserRepository;
 import com.apuope.apuope_re.dto.UserCredentials;
 import org.jooq.DSLContext;
 import org.junit.jupiter.api.*;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -37,14 +35,14 @@ public class LogInServiceTest {
     @Test
     void testLoginSuccess() {
         UserCredentials userCredentials = new UserCredentials(TEST_EMAIL, TEST_PASSWORD);
-        boolean result = logInService.validateUser(userCredentials);
-        assertTrue(result, "Login successful");
+        ResponseData<String> result = logInService.validateUser(userCredentials);
+        assertTrue(result.getSuccess(), "Login successful");
     }
 
     @Test
     void testLoginFailure() {
         UserCredentials userCredentials = new UserCredentials("test@failure.com", "password123");
-        boolean result = logInService.validateUser(userCredentials);
-        assertFalse(result, "Login unsuccessful");
+        ResponseData<String>  result = logInService.validateUser(userCredentials);
+        assertFalse(result.getSuccess(), "Login unsuccessful");
     }
 }
