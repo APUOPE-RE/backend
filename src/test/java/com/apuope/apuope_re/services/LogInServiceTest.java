@@ -10,11 +10,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest
 @ActiveProfiles("test")
 public class LogInServiceTest {
+    public static String TEST_USERNAME = "testuser";
     public static String TEST_EMAIL = "test@success.com";
     public static String TEST_PASSWORD = "password123";
+    public static boolean VERIFIED = true;
     @Autowired
     DSLContext dslContext;
     @Autowired
@@ -24,16 +27,17 @@ public class LogInServiceTest {
 
     @BeforeEach
     void setUp() {
-        TestDataGenerator.insertTestUser(dslContext, TEST_EMAIL, TEST_PASSWORD);
+        TestDataGenerator.insertTestUser(dslContext, TEST_EMAIL, TEST_USERNAME, TEST_PASSWORD,
+                VERIFIED);
     }
 
     @AfterEach
     void tearDown() {
-        TestDataGenerator.deleteTestUsers(dslContext);
+        TestDataGenerator.deleteTestUsers(dslContext, TEST_EMAIL);
     }
 
     @Test
-    void testLoginSuccess() {
+    void testLoginSuccessful() {
         UserCredentials userCredentials = new UserCredentials(TEST_EMAIL, TEST_PASSWORD);
         ResponseData<String> result = logInService.validateUser(userCredentials);
         assertTrue(result.getSuccess(), "Login successful");
