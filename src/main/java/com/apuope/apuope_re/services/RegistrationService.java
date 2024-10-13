@@ -15,7 +15,7 @@ public class RegistrationService {
     private final UserRepository userRepository;
 
     public RegistrationService(DSLContext dslContext,
-            UserRepository userRepository, EmailService emailService) {
+            UserRepository userRepository) {
         this.dslContext = dslContext;
         this.userRepository = userRepository;
     }

@@ -5,6 +5,7 @@ package com.apuope.apuope_re.jooq;
 
 
 import com.apuope.apuope_re.jooq.tables.Session;
+import com.apuope.apuope_re.jooq.tables.Token;
 import com.apuope.apuope_re.jooq.tables.Users;
 
 
@@ -18,6 +19,11 @@ public class Tables {
      * The table <code>apuope.session</code>.
      */
     public static final Session SESSION = Session.SESSION;
+
+    /**
+     * The table <code>apuope.token</code>.
+     */
+    public static final Token TOKEN = Token.TOKEN;
 
     /**
      * The table <code>apuope.users</code>.

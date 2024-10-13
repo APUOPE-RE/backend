@@ -5,6 +5,7 @@ package com.apuope.apuope_re.jooq;
 
 
 import com.apuope.apuope_re.jooq.tables.Session;
+import com.apuope.apuope_re.jooq.tables.Token;
 import com.apuope.apuope_re.jooq.tables.Users;
 
 import java.util.Arrays;
@@ -34,6 +35,11 @@ public class Apuope extends SchemaImpl {
     public final Session SESSION = Session.SESSION;
 
     /**
+     * The table <code>apuope.token</code>.
+     */
+    public final Token TOKEN = Token.TOKEN;
+
+    /**
      * The table <code>apuope.users</code>.
      */
     public final Users USERS = Users.USERS;
@@ -55,6 +61,7 @@ public class Apuope extends SchemaImpl {
     public final List<Table<?>> getTables() {
         return Arrays.asList(
             Session.SESSION,
+            Token.TOKEN,
             Users.USERS
         );
     }
