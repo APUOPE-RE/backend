@@ -1,8 +1,12 @@
 package com.apuope.apuope_re.services;
 
+import com.apuope.apuope_re.dto.ResponseData;
+import com.apuope.apuope_re.jooq.tables.records.TokenRecord;
 import com.apuope.apuope_re.jooq.tables.records.UsersRecord;
 import com.apuope.apuope_re.repositories.UserRepository;
+import org.apache.coyote.Response;
 import org.jooq.DSLContext;
+import org.jooq.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -27,27 +31,57 @@ public class EmailService {
         this.userRepository = userRepository;
     }
 
-    public void sendVerification(String to) throws MessagingException {
+    public ResponseData<String> sendVerification(String to) throws MessagingException {
         Optional<UsersRecord> userByEmail = userRepository.findByEmail(to, this.dslContext);
 
         if (userByEmail.isPresent()) {
             UUID uuid = userByEmail.get().getUuid();
+
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper mimeMessage = new MimeMessageHelper(message, true);
 
             mimeMessage.setTo(to);
             mimeMessage.setSubject("Verify your APUOPE-RE account");
             String htmlContent = "Thank you for creating an account with APUOPE-RE learning " +
-                    "assistant!<br>" + "Please verify your account to complete your registration" + ".<br>" + "Simply click the link below to verify your account:<br><br>" + "<a" + " href=\"http://localhost:3000/login?token=" + uuid + "\">Verify Your " + "Account</a><br><br>" + "If the link above does not work, copy and paste the " + "following URL into your browser: " + "http://localhost:3000/login?token=" + uuid + "<br><br>" + "If you did not sign up for an account with us, please ignore " + "this email" + ".<br><br>" + "Thank you,<br>" + "The APUOPE-RE Team<br>";
+                    "assistant!<br>" + "Please verify your account to complete your registration" + ".<br>" + "Simply click the link below to verify your account:<br><br>" + "<a" + " href=\"http://localhost:3000/login?token=" + uuid + "\">Verify Your " + "Account</a><br><br>" + "If the link above does not work, copy and paste the " + "following URL into your browser: " + "http://localhost:3000/login?token=" + uuid + "<br><br>" + "If you did not sign up for an account with us, please ignore " + "this email" + ".<br><br>" + "Thank you,<br>" + "The APUOPE-RE Team<br>" + "<a href=\"http://localhost:3000/login\">login</a>";
 
             mimeMessage.setText(htmlContent, true);
             mimeMessage.setFrom("mail.apuopere@gmail.com"); // Optional, depending on the setup
 
             mailSender.send(message);
 
-            System.out.println("Mail sent successfully!");
+            //update tests
+            return new ResponseData<>(true, "Mail sent successfully!");
         } else {
-            System.out.println("No user with given email found from database.");
+            return new ResponseData<>(false,"No user with given email found from database.");
+        }
+    }
+
+    public ResponseData<String> sendResetPasswordLink(TokenRecord token,
+    String email) throws MessagingException {
+        try{
+            UUID uuid = token.getUuid();
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper mimeMessage = new MimeMessageHelper(message, true);
+
+            mimeMessage.setTo(email);
+            mimeMessage.setSubject("Reset your APUOPE-RE password");
+            String htmlContent = "We received a request to reset the password for your account. " +
+                    "If you made this request, please click the link below to reset your " +
+                    "password:\n\n" + "<a" + " href=\"http://localhost:3000/reset-password?token" +
+                    "=" + uuid + "\">Reset password</a>\n\n" + "If you did not request a " +
+                    "password reset, please ignore this email or contact our support team if you " +
+                    "have any concerns.\n" + "\n" + "For your security, this link will expire in " +
+                    "30 minutes.\n" + "\n" + "Thank you,\n APUOPE-RE Team";
+            mimeMessage.setText(htmlContent, true);
+            mimeMessage.setFrom("mail.apuopere@gmail.com"); // Optional, depending on the setup
+
+            mailSender.send(message);
+
+            return new ResponseData<>(true, "Mail sent successfully!");
+        } catch (Exception e) {
+            return new ResponseData<>(false, "Error when sending password reset mail.");
         }
 
     }

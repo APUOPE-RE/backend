@@ -49,10 +49,19 @@ public class UserRepository {
         }
     }
 
-    public Boolean alterUser(UUID uuid, DSLContext context) {
+    public Boolean alterUserVerify(UUID uuid, DSLContext context) {
         int affectedRows =  context.update(Users.USERS)
                 .set(Users.USERS.VERIFIED, true)
                 .where(Users.USERS.UUID.eq(uuid)).and(Users.USERS.VERIFIED.eq(false))
+                .execute();
+
+        return affectedRows > 0;
+    }
+
+    public Boolean alterUserResetPassword(Integer id, String passwordHash, DSLContext context) {
+        int affectedRows =  context.update(Users.USERS)
+                .set(Users.USERS.PASSWORD_HASH, passwordHash)
+                .where(Users.USERS.ID.eq(id))
                 .execute();
 
         return affectedRows > 0;

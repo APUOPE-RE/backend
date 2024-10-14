@@ -1,5 +1,6 @@
 package com.apuope.apuope_re.services;
 
+import com.apuope.apuope_re.dto.ResetPasswordData;
 import com.apuope.apuope_re.dto.ResponseData;
 import com.apuope.apuope_re.dto.TokenData;
 import com.apuope.apuope_re.jooq.tables.records.TokenRecord;
@@ -7,12 +8,9 @@ import com.apuope.apuope_re.jooq.tables.records.UsersRecord;
 import com.apuope.apuope_re.repositories.TokenRepository;
 import com.apuope.apuope_re.repositories.UserRepository;
 import org.jooq.DSLContext;
-import org.jooq.Result;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -29,13 +27,18 @@ public class ResetPasswordService {
         this.tokenRepository = tokenRepository;
     }
 
-   public Result<TokenRecord> generateEmailToken(Integer accountId){
+   public TokenRecord generateEmailToken(String email){
         try {
-            TokenData tokenData = new TokenData(accountId, UUID.randomUUID(), LocalDateTime.now().plusMinutes(30));
+            Optional<UsersRecord> user = userRepository.findByEmail(email, dslContext);
 
-            ResponseData<String> response = tokenRepository.createToken(tokenData, dslContext);
-            if (response.getSuccess()){
-                return tokenRepository.findByAccountId(accountId, dslContext);
+            if (user.isPresent()) {
+                TokenData tokenData = new TokenData(user.get().getId(), UUID.randomUUID(),
+                        LocalDateTime.now().plusMinutes(30));
+
+                ResponseData<String> response = tokenRepository.createToken(tokenData, dslContext);
+                if (response.getSuccess()) {
+                    return tokenRepository.findByAccountId(user.get().getId(), dslContext);
+                }
             }
             return null;
         } catch (Exception e) {
@@ -43,13 +46,15 @@ public class ResetPasswordService {
         }
     }
 
-    public ResponseData<String> sendResetPasswordEmail(String email) {
-        Optional<UsersRecord> user = userRepository.findByEmail(email, dslContext);
+    public ResponseData<String> resetPassword(ResetPasswordData resetPasswordData){
+        TokenRecord token = tokenRepository.findByUuid(resetPasswordData.getUuid(), dslContext);
+        boolean success = userRepository.alterUserResetPassword(token.getAccountId(),
+                resetPasswordData.getPasswordHash(), dslContext);
 
-        if (user.isPresent()) {
-            Result<TokenRecord> response = generateEmailToken(user.get().getId());
-            //send email
+        if (success){
+            return new ResponseData<>(true, "Password reset successfully.");
         }
-        return new ResponseData<>(false, "No user found with given email address.");
+        // maybe better error messages could be in place...
+        return new ResponseData<>(false, "Error when resetting password.");
     }
 }

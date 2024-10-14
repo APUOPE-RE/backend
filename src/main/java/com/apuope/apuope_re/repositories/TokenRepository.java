@@ -13,15 +13,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public class TokenRepository {
     @Autowired
     public TokenRepository(){};
 
-    public Result<TokenRecord> findByAccountId(Integer accountId, DSLContext context){
+    public TokenRecord findByAccountId(Integer accountId, DSLContext context){
         return context.selectFrom(Token.TOKEN)
-                .where(Token.TOKEN.ACCOUNT_ID.eq(accountId)).orderBy(Token.TOKEN.ID.desc()).fetch();
+                .where(Token.TOKEN.ACCOUNT_ID.eq(accountId)).orderBy(Token.TOKEN.ID.desc()).fetchOne();
+    }
+
+    public TokenRecord findByUuid(UUID uuid, DSLContext context){
+        return context.selectFrom(Token.TOKEN)
+                .where(Token.TOKEN.UUID.eq(uuid)).fetchOne();
     }
 
     public ResponseData<String> createToken(TokenData tokenData, DSLContext context) {
