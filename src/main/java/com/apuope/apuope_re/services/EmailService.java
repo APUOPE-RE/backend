@@ -67,13 +67,12 @@ public class EmailService {
 
             mimeMessage.setTo(email);
             mimeMessage.setSubject("Reset your APUOPE-RE password");
-            String htmlContent = "We received a request to reset the password for your account. " +
-                    "If you made this request, please click the link below to reset your " +
-                    "password:\n\n" + "<a" + " href=\"http://localhost:3000/reset-password?token" +
-                    "=" + uuid + "\">Reset password</a>\n\n" + "If you did not request a " +
-                    "password reset, please ignore this email or contact our support team if you " +
-                    "have any concerns.\n" + "\n" + "For your security, this link will expire in " +
-                    "30 minutes.\n" + "\n" + "Thank you,\n APUOPE-RE Team";
+            String htmlContent = "We received a request to reset the password for your account.<br><br>" +
+                    "If you made this request, please click the link below to reset your password:<br><br>" +
+                    "<a" + " href=\"http://localhost:3000/reset-password?token=" + uuid + "\">Reset password</a><br><br>" +
+                    "If you did not request a password reset, please ignore this email.<br><br>" +
+                    "For your security, this link will expire in 30 minutes.<br><br>" +
+                    "Thank you,<br>APUOPE-RE Team";
             mimeMessage.setText(htmlContent, true);
             mimeMessage.setFrom("mail.apuopere@gmail.com"); // Optional, depending on the setup
 

@@ -4,18 +4,18 @@ import java.util.UUID;
 
 public class ResetPasswordData {
     public UUID uuid;
-    public String passwordHash;
+    public String password;
 
     public ResetPasswordData(UUID uuid, String passwordHash) {
         this.uuid = uuid;
-        this.passwordHash = passwordHash;
+        this.password = passwordHash;
     }
 
     public UUID getUuid() { return uuid; }
 
     public void setUuid(UUID uuid) { this.uuid = uuid; }
 
-    public String getPasswordHash() { return passwordHash; }
+    public String getPassword() { return password; }
 
-    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
+    public void setPassword(String password) { this.password = password; }
 }

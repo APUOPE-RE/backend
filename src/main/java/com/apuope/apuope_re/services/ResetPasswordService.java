@@ -10,12 +10,13 @@ import com.apuope.apuope_re.repositories.UserRepository;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.*;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class ResetPasswordService {
+    private final ZoneId TIMEZONE = ZoneId.of("Europe/Helsinki");
     private final DSLContext dslContext;
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
@@ -32,10 +33,9 @@ public class ResetPasswordService {
             Optional<UsersRecord> user = userRepository.findByEmail(email, dslContext);
 
             if (user.isPresent()) {
-                TokenData tokenData = new TokenData(user.get().getId(), UUID.randomUUID(),
-                        LocalDateTime.now().plusMinutes(30));
-
+                TokenData tokenData = new TokenData(user.get().getId(), UUID.randomUUID());
                 ResponseData<String> response = tokenRepository.createToken(tokenData, dslContext);
+
                 if (response.getSuccess()) {
                     return tokenRepository.findByAccountId(user.get().getId(), dslContext);
                 }
@@ -46,15 +46,19 @@ public class ResetPasswordService {
         }
     }
 
-    public ResponseData<String> resetPassword(ResetPasswordData resetPasswordData){
+    public ResponseData<String> resetPassword(ResetPasswordData resetPasswordData) {
         TokenRecord token = tokenRepository.findByUuid(resetPasswordData.getUuid(), dslContext);
-        boolean success = userRepository.alterUserResetPassword(token.getAccountId(),
-                resetPasswordData.getPasswordHash(), dslContext);
 
-        if (success){
-            return new ResponseData<>(true, "Password reset successfully.");
+        if (LocalDateTime.now(TIMEZONE).isBefore(token.getExpirationTime())) {
+            boolean success = userRepository.alterUserResetPassword(token.getAccountId(), resetPasswordData.getPassword(), dslContext);
+
+            if (success) {
+                tokenRepository.invalidateToken(token.getId(), dslContext);
+                return new ResponseData<>(true, "Password reset successfully.");
+            }
+            return new ResponseData<>(false, "Error when resetting password.");
         }
         // maybe better error messages could be in place...
-        return new ResponseData<>(false, "Error when resetting password.");
+        return new ResponseData<>(false, "Reset password link is expired.");
     }
 }

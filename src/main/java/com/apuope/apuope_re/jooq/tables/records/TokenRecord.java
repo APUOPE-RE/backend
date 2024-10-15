@@ -77,6 +77,20 @@ public class TokenRecord extends UpdatableRecordImpl<TokenRecord> {
         return (LocalDateTime) get(3);
     }
 
+    /**
+     * Setter for <code>apuope.token.valid</code>.
+     */
+    public void setValid(boolean value) {
+        set(4, value);
+    }
+
+    /**
+     * Getter for <code>apuope.token.expiration_time</code>.
+     */
+    public boolean getValid() {
+        return (boolean) get(4);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------

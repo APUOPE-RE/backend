@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import com.apuope.apuope_re.jooq.tables.records.UsersRecord;
 import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
@@ -77,6 +78,11 @@ public class Token extends TableImpl<TokenRecord> {
      * The column <code>apuope.token.expiration_time</code>.
      */
     public final TableField<TokenRecord, LocalDateTime> EXPIRATION_TIME = createField(DSL.name("expiration_time"), SQLDataType.LOCALDATETIME(6), this, "");
+
+    /**
+     * The column <code>apuope.token.valid</code>.
+     */
+    public final TableField<TokenRecord, Boolean> VALID = createField(DSL.name("valid"), SQLDataType.BOOLEAN.defaultValue(DSL.field(DSL.raw("false"), SQLDataType.BOOLEAN)), this, "");
 
     private Token(Name alias, Table<TokenRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);

@@ -33,8 +33,7 @@ public class ResetPasswordController {
     }
 
     @PostMapping(value = "/resetPassword")
-    public ResponseEntity<ResponseData<String>> resetPassword(@RequestBody ResetPasswordData input) throws MessagingException {
-        ResponseData<String> response = resetPasswordService.resetPassword(input);
-        return ResponseEntity.ok(new ResponseData<>(false, "Error when creating email token."));
+    public ResponseEntity<ResponseData<String>> resetPassword(@RequestBody ResetPasswordData input) {
+        return ResponseEntity.ok(resetPasswordService.resetPassword(input));
     }
 }
