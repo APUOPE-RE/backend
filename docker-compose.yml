@@ -3,18 +3,18 @@ services:
   apuopere-backend:
     container_name: apuopere-backend
     environment:
-        SPRING_DATASOURCE_URL: ${POSTGRES_URL}
-        SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
-        SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-        SPRING_JPA_HIBERNATE_DDL_AUTO: none
-        SPRING_PROFILES_ACTIVE: docker
-        SPRING_MAIL_HOST: smtp.gmail.com
-        SPRING_MAIL_PORT: 587
-        SPRING_MAIL_USERNAME: mail.apuopere@gmail.com
-        SPRING_MAIL_PASSWORD: tsnbgijhjtetbonu
-        SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: true
-        SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: true
-        SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_REQUIRED: true
+      SPRING_DATASOURCE_URL: ${POSTGRES_URL}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_MAIL_HOST: smtp.gmail.com
+      SPRING_MAIL_PORT: 587
+      SPRING_MAIL_USERNAME: mail.apuopere@gmail.com
+      SPRING_MAIL_PASSWORD: tsnbgijhjtetbonu
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: true
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: true
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_REQUIRED: true
     build: .
     ports:
       - "8080:8080"
@@ -22,6 +22,8 @@ services:
       - ./logs:/app/logs
     depends_on:
       apuopere-database:
+        condition: service_healthy
+      ollama:
         condition: service_healthy
 
   # @TODO: We should use GitHub secrets to store the database credentials
@@ -40,6 +42,18 @@ services:
       retries: 5
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  ollama:
+    hostname: ollama
+    container_name: ollama
+    image: ollama/ollama
+    ports:
+      - "11434:11434"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:11434/" ]  # please check the endpoint and healthcheck setup
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 volumes:
   postgres_data:
