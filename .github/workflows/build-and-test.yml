@@ -3,10 +3,14 @@ name: Build and Test Spring Boot Application
 on:
   push:
     branches:
-      - '**'
+      - main
+      - dev
+      - feature/**
   pull_request:
     branches:
-      - '**'
+      - main
+      - dev
+      - feature/**
 
 jobs:
   build:
