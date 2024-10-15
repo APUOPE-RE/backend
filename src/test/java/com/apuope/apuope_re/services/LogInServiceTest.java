@@ -36,6 +36,8 @@ public class LogInServiceTest {
     void testLoginSuccess() {
         UserCredentials userCredentials = new UserCredentials(TEST_EMAIL, TEST_PASSWORD);
         ResponseData<String> result = logInService.validateUser(userCredentials);
+        System.out.println("Login success: " + result.getSuccess());
+        System.out.println("Login data: " + result.getData());
         assertTrue(result.getSuccess(), "Login successful");
     }
 

@@ -23,6 +23,8 @@ public class LogInService {
                 userRepository.findByEmailAndPasswordHash(userCredentials.getEmail(),
                         userCredentials.getPasswordHash(), this.dslContext);
 
+        System.out.println(userOpt);
+
         if (userOpt.isPresent()) {
             userRepository.addSession(userOpt.get().getId(), this.dslContext);
             return new ResponseData<>(true, "");
