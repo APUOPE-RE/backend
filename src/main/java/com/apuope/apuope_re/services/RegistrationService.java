@@ -50,7 +50,7 @@ public class RegistrationService {
             return validatedData;
         }
         String password = registrationData.getPasswordHash();
-        registrationData.setPasswordHash(UtilsService.hashPassword(password));
+        registrationData.setPasswordHash(PasswordHashService.hashPassword(password));
         return userRepository.createUser(registrationData, this.dslContext);
     }
 

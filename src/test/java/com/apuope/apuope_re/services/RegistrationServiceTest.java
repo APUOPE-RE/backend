@@ -17,12 +17,13 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @ActiveProfiles("test")
 public class RegistrationServiceTest {
-    public static String TEST_USERNAME = "testuser";
+    public static String TEST_USERNAME1 = "testuser";
     public static String TEST_USERNAME2 = "testuser2";
-    public static String TEST_EMAIL = "test@success.com";
+    public static String TEST_EMAIL1 = "test@success.com";
     public static String TEST_EMAIL2 = "test2@success.com";
     public static String TEST_EMAIL_NON_EXISTING = "test@non-existing.com";
     public static String TEST_PASSWORD = "password123";
+    public static String TEST_PASSWORD_HASHED = PasswordHashService.hashPassword(TEST_PASSWORD);
     public static boolean VERIFIED = true;
 
     @Autowired
@@ -36,19 +37,19 @@ public class RegistrationServiceTest {
 
     @BeforeEach
     void setUp() {
-        TestDataGenerator.insertTestUser(dslContext, TEST_EMAIL, TEST_USERNAME, TEST_PASSWORD,
+        TestDataGenerator.insertTestUser(dslContext, TEST_EMAIL1, TEST_USERNAME1, TEST_PASSWORD_HASHED,
                 VERIFIED);
     }
 
     @AfterEach
     void tearDown() {
-        TestDataGenerator.deleteTestUsers(dslContext, TEST_EMAIL);
+        TestDataGenerator.deleteTestUsers(dslContext, TEST_EMAIL1);
         TestDataGenerator.deleteTestUsers(dslContext, TEST_EMAIL2);
     }
 
     @Test
     void testEmailAlreadyExists() {
-        RegistrationData registrationData = new RegistrationData(TEST_EMAIL, TEST_USERNAME,
+        RegistrationData registrationData = new RegistrationData(TEST_EMAIL1, TEST_USERNAME1,
                 TEST_PASSWORD);
         ResponseData<String> result = registrationService.registerUser(registrationData);
         assertFalse(result.getSuccess(), "User already exist for given email.");
@@ -56,7 +57,7 @@ public class RegistrationServiceTest {
 
     @Test
     void testUsernameAlreadyExists() {
-        RegistrationData registrationData = new RegistrationData(TEST_EMAIL2, TEST_USERNAME,
+        RegistrationData registrationData = new RegistrationData(TEST_EMAIL2, TEST_USERNAME1,
                 TEST_PASSWORD);
         ResponseData<String> result = registrationService.registerUser(registrationData);
         assertFalse(result.getSuccess(), "User already exist for given username.");
@@ -72,7 +73,7 @@ public class RegistrationServiceTest {
 
     @Test
     void testEmailSuccess() throws MessagingException {
-        ResponseData<String> response = emailService.sendVerification(TEST_EMAIL);
+        ResponseData<String> response = emailService.sendVerification(TEST_EMAIL1);
         assertTrue(response.getSuccess(), "Mail sent successfully!");
     }
 

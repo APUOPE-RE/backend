@@ -28,9 +28,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ActiveProfiles("test")
 public class ResetPasswordServiceTest {
     public static String TEST_USERNAME = "testuser";
-    public static String TEST_EMAIL = "test@success.com";
+    public static String TEST_EMAIL1 = "test@success.com";
     public static String TEST_EMAIL2 = "test2@success.com";
-    public static String TEST_PASSWORD = "password123";
+    public static String TEST_PASSWORD1 = "password123";
+    public static String TEST_PASSWORD_HASHED1 = PasswordHashService.hashPassword(TEST_PASSWORD1);
     public static String TEST_PASSWORD2 = "321password";
     public static UUID TEST_UUID1 = UUID.randomUUID();
     public static UUID TEST_UUID2 = UUID.randomUUID();
@@ -51,9 +52,9 @@ public class ResetPasswordServiceTest {
 
     @BeforeEach
     void setUp() {
-        TestDataGenerator.insertTestUser(dslContext, TEST_EMAIL, TEST_USERNAME, TEST_PASSWORD,
+        TestDataGenerator.insertTestUser(dslContext, TEST_EMAIL1, TEST_USERNAME, TEST_PASSWORD_HASHED1,
                 true);
-        UsersRecord user = TestDataGenerator.findByEmail(dslContext, TEST_EMAIL);
+        UsersRecord user = TestDataGenerator.findByEmail(dslContext, TEST_EMAIL1);
         // Insert unexpired token
         TestDataGenerator.insertTestToken(dslContext, user.getId(), TEST_UUID1, TEST_EXPIRATION_TIME_UNEXPIRED,
                 true);
@@ -67,15 +68,15 @@ public class ResetPasswordServiceTest {
 
     @AfterEach
     void tearDown() {
-        TestDataGenerator.deleteTestUsers(dslContext, TEST_EMAIL);
+        TestDataGenerator.deleteTestUsers(dslContext, TEST_EMAIL1);
         TestDataGenerator.deleteTestUsers(dslContext, TEST_EMAIL2);
     }
 
     @Test
     void testGenerateEmailTokenSuccess() {
-        Optional<UsersRecord> user = userRepository.findByEmail(TEST_EMAIL, dslContext);
+        Optional<UsersRecord> user = userRepository.findByEmail(TEST_EMAIL1, dslContext);
         if (user.isPresent()) {
-            TokenRecord result = resetPasswordService.generateEmailToken(TEST_EMAIL);
+            TokenRecord result = resetPasswordService.generateEmailToken(TEST_EMAIL1);
             assertEquals(user.get().getId(), result.getAccountId());
         } else{
             Assertions.fail("User should be found from db.");
@@ -90,17 +91,17 @@ public class ResetPasswordServiceTest {
 
     @Test
     void testSendResetPasswordLinkSuccess() throws MessagingException {
-        UsersRecord user = TestDataGenerator.findByEmail(dslContext, TEST_EMAIL);
+        UsersRecord user = TestDataGenerator.findByEmail(dslContext, TEST_EMAIL1);
         TokenRecord token = tokenRepository.findByAccountId(user.getId(), dslContext);
 
-        ResponseData<String> response = emailService.sendResetPasswordLink(token, TEST_EMAIL);
+        ResponseData<String> response = emailService.sendResetPasswordLink(token, TEST_EMAIL1);
         assertTrue(response.getSuccess(), "Mail sent successfully!");
     }
 
     @Test
     void testResetPasswordTokenValidAndExpired() {
         TokenRecord token = TestDataGenerator.fetchExpiredToken(dslContext);
-        ResetPasswordData data = new ResetPasswordData(token.getUuid(), TEST_PASSWORD);
+        ResetPasswordData data = new ResetPasswordData(token.getUuid(), TEST_PASSWORD1);
 
         ResponseData<String> response = resetPasswordService.resetPassword(data);
         assertFalse(response.getSuccess(), "Reset password link is expired.");
@@ -109,7 +110,7 @@ public class ResetPasswordServiceTest {
     @Test
     void testResetPasswordTokenInvalidAndUnexpired() {
         TokenRecord token = TestDataGenerator.fetchInvalidToken(dslContext);
-        ResetPasswordData data = new ResetPasswordData(token.getUuid(), TEST_PASSWORD);
+        ResetPasswordData data = new ResetPasswordData(token.getUuid(), TEST_PASSWORD1);
 
         ResponseData<String> response = resetPasswordService.resetPassword(data);
         assertFalse(response.getSuccess(), "This reset password request has already been completed. Request a new link if needed.");

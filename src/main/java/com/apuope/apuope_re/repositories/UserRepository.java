@@ -20,9 +20,9 @@ public class UserRepository {
     @Autowired
     public UserRepository(){};
 
-    public Optional<UsersRecord> findByEmailAndPasswordHash(String email, String passwordHash, DSLContext context){
+    public Optional<UsersRecord> findVerifiedUserByEmail(String email, DSLContext context){
         return context.selectFrom(Users.USERS)
-                .where(Users.USERS.EMAIL.eq(email).and(Users.USERS.PASSWORD_HASH.eq(passwordHash)).and(Users.USERS.VERIFIED.eq(true)))
+                .where(Users.USERS.EMAIL.eq(email).and(Users.USERS.VERIFIED.eq(true)))
                 .fetchOptional();
     }
 

@@ -53,7 +53,7 @@ public class ResetPasswordService {
             if (!token.getValid()) {
                 return new ResponseData<>(false, "This reset password request has already been completed. Request a new link if needed.");
             }
-            String hashedPassword = UtilsService.hashPassword(resetPasswordData.getPassword());
+            String hashedPassword = PasswordHashService.hashPassword(resetPasswordData.getPassword());
             boolean success = userRepository.alterUserResetPassword(token.getAccountId(), hashedPassword, dslContext);
 
             if (success) {
