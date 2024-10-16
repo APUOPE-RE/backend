@@ -50,15 +50,19 @@ public class ResetPasswordService {
         TokenRecord token = tokenRepository.findByUuid(resetPasswordData.getUuid(), dslContext);
 
         if (LocalDateTime.now(TIMEZONE).isBefore(token.getExpirationTime())) {
-            boolean success = userRepository.alterUserResetPassword(token.getAccountId(), resetPasswordData.getPassword(), dslContext);
+            if (!token.getValid()) {
+                return new ResponseData<>(false, "This reset password request has already been completed. Request a new link if needed.");
+            }
+            String hashedPassword = UtilsService.hashPassword(resetPasswordData.getPassword());
+            boolean success = userRepository.alterUserResetPassword(token.getAccountId(), hashedPassword, dslContext);
 
             if (success) {
                 tokenRepository.invalidateToken(token.getId(), dslContext);
                 return new ResponseData<>(true, "Password reset successfully.");
             }
-            return new ResponseData<>(false, "Error when resetting password.");
+            // This should be never reached, but response is good to be here just for sure.
+            return new ResponseData<>(false, "No rows affected.");
         }
-        // maybe better error messages could be in place...
         return new ResponseData<>(false, "Reset password link is expired.");
     }
 }

@@ -37,7 +37,7 @@ public class LogInServiceTest {
     }
 
     @Test
-    void testLoginSuccessful() {
+    void testLoginSuccess() {
         UserCredentials userCredentials = new UserCredentials(TEST_EMAIL, TEST_PASSWORD);
         ResponseData<String> result = logInService.validateUser(userCredentials);
         assertTrue(result.getSuccess(), "Login successful");

@@ -49,7 +49,8 @@ public class RegistrationService {
         if (!validatedData.getSuccess()){
             return validatedData;
         }
-
+        String password = registrationData.getPasswordHash();
+        registrationData.setPasswordHash(UtilsService.hashPassword(password));
         return userRepository.createUser(registrationData, this.dslContext);
     }
 
