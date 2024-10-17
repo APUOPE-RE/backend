@@ -156,8 +156,7 @@ public class UsersRecord extends UpdatableRecordImpl<UsersRecord> {
     /**
      * Create a detached, initialised UsersRecord
      */
-    public UsersRecord(Integer id, UUID uuid, String username, String email, String passwordHash,
-            LocalDateTime created, LocalDateTime updated, Boolean verified) {
+    public UsersRecord(Integer id, UUID uuid, String username, String email, String passwordHash, LocalDateTime created, LocalDateTime updated, Boolean verified) {
         super(Users.USERS);
 
         setId(id);

@@ -5,8 +5,10 @@ package com.apuope.apuope_re.jooq;
 
 
 import com.apuope.apuope_re.jooq.tables.Session;
+import com.apuope.apuope_re.jooq.tables.Token;
 import com.apuope.apuope_re.jooq.tables.Users;
 import com.apuope.apuope_re.jooq.tables.records.SessionRecord;
+import com.apuope.apuope_re.jooq.tables.records.TokenRecord;
 import com.apuope.apuope_re.jooq.tables.records.UsersRecord;
 
 import org.jooq.ForeignKey;
@@ -28,6 +30,8 @@ public class Keys {
     // -------------------------------------------------------------------------
 
     public static final UniqueKey<SessionRecord> SESSION_PKEY = Internal.createUniqueKey(Session.SESSION, DSL.name("session_pkey"), new TableField[] { Session.SESSION.ID }, true);
+    public static final UniqueKey<TokenRecord> TOKEN_PKEY = Internal.createUniqueKey(Token.TOKEN, DSL.name("token_pkey"), new TableField[] { Token.TOKEN.ID }, true);
+    public static final UniqueKey<TokenRecord> TOKEN_UUID_KEY = Internal.createUniqueKey(Token.TOKEN, DSL.name("token_uuid_key"), new TableField[] { Token.TOKEN.UUID }, true);
     public static final UniqueKey<UsersRecord> USERS_EMAIL_KEY = Internal.createUniqueKey(Users.USERS, DSL.name("users_email_key"), new TableField[] { Users.USERS.EMAIL }, true);
     public static final UniqueKey<UsersRecord> USERS_PKEY = Internal.createUniqueKey(Users.USERS, DSL.name("users_pkey"), new TableField[] { Users.USERS.ID }, true);
     public static final UniqueKey<UsersRecord> USERS_USERNAME_KEY = Internal.createUniqueKey(Users.USERS, DSL.name("users_username_key"), new TableField[] { Users.USERS.USERNAME }, true);
@@ -38,4 +42,5 @@ public class Keys {
     // -------------------------------------------------------------------------
 
     public static final ForeignKey<SessionRecord, UsersRecord> SESSION__FK_ACCOUNT = Internal.createForeignKey(Session.SESSION, DSL.name("fk_account"), new TableField[] { Session.SESSION.ACCOUNT_ID }, Keys.USERS_PKEY, new TableField[] { Users.USERS.ID }, true);
+    public static final ForeignKey<TokenRecord, UsersRecord> TOKEN__FK_ACCOUNT = Internal.createForeignKey(Token.TOKEN, DSL.name("fk_account"), new TableField[] { Token.TOKEN.ACCOUNT_ID }, Keys.USERS_PKEY, new TableField[] { Users.USERS.ID }, true);
 }

@@ -31,12 +31,14 @@ public class LogInService {
 
         if (userOpt.isPresent()) {
             if (passwordEncoder.matches(userCredentials.getPasswordHash(), userOpt.get().getPasswordHash())) {
+                boolean credentialsValid = PasswordHashService.checkPassword(userCredentials.getPasswordHash(), userOpt.get().getPasswordHash());
+              if (credentialsValid) {
                 userRepository.addSession(userOpt.get().getId(), this.dslContext);
                 return new ResponseData<>(true, jwtService.generateToken(userOpt.get().getEmail()));
+              }
             }
 
         }
             return new ResponseData<>(false, "Invalid credentials. Please try again.");
     }
-
 }

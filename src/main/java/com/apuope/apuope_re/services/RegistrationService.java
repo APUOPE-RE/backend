@@ -9,6 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class RegistrationService {
@@ -18,7 +19,7 @@ public class RegistrationService {
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
     public RegistrationService(DSLContext dslContext,
-            UserRepository userRepository, EmailService emailService) {
+            UserRepository userRepository) {
         this.dslContext = dslContext;
         this.userRepository = userRepository;
     }
@@ -53,6 +54,16 @@ public class RegistrationService {
             return validatedData;
         }
         registrationData.setPasswordHash(passwordEncoder.encode(registrationData.getPasswordHash()));
+
         return userRepository.createUser(registrationData, this.dslContext);
+    }
+
+    public ResponseData<String> verifyUser(UUID uuid){
+        boolean response = userRepository.alterUserVerify(uuid, dslContext);
+
+        if (response){
+            return new ResponseData<>(true, "User verified");
+        }
+        return new ResponseData<>(false, "User verification failed");
     }
 }
