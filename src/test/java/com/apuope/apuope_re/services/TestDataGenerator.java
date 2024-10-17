@@ -62,7 +62,8 @@ public class TestDataGenerator {
         if (user.isPresent()){
             dslContext.delete(Session.SESSION).where(Session.SESSION.ACCOUNT_ID.eq(user.get().getId())).execute();
             dslContext.delete(Session.SESSION).execute();
-        dslContext.delete(Users.USERS).where(Users.USERS.ID.eq(user.get().getId())).execute();
+            dslContext.delete(Token.TOKEN).where(Token.TOKEN.ACCOUNT_ID.eq(user.get().getId())).execute();
+            dslContext.delete(Users.USERS).where(Users.USERS.ID.eq(user.get().getId())).execute();
         }
     }
 }
