@@ -16,7 +16,8 @@ public class TestDataGenerator {
                 dslContext.selectFrom(Users.USERS).where(Users.USERS.EMAIL.eq(email)).fetchOptional();
 
         if (user.isEmpty()) {
-            dslContext.insertInto(Users.USERS).set(Users.USERS.USERNAME, username).set(Users.USERS.EMAIL, email).set(Users.USERS.PASSWORD_HASH, passwordHash).set(Users.USERS.VERIFIED, verified).execute();
+            dslContext.insertInto(Users.USERS).set(Users.USERS.USERNAME, username).set(Users.USERS.EMAIL, email).set(Users.USERS.PASSWORD_HASH, passwordHash).set(Users.USERS.VERIFIED, verified).set(Users.USERS.VERIFIED, true)
+                .execute();
         }
     }
 
@@ -26,7 +27,8 @@ public class TestDataGenerator {
 
         if (user.isPresent()){
             dslContext.delete(Session.SESSION).where(Session.SESSION.ACCOUNT_ID.eq(user.get().getId())).execute();
-            dslContext.delete(Users.USERS).where(Users.USERS.ID.eq(user.get().getId())).execute();
+            dslContext.delete(Session.SESSION).execute();
+        dslContext.delete(Users.USERS).where(Users.USERS.ID.eq(user.get().getId())).execute();
         }
     }
 }
