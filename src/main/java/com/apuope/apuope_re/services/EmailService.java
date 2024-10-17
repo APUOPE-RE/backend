@@ -28,22 +28,17 @@ public class EmailService {
     }
 
     public void sendVerification(String to) throws MessagingException {
-        System.out.println(to);
         Optional<UsersRecord> userByEmail = userRepository.findByEmail(to, this.dslContext);
 
         if (userByEmail.isPresent()) {
-            System.out.println(userByEmail.get().getEmail());
-            System.out.println(userByEmail.get().getUuid());
             UUID uuid = userByEmail.get().getUuid();
-            System.out.println(uuid);
-
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper mimeMessage = new MimeMessageHelper(message, true);
 
             mimeMessage.setTo(to);
             mimeMessage.setSubject("Verify your APUOPE-RE account");
             String htmlContent = "Thank you for creating an account with APUOPE-RE learning " +
-                    "assistant!<br>" + "Please verify your account to complete your registration" + ".<br>" + "Simply click the link below to verify your account:<br><br>" + "<a" + " href=\"http://localhost:3000/login?token=" + uuid + "\">Verify Your " + "Account</a><br><br>" + "If the link above does not work, copy and paste the " + "following URL into your browser: " + "http://localhost:3000/login?token=" + uuid + "<br><br>" + "If you did not sign up for an account with us, please ignore " + "this email" + ".<br><br>" + "Thank you,<br>" + "The APUOPE-RE Team<br>" + "<a href=\"http://localhost:3000/login\">login</a>";
+                    "assistant!<br>" + "Please verify your account to complete your registration" + ".<br>" + "Simply click the link below to verify your account:<br><br>" + "<a" + " href=\"http://localhost:3000/login?token=" + uuid + "\">Verify Your " + "Account</a><br><br>" + "If the link above does not work, copy and paste the " + "following URL into your browser: " + "http://localhost:3000/login?token=" + uuid + "<br><br>" + "If you did not sign up for an account with us, please ignore " + "this email" + ".<br><br>" + "Thank you,<br>" + "The APUOPE-RE Team<br>";
 
             mimeMessage.setText(htmlContent, true);
             mimeMessage.setFrom("mail.apuopere@gmail.com"); // Optional, depending on the setup
