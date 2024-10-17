@@ -64,4 +64,11 @@ public class UserRepository {
                 .set(Session.SESSION.LOG_IN, java.time.LocalDateTime.now())
                 .execute();
     }
+
+    public void logOutSession(int userId, DSLContext context) {
+        context.update(Session.SESSION)
+                .set(Session.SESSION.LOG_OUT, java.time.LocalDateTime.now())
+                .where(Session.SESSION.ACCOUNT_ID.eq(userId).and(Session.SESSION.LOG_OUT.isNull()))
+                .execute();
+    }
 }
