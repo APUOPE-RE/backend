@@ -25,7 +25,9 @@ public class ResetPasswordController {
         if (response != null) {
             return ResponseEntity.ok(emailService.sendResetPasswordLink(response, email));
         }
-        return ResponseEntity.ok(new ResponseData<>(false, "Error when creating email token."));
+        return ResponseEntity
+                .internalServerError()
+                .body(new ResponseData<>(false, "Error when creating email token."));
     }
 
     @PostMapping(value = "/resetPassword")
