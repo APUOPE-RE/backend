@@ -3,6 +3,7 @@ services:
   apuopere-backend:
     container_name: apuopere-backend
     environment:
+        SPRING_API_URL: ${APP_URL_DEV}
         SPRING_DATASOURCE_URL: ${POSTGRES_URL}
         SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
         SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}

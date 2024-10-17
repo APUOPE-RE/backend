@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @CrossOrigin
 @RequestMapping("/api")
@@ -22,8 +24,13 @@ public class RegistrationController {
     public ResponseEntity<ResponseData<String>> validateUser(@RequestBody RegistrationData input) throws MessagingException {
         ResponseData<String> response = registrationService.registerUser(input);
         if (response.getSuccess()) {
-            emailService.sendVerification(input.getEmail());
+            return ResponseEntity.ok(emailService.sendVerification(input.getEmail()));
         }
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping(value = "/verify/{uuid}")
+    public ResponseEntity<ResponseData<String>> verifyAccount(@PathVariable("uuid") UUID uuid) {
+        return ResponseEntity.ok(registrationService.verifyUser(uuid));
     }
 }

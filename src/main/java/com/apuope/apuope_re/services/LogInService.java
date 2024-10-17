@@ -20,15 +20,15 @@ public class LogInService {
 
     public ResponseData<String> validateUser(UserCredentials userCredentials) {
         Optional<UsersRecord> userOpt =
-                userRepository.findByEmailAndPasswordHash(userCredentials.getEmail(),
-                        userCredentials.getPasswordHash(), this.dslContext);
+                userRepository.findVerifiedUserByEmail(userCredentials.getEmail(), this.dslContext);
 
         if (userOpt.isPresent()) {
-            userRepository.addSession(userOpt.get().getId(), this.dslContext);
-            return new ResponseData<>(true, "");
-        } else {
-            return new ResponseData<>(false, "Invalid credentials. Please try again.");
+            boolean credentialsValid = PasswordHashService.checkPassword(userCredentials.getPasswordHash(), userOpt.get().getPasswordHash());
+            if (credentialsValid) {
+                userRepository.addSession(userOpt.get().getId(), this.dslContext);
+                return new ResponseData<>(true, "");
+            }
         }
+        return new ResponseData<>(false, "Invalid credentials. Please try again.");
     }
-
 }

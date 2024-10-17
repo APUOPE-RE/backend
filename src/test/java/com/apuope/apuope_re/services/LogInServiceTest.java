@@ -15,9 +15,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 public class LogInServiceTest {
     public static String TEST_USERNAME = "testuser";
-    public static String TEST_EMAIL = "test@success.com";
+    public static String TEST_EMAIL1 = "test@success.com";
+    public static String TEST_EMAIL2 = "test@failure.com";
     public static String TEST_PASSWORD = "password123";
+    public static String TEST_PASSWORD_HASHED = PasswordHashService.hashPassword("password123");
     public static boolean VERIFIED = true;
+
     @Autowired
     DSLContext dslContext;
     @Autowired
@@ -27,25 +30,25 @@ public class LogInServiceTest {
 
     @BeforeEach
     void setUp() {
-        TestDataGenerator.insertTestUser(dslContext, TEST_EMAIL, TEST_USERNAME, TEST_PASSWORD,
+        TestDataGenerator.insertTestUser(dslContext, TEST_EMAIL1, TEST_USERNAME, TEST_PASSWORD_HASHED,
                 VERIFIED);
     }
 
     @AfterEach
     void tearDown() {
-        TestDataGenerator.deleteTestUsers(dslContext, TEST_EMAIL);
+        TestDataGenerator.deleteTestUsers(dslContext, TEST_EMAIL1);
     }
 
     @Test
-    void testLoginSuccessful() {
-        UserCredentials userCredentials = new UserCredentials(TEST_EMAIL, TEST_PASSWORD);
+    void testLoginSuccess() {
+        UserCredentials userCredentials = new UserCredentials(TEST_EMAIL1, TEST_PASSWORD);
         ResponseData<String> result = logInService.validateUser(userCredentials);
         assertTrue(result.getSuccess(), "Login successful");
     }
 
     @Test
     void testLoginFailure() {
-        UserCredentials userCredentials = new UserCredentials("test@failure.com", "password123");
+        UserCredentials userCredentials = new UserCredentials(TEST_EMAIL2, TEST_PASSWORD);
         ResponseData<String>  result = logInService.validateUser(userCredentials);
         assertFalse(result.getSuccess(), "Login unsuccessful");
     }

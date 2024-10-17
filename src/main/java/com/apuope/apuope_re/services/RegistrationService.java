@@ -8,6 +8,7 @@ import org.jooq.DSLContext;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class RegistrationService {
@@ -15,7 +16,7 @@ public class RegistrationService {
     private final UserRepository userRepository;
 
     public RegistrationService(DSLContext dslContext,
-            UserRepository userRepository, EmailService emailService) {
+            UserRepository userRepository) {
         this.dslContext = dslContext;
         this.userRepository = userRepository;
     }
@@ -48,7 +49,17 @@ public class RegistrationService {
         if (!validatedData.getSuccess()){
             return validatedData;
         }
-
+        String password = registrationData.getPasswordHash();
+        registrationData.setPasswordHash(PasswordHashService.hashPassword(password));
         return userRepository.createUser(registrationData, this.dslContext);
+    }
+
+    public ResponseData<String> verifyUser(UUID uuid){
+        boolean response = userRepository.alterUserVerify(uuid, dslContext);
+
+        if (response){
+            return new ResponseData<>(true, "User verified");
+        }
+        return new ResponseData<>(false, "User verification failed");
     }
 }

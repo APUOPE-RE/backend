@@ -7,6 +7,7 @@ package com.apuope.apuope_re.jooq.tables;
 import com.apuope.apuope_re.jooq.Apuope;
 import com.apuope.apuope_re.jooq.Keys;
 import com.apuope.apuope_re.jooq.tables.Session.SessionPath;
+import com.apuope.apuope_re.jooq.tables.Token.TokenPath;
 import com.apuope.apuope_re.jooq.tables.records.UsersRecord;
 
 import java.time.LocalDateTime;
@@ -71,12 +72,12 @@ public class Users extends TableImpl<UsersRecord> {
     /**
      * The column <code>apuope.users.username</code>.
      */
-    public final TableField<UsersRecord, String> USERNAME = createField(DSL.name("username"), SQLDataType.VARCHAR(255).nullable(false), this, "");
+    public final TableField<UsersRecord, String> USERNAME = createField(DSL.name("username"), SQLDataType.VARCHAR(50).nullable(false), this, "");
 
     /**
      * The column <code>apuope.users.email</code>.
      */
-    public final TableField<UsersRecord, String> EMAIL = createField(DSL.name("email"), SQLDataType.VARCHAR(255).nullable(false), this, "");
+    public final TableField<UsersRecord, String> EMAIL = createField(DSL.name("email"), SQLDataType.VARCHAR(100).nullable(false), this, "");
 
     /**
      * The column <code>apuope.users.password_hash</code>.
@@ -96,8 +97,7 @@ public class Users extends TableImpl<UsersRecord> {
     /**
      * The column <code>apuope.users.verified</code>.
      */
-    public final TableField<UsersRecord, Boolean> VERIFIED = createField(DSL.name("verified"),
-            SQLDataType.BOOLEAN.nullable(false).defaultValue(false), this, "");
+    public final TableField<UsersRecord, Boolean> VERIFIED = createField(DSL.name("verified"), SQLDataType.BOOLEAN.defaultValue(DSL.field(DSL.raw("false"), SQLDataType.BOOLEAN)), this, "");
 
     private Users(Name alias, Table<UsersRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
@@ -192,6 +192,18 @@ public class Users extends TableImpl<UsersRecord> {
             _session = new SessionPath(this, null, Keys.SESSION__FK_ACCOUNT.getInverseKey());
 
         return _session;
+    }
+
+    private transient TokenPath _token;
+
+    /**
+     * Get the implicit to-many join path to the <code>apuope.token</code> table
+     */
+    public TokenPath token() {
+        if (_token == null)
+            _token = new TokenPath(this, null, Keys.TOKEN__FK_ACCOUNT.getInverseKey());
+
+        return _token;
     }
 
     @Override
