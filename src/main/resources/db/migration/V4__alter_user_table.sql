@@ -1,0 +1,2 @@
+ALTER TABLE apuope.users
+ADD COLUMN verified BOOLEAN DEFAULT FALSE;
