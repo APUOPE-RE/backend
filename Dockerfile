@@ -8,7 +8,7 @@ RUN mvn dependency:go-offline -B
 
 # Copy the source code and build the application
 COPY src ./src
-RUN mvn clean package
+RUN mvn clean package -P docker
 
 # Step 2: Create a lightweight image for runtime environment
 FROM openjdk:21 AS runtime
