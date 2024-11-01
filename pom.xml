@@ -118,9 +118,9 @@
 		<profile>
 			<id>jooq-codegen</id>
 			<properties>
-				<jdbc>jdbc:postgresql://localhost:5434/apuope_db</jdbc>
-				<db.user>apuope_user</db.user>
-				<db.password>apuope_password</db.password>
+				<jdbc>${env.POSTGRES_URL}</jdbc>
+				<db.user>${env.POSTGRES_USER}</db.user>
+				<db.password>${env.POSTGRES_PASSWORD}</db.password>
 			</properties>
 			<build>
 			<plugins>
@@ -150,9 +150,9 @@
 							<configuration>
 								<jdbc>
 									<driver>org.postgresql.Driver</driver>
-									<url>jdbc:postgresql://localhost:5434/apuope_db</url>
-									<user>apuope_user</user>
-									<password>apuope_password</password>
+									<url>${env.POSTGRES_URL}</url>
+									<user>${env.POSTGRES_USER}r</user>
+									<password>${env.POSTGRES_PASSWORD}</password>
 								</jdbc>
 								<generator>
 									<name>org.jooq.codegen.JavaGenerator</name>
@@ -175,9 +175,9 @@
 		<profile>
 			<id>docker</id>
 			<properties>
-				<jdbc>jdbc:postgresql://localhost:5434/apuope_db</jdbc>
-				<db.user>apuope_user</db.user>
-				<db.password>apuope_password</db.password>
+				<jdbc>${env.POSTGRES_URL}</jdbc>
+				<db.user>${env.POSTGRES_USER}</db.user>
+				<db.password>${env.POSTGRES_PASSWORD}</db.password>
 				<maven.test.skip>true</maven.test.skip>
 			</properties>
 			<build>
