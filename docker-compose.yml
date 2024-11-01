@@ -9,10 +9,10 @@ services:
         SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
         SPRING_JPA_HIBERNATE_DDL_AUTO: none
         SPRING_PROFILES_ACTIVE: docker
-        SPRING_MAIL_HOST: smtp.gmail.com
-        SPRING_MAIL_PORT: 587
-        SPRING_MAIL_USERNAME: mail.apuopere@gmail.com
-        SPRING_MAIL_PASSWORD: tsnbgijhjtetbonu
+        SPRING_MAIL_HOST: ${SPRING_MAIL_HOST}
+        SPRING_MAIL_PORT: ${SPRING_MAIL_PORT}
+        SPRING_MAIL_USERNAME: ${SPRING_MAIL_USERNAME}
+        SPRING_MAIL_PASSWORD: ${SPRING_MAIL_PASSWORD}
         SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: "true"
         SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: "true"
         SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_REQUIRED: "true"
@@ -31,9 +31,9 @@ services:
   apuopere-database:
     image: postgres:15
     environment:
-      POSTGRES_DB: apuope_db
-      POSTGRES_USER: apuope_user
-      POSTGRES_PASSWORD: apuope_password
+      POSTGRES_DB: ${POSTGRES_URL}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5434:5432"
     healthcheck:
