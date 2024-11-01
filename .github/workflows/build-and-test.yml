@@ -39,6 +39,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install docker-compose -y
 
+      - name: Set environment variables for Docker Compose
+        env:
+          LLM_API_URL: ${{ secrets.LLM_API_URL }}
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+        run: |
+          echo "LLM_API_URL=${LLM_API_URL}" >> $GITHUB_ENV
+          echo "LLM_API_KEY=${LLM_API_KEY}" >> $GITHUB_ENV
+
       - name: Start Docker Compose
         run: docker-compose -f docker-compose.yml up -d
 
