@@ -69,9 +69,14 @@ public class Message extends TableImpl<MessageRecord> {
     public final TableField<MessageRecord, Integer> CONVERSATION_ID = createField(DSL.name("conversation_id"), SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
-     * The column <code>apuope.message.message</code>.
+     * The column <code>apuope.message.content</code>.
      */
-    public final TableField<MessageRecord, String> MESSAGE_ = createField(DSL.name("message"), SQLDataType.VARCHAR(1000).nullable(false), this, "");
+    public final TableField<MessageRecord, String> CONTENT = createField(DSL.name("content"), SQLDataType.VARCHAR(1000).nullable(false), this, "");
+
+    /**
+     * The column <code>apuope.message.source</code>.
+     */
+    public final TableField<MessageRecord, Integer> SOURCE = createField(DSL.name("source"), SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>apuope.message.datetime</code>.

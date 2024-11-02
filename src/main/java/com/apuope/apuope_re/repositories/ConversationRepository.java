@@ -1,27 +1,48 @@
 package com.apuope.apuope_re.repositories;
 
+import com.apuope.apuope_re.dto.MessageData;
 import com.apuope.apuope_re.dto.ResponseData;
 import com.apuope.apuope_re.jooq.tables.Conversation;
+import com.apuope.apuope_re.jooq.tables.Message;
 import com.apuope.apuope_re.jooq.tables.records.ConversationRecord;
+import com.apuope.apuope_re.jooq.tables.records.MessageRecord;
 import org.jooq.DSLContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 
+@Repository
 public class ConversationRepository {
     private final ZoneId TIMEZONE = ZoneId.of("Europe/Helsinki");
 
     @Autowired
     public ConversationRepository(){};
 
-    public ConversationRecord findByConversationId(Integer conversationId, DSLContext context){
+    // Conversation
+    public List<ConversationRecord> fetchConversationByAccountId(Integer accountId, DSLContext context){
         return context.selectFrom(Conversation.CONVERSATION)
-                .where(Conversation.CONVERSATION.ID.eq(conversationId))
-                .fetch()
-                .getFirst();
+                .where(Conversation.CONVERSATION.ACCOUNT_ID.eq(accountId))
+                .fetch();
     }
-    public ConversationRecord findByAccountId(Integer accountId, DSLContext context){
+
+    public List<MessageData> fetchConversationById(Integer conversationId, DSLContext context){
+        return context.select(
+                        Conversation.CONVERSATION.ID.as("conversationId"),
+                        Message.MESSAGE.ID.as("messageId"),
+                        Message.MESSAGE.CONTENT.as("content"),
+                        Message.MESSAGE.SOURCE.as("source"),
+                        Message.MESSAGE.DATETIME.as("timeStamp")
+                )
+                .from(Conversation.CONVERSATION)
+                .join(Message.MESSAGE).on(Message.MESSAGE.CONVERSATION_ID.eq(Conversation.CONVERSATION.ID))
+                .where(Conversation.CONVERSATION.ID.eq(conversationId))
+                .fetchInto(MessageData.class);
+    }
+
+    public ConversationRecord findLatestByAccountId(Integer accountId, DSLContext context){
         return context.selectFrom(Conversation.CONVERSATION)
                 .where(Conversation.CONVERSATION.ACCOUNT_ID.eq(accountId))
                 .orderBy(Conversation.CONVERSATION.ID.desc())
@@ -38,21 +59,26 @@ public class ConversationRepository {
                 .set(Conversation.CONVERSATION.SUBJECT, "Chapter " + chapterId)
                 .execute();
 
-        return findByAccountId(accountId, context);
+        return findLatestByAccountId(accountId, context);
     }
-/*
-    public ResponseData<String> createMessage(Integer conversationId, String message, DSLContext context) {
-        try {
-            context.insertInto(Message.MESSAGE)
-                    .set(Message.MESSAGE.CONVERSATION_ID, conversationId)
-                    .set(Message.MESSAGE.MESSAGE_, message)
-                    .set(Message.MESSAGE.DATETIME, LocalDateTime.now(TIMEZONE))
-                    .execute();
 
-            return new ResponseData<>(true, "Message added successfully.");
-        } catch (Exception e) {
-            return new ResponseData<>(false, "Error when creating message: " + e);
-        }
+    // Message
+    public MessageRecord findLatestByConversationId(Integer conversationId, DSLContext context){
+        return context.selectFrom(Message.MESSAGE)
+                .where(Message.MESSAGE.CONVERSATION_ID.eq(conversationId))
+                .orderBy(Message.MESSAGE.ID.desc())
+                .fetch()
+                .getFirst();
     }
-    */
+
+    public MessageRecord createMessage(Integer conversationId, String message, Integer source, DSLContext context) {
+        context.insertInto(Message.MESSAGE)
+                .set(Message.MESSAGE.CONVERSATION_ID, conversationId)
+                .set(Message.MESSAGE.CONTENT, message)
+                .set(Message.MESSAGE.SOURCE, source)
+                .set(Message.MESSAGE.DATETIME, LocalDateTime.now(TIMEZONE))
+                .execute();
+
+        return findLatestByConversationId(conversationId, context);
+    }
 }

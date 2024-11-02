@@ -49,31 +49,45 @@ public class MessageRecord extends UpdatableRecordImpl<MessageRecord> {
     }
 
     /**
-     * Setter for <code>apuope.message.message</code>.
+     * Setter for <code>apuope.message.content</code>.
      */
-    public void setMessage(String value) {
+    public void setContent(String value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>apuope.message.message</code>.
+     * Getter for <code>apuope.message.content</code>.
      */
-    public String getMessage() {
+    public String getContent() {
         return (String) get(2);
+    }
+
+    /**
+     * Setter for <code>apuope.message.source</code>.
+     */
+    public void setSource(Integer value) {
+        set(3, value);
+    }
+
+    /**
+     * Getter for <code>apuope.message.source</code>.
+     */
+    public Integer getSource() {
+        return (Integer) get(3);
     }
 
     /**
      * Setter for <code>apuope.message.datetime</code>.
      */
     public void setDatetime(LocalDateTime value) {
-        set(3, value);
+        set(4, value);
     }
 
     /**
      * Getter for <code>apuope.message.datetime</code>.
      */
     public LocalDateTime getDatetime() {
-        return (LocalDateTime) get(3);
+        return (LocalDateTime) get(4);
     }
 
     // -------------------------------------------------------------------------
@@ -99,12 +113,13 @@ public class MessageRecord extends UpdatableRecordImpl<MessageRecord> {
     /**
      * Create a detached, initialised MessageRecord
      */
-    public MessageRecord(Integer id, Integer conversationId, String message, LocalDateTime datetime) {
+    public MessageRecord(Integer id, Integer conversationId, String content, Integer source, LocalDateTime datetime) {
         super(Message.MESSAGE);
 
         setId(id);
         setConversationId(conversationId);
-        setMessage(message);
+        setContent(content);
+        setSource(source);
         setDatetime(datetime);
         resetChangedOnNotNull();
     }
