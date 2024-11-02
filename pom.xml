@@ -151,7 +151,7 @@
 								<jdbc>
 									<driver>org.postgresql.Driver</driver>
 									<url>${env.POSTGRES_URL}</url>
-									<user>${env.POSTGRES_USER}r</user>
+									<user>${env.POSTGRES_USER}</user>
 									<password>${env.POSTGRES_PASSWORD}</password>
 								</jdbc>
 								<generator>
