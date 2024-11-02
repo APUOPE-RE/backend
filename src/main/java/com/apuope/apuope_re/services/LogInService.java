@@ -5,6 +5,8 @@ import com.apuope.apuope_re.jooq.tables.records.UsersRecord;
 import com.apuope.apuope_re.repositories.UserRepository;
 import com.apuope.apuope_re.dto.UserCredentials;
 import org.jooq.DSLContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
 
@@ -12,10 +14,15 @@ import java.util.Optional;
 public class LogInService {
     private final DSLContext dslContext;
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JWTService jwtService;
 
     public LogInService(DSLContext dslContext, UserRepository userRepository) {
         this.dslContext = dslContext;
         this.userRepository = userRepository;
+        this.passwordEncoder = new BCryptPasswordEncoder(10);
     }
 
     public ResponseData<String> validateUser(UserCredentials userCredentials) {
@@ -26,8 +33,9 @@ public class LogInService {
             boolean credentialsValid = PasswordHashService.checkPassword(userCredentials.getPasswordHash(), userOpt.get().getPasswordHash());
             if (credentialsValid) {
                 userRepository.addSession(userOpt.get().getId(), this.dslContext);
-                return new ResponseData<>(true, "");
+                return new ResponseData<>(true, jwtService.generateToken(userOpt.get().getEmail()));
             }
+
         }
         return new ResponseData<>(false, "Invalid credentials. Please try again.");
     }
