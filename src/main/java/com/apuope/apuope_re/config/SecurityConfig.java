@@ -1,7 +1,7 @@
 package com.apuope.apuope_re.config;
 
 import com.apuope.apuope_re.filters.JWTFilter;
-import com.apuope.apuope_re.services.MyUserDetailService;
+import com.apuope.apuope_re.services.ApuopeUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,7 +27,7 @@ import java.util.Arrays;
 public class SecurityConfig {
 
     @Autowired
-    private MyUserDetailService userDetailsService;
+    private ApuopeUserDetailService userDetailsService;
 
     @Autowired
     private JWTFilter jwtFilter;
@@ -52,7 +52,7 @@ public class SecurityConfig {
                 .cors(customizer -> customizer.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers( "/api/login", "/api/register", "/api/logout", "/api/sendResetPasswordLink", "/api/resetPassword")
+                        .requestMatchers( "/api/**")
                         .permitAll().anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

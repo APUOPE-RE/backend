@@ -5,7 +5,6 @@ import com.apuope.apuope_re.dto.ResponseData;
 import com.apuope.apuope_re.jooq.tables.records.UsersRecord;
 import com.apuope.apuope_re.repositories.UserRepository;
 import org.jooq.DSLContext;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -15,13 +14,14 @@ import java.util.UUID;
 public class RegistrationService {
     private final DSLContext dslContext;
     private final UserRepository userRepository;
-
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+    private final PasswordHashService passwordHashService;
 
     public RegistrationService(DSLContext dslContext,
-            UserRepository userRepository) {
+                               UserRepository userRepository,
+                               PasswordHashService passwordHashService) {
         this.dslContext = dslContext;
         this.userRepository = userRepository;
+        this.passwordHashService = passwordHashService;
     }
 
     private ResponseData<String> validateRegistrationData(RegistrationData registrationData) {
@@ -54,7 +54,7 @@ public class RegistrationService {
             return validatedData;
         }
 
-        registrationData.setPasswordHash(passwordEncoder.encode(registrationData.getPasswordHash()));
+        registrationData.setPasswordHash(passwordHashService.hashPassword(registrationData.getPasswordHash()));
         return userRepository.createUser(registrationData, this.dslContext);
     }
 

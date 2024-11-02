@@ -27,10 +27,11 @@ public class LogInService {
 
     public ResponseData<String> validateUser(UserCredentials userCredentials) {
         Optional<UsersRecord> userOpt =
-                userRepository.findByEmail(userCredentials.getEmail(), this.dslContext);
+                userRepository.findVerifiedUserByEmail(userCredentials.getEmail(), this.dslContext);
 
         if (userOpt.isPresent()) {
-            if (passwordEncoder.matches(userCredentials.getPasswordHash(), userOpt.get().getPasswordHash())) {
+            boolean credentialsValid = PasswordHashService.checkPassword(userCredentials.getPasswordHash(), userOpt.get().getPasswordHash());
+            if (credentialsValid) {
                 userRepository.addSession(userOpt.get().getId(), this.dslContext);
                 return new ResponseData<>(true, jwtService.generateToken(userOpt.get().getEmail()));
             }

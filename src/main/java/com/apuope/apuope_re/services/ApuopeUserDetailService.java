@@ -12,12 +12,12 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class MyUserDetailService implements UserDetailsService {
+public class ApuopeUserDetailService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final DSLContext dslContext;
 
-    public MyUserDetailService(UserRepository userRepository, DSLContext dslContext) {
+    public ApuopeUserDetailService(UserRepository userRepository, DSLContext dslContext) {
         this.userRepository = userRepository;
         this.dslContext = dslContext;
     }

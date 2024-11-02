@@ -1,7 +1,7 @@
 package com.apuope.apuope_re.filters;
 
 import com.apuope.apuope_re.services.JWTService;
-import com.apuope.apuope_re.services.MyUserDetailService;
+import com.apuope.apuope_re.services.ApuopeUserDetailService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,7 +25,7 @@ public class JWTFilter extends OncePerRequestFilter {
     private final JWTService jwtService;
 
     @Autowired
-    private final MyUserDetailService myUserDetailService;
+    private final ApuopeUserDetailService myUserDetailService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
