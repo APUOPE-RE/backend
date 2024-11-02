@@ -106,6 +106,12 @@
 			<artifactId>junit-jupiter-engine</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.vaadin.external.google</groupId>
+			<artifactId>android-json</artifactId>
+			<version>0.0.20131108.vaadin1</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 	<profiles>
@@ -113,8 +119,8 @@
 			<id>jooq-codegen</id>
 			<properties>
 				<jdbc>jdbc:postgresql://localhost:5434/apuope_db</jdbc>
-				<db.user>apuope_user</db.user>
-				<db.password>apuope_password</db.password>
+				<db.user>${env.POSTGRES_USER}</db.user>
+				<db.password>${env.POSTGRES_PASSWORD}</db.password>
 			</properties>
 			<build>
 			<plugins>
@@ -145,8 +151,8 @@
 								<jdbc>
 									<driver>org.postgresql.Driver</driver>
 									<url>jdbc:postgresql://localhost:5434/apuope_db</url>
-									<user>apuope_user</user>
-									<password>apuope_password</password>
+									<user>${env.POSTGRES_USER}</user>
+									<password>${env.POSTGRES_PASSWORD}</password>
 								</jdbc>
 								<generator>
 									<name>org.jooq.codegen.JavaGenerator</name>
@@ -170,8 +176,8 @@
 			<id>docker</id>
 			<properties>
 				<jdbc>jdbc:postgresql://localhost:5434/apuope_db</jdbc>
-				<db.user>apuope_user</db.user>
-				<db.password>apuope_password</db.password>
+				<db.user>${env.POSTGRES_USER}</db.user>
+				<db.password>${env.POSTGRES_PASSWORD}</db.password>
 				<maven.test.skip>true</maven.test.skip>
 			</properties>
 			<build>
