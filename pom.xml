@@ -118,7 +118,7 @@
 		<profile>
 			<id>jooq-codegen</id>
 			<properties>
-				<jdbc>${env.POSTGRES_URL}</jdbc>
+				<jdbc>jdbc:postgresql://localhost:5434/apuope_db</jdbc>
 				<db.user>${env.POSTGRES_USER}</db.user>
 				<db.password>${env.POSTGRES_PASSWORD}</db.password>
 			</properties>
@@ -150,7 +150,7 @@
 							<configuration>
 								<jdbc>
 									<driver>org.postgresql.Driver</driver>
-									<url>${env.POSTGRES_URL}</url>
+									<url>jdbc:postgresql://localhost:5434/apuope_db</url>
 									<user>${env.POSTGRES_USER}</user>
 									<password>${env.POSTGRES_PASSWORD}</password>
 								</jdbc>
@@ -175,7 +175,7 @@
 		<profile>
 			<id>docker</id>
 			<properties>
-				<jdbc>${env.POSTGRES_URL}</jdbc>
+				<jdbc>jdbc:postgresql://localhost:5434/apuope_db</jdbc>
 				<db.user>${env.POSTGRES_USER}</db.user>
 				<db.password>${env.POSTGRES_PASSWORD}</db.password>
 				<maven.test.skip>true</maven.test.skip>
