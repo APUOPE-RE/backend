@@ -4,6 +4,8 @@
 package com.apuope.apuope_re.jooq;
 
 
+import com.apuope.apuope_re.jooq.tables.Conversation;
+import com.apuope.apuope_re.jooq.tables.Message;
 import com.apuope.apuope_re.jooq.tables.Session;
 import com.apuope.apuope_re.jooq.tables.Token;
 import com.apuope.apuope_re.jooq.tables.Users;
@@ -28,6 +30,16 @@ public class Apuope extends SchemaImpl {
      * The reference instance of <code>apuope</code>
      */
     public static final Apuope APUOPE = new Apuope();
+
+    /**
+     * The table <code>apuope.conversation</code>.
+     */
+    public final Conversation CONVERSATION = Conversation.CONVERSATION;
+
+    /**
+     * The table <code>apuope.message</code>.
+     */
+    public final Message MESSAGE = Message.MESSAGE;
 
     /**
      * The table <code>apuope.session</code>.
@@ -60,6 +72,8 @@ public class Apuope extends SchemaImpl {
     @Override
     public final List<Table<?>> getTables() {
         return Arrays.asList(
+            Conversation.CONVERSATION,
+            Message.MESSAGE,
             Session.SESSION,
             Token.TOKEN,
             Users.USERS
