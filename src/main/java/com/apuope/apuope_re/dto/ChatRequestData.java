@@ -1,24 +1,14 @@
 package com.apuope.apuope_re.dto;
 
 public class ChatRequestData {
-    public Integer userId;
     public Integer conversationId;
     public Integer chapterId;
     public String data;
 
-    public ChatRequestData(Integer userId, Integer conversationId, Integer chapterId, String data) {
-        this.userId = userId;
+    public ChatRequestData(Integer conversationId, Integer chapterId, String data) {
         this.conversationId = conversationId;
         this.chapterId = chapterId;
         this.data = data;
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
     }
 
     public Integer getConversationId() {

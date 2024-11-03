@@ -36,7 +36,8 @@ public class ChatbotController {
     }
 
     @PostMapping(value = "/chatBot")
-    public ResponseEntity<ResponseData<MessageData>> sendRequest(@RequestBody ChatRequestData input) throws JsonProcessingException {
-        return ResponseEntity.ok(chatbotService.sendRequest(input));
+    public ResponseEntity<ResponseData<MessageData>> sendRequest(HttpServletRequest request, @RequestBody ChatRequestData input) throws JsonProcessingException {
+        String token = request.getHeader(HttpHeaders.AUTHORIZATION).replace("Bearer ", "");
+        return ResponseEntity.ok(chatbotService.sendRequest(token, request, input));
     }
 }

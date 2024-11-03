@@ -63,29 +63,40 @@ public class ChatbotService {
         return conversationRepository.fetchConversationById(conversationId, dslContext);
     }
 
-    public ConversationRecord startConversation(ChatRequestData request) {
-        return conversationRepository.createConversation(request.getUserId(), request.getChapterId(), "", dslContext);
+    public ConversationRecord startConversation(Integer userId, ChatRequestData request) {
+        return conversationRepository.createConversation(userId, request.getChapterId(), "", dslContext);
     }
 
-    public ResponseData<MessageData> sendRequest(ChatRequestData request) throws JsonProcessingException {
-        if (request.getConversationId() == 0 || request.getConversationId() == null) {
-            ConversationRecord conversation = startConversation(request);
-            conversationRepository.createMessage(conversation.getId(), request.getData(), MessageSource.USER.getValue(),
+    public ResponseData<MessageData> sendRequest(
+            String token, HttpServletRequest request,
+            ChatRequestData chatRequest
+    ) throws JsonProcessingException {
+        Integer conversationId;
+
+        String userEmail = jwtService.extractEmail(token);
+        Optional<UsersRecord> userOpt = userRepository.findVerifiedUserByEmail(userEmail, dslContext);
+
+        if (userOpt.isPresent() && (chatRequest.getConversationId() == 0 || chatRequest.getConversationId() == null)) {
+            ConversationRecord conversation = startConversation(userOpt.get().getId(), chatRequest);
+            conversationId = conversation.getId();
+
+            conversationRepository.createMessage(conversationId, chatRequest.getData(), MessageSource.USER.getValue(),
                     dslContext);
         } else {
-            conversationRepository.createMessage(request.getConversationId(), request.getData(), MessageSource.USER.getValue(),
+            conversationId = chatRequest.getConversationId();
+            conversationRepository.createMessage(chatRequest.getConversationId(), chatRequest.getData(), MessageSource.USER.getValue(),
                     dslContext);
         }
 
-        // Comment out lines 84-98 and uncomment line 99 if you can't connect to LLM.
-        // Line 98 will sent mocked answer every time message is sent to LLM.
+        // Comment out lines 93-107 and uncomment line 108 if you can't connect to LLM.
+        // Line 108 will sent mocked answer every time message is sent to LLM.
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + apiKey);
         headers.set("Content-Type", "application/json");
 
         String requestBody = "{"
                 + "\"model\": \"llama3.1-8b\","
-                + "\"messages\": [{\"role\": \"user\", \"content\": \"" + request.getData() + "\"}]"
+                + "\"messages\": [{\"role\": \"user\", \"content\": \"" + chatRequest.getData() + "\"}]"
                 + "}";
 
         HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
@@ -96,7 +107,7 @@ public class ChatbotService {
         String content = root.path("choices").get(0).path("message").path("content").asText();
         //String content = "This is an LLM answer!";
 
-        MessageRecord llmMessage = conversationRepository.createMessage(request.getConversationId(), content, MessageSource.LLM.getValue(),
+        MessageRecord llmMessage = conversationRepository.createMessage(conversationId, content, MessageSource.LLM.getValue(),
                 dslContext);
 
         MessageData mesageData = new MessageData(llmMessage.getConversationId(), llmMessage.getId(),
