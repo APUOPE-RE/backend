@@ -1,7 +1,7 @@
 package com.apuope.apuope_re.repositories;
 
+import com.apuope.apuope_re.dto.ConversationData;
 import com.apuope.apuope_re.dto.MessageData;
-import com.apuope.apuope_re.dto.ResponseData;
 import com.apuope.apuope_re.jooq.tables.Conversation;
 import com.apuope.apuope_re.jooq.tables.Message;
 import com.apuope.apuope_re.jooq.tables.records.ConversationRecord;
@@ -22,10 +22,17 @@ public class ConversationRepository {
     public ConversationRepository(){};
 
     // Conversation
-    public List<ConversationRecord> fetchConversationByAccountId(Integer accountId, DSLContext context){
-        return context.selectFrom(Conversation.CONVERSATION)
+    public List<ConversationData> fetchConversationByAccountId(Integer accountId, DSLContext context){
+        return context.select(
+                        Conversation.CONVERSATION.ID.as("id"),
+                        Conversation.CONVERSATION.ACCOUNT_ID.as("accountId"),
+                        Conversation.CONVERSATION.CHAPTER_ID.as("chapterId"),
+                        Conversation.CONVERSATION.DATETIME.as("dateTime"),
+                        Conversation.CONVERSATION.SUBJECT.as("subject")
+                )
+                .from(Conversation.CONVERSATION)
                 .where(Conversation.CONVERSATION.ACCOUNT_ID.eq(accountId))
-                .fetch();
+                .fetchInto(ConversationData.class);
     }
 
     public List<MessageData> fetchConversationById(Integer conversationId, DSLContext context){

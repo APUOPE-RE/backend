@@ -1,9 +1,9 @@
 package com.apuope.apuope_re.controllers;
 
 import com.apuope.apuope_re.dto.ChatRequestData;
+import com.apuope.apuope_re.dto.ConversationData;
 import com.apuope.apuope_re.dto.MessageData;
 import com.apuope.apuope_re.dto.ResponseData;
-import com.apuope.apuope_re.jooq.tables.records.ConversationRecord;
 import com.apuope.apuope_re.services.ChatbotService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,9 +25,9 @@ public class ChatbotController {
     }
 
     @GetMapping(value = "/conversations")
-    public ResponseEntity<List<ConversationRecord>> fetchAllConversations(HttpServletRequest request) {
+    public ResponseEntity<List<ConversationData>> fetchAllConversations(HttpServletRequest request) {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION).replace("Bearer ", "");
-        return ResponseEntity.ok(chatbotService.fetchAllConversations(request));
+        return ResponseEntity.ok(chatbotService.fetchAllConversations(token, request));
     }
 
     @GetMapping(value = "/conversation/{id}")
