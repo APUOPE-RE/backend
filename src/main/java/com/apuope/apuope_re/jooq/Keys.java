@@ -5,9 +5,11 @@ package com.apuope.apuope_re.jooq;
 
 
 import com.apuope.apuope_re.jooq.tables.Session;
+import com.apuope.apuope_re.jooq.tables.TextbookEmbeddings;
 import com.apuope.apuope_re.jooq.tables.Token;
 import com.apuope.apuope_re.jooq.tables.Users;
 import com.apuope.apuope_re.jooq.tables.records.SessionRecord;
+import com.apuope.apuope_re.jooq.tables.records.TextbookEmbeddingsRecord;
 import com.apuope.apuope_re.jooq.tables.records.TokenRecord;
 import com.apuope.apuope_re.jooq.tables.records.UsersRecord;
 
@@ -22,7 +24,7 @@ import org.jooq.impl.Internal;
  * A class modelling foreign key relationships and constraints of tables in
  * apuope.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes", "this-escape" })
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Keys {
 
     // -------------------------------------------------------------------------
@@ -30,6 +32,7 @@ public class Keys {
     // -------------------------------------------------------------------------
 
     public static final UniqueKey<SessionRecord> SESSION_PKEY = Internal.createUniqueKey(Session.SESSION, DSL.name("session_pkey"), new TableField[] { Session.SESSION.ID }, true);
+    public static final UniqueKey<TextbookEmbeddingsRecord> TEXTBOOK_EMBEDDINGS_PKEY = Internal.createUniqueKey(TextbookEmbeddings.TEXTBOOK_EMBEDDINGS, DSL.name("textbook_embeddings_pkey"), new TableField[] { TextbookEmbeddings.TEXTBOOK_EMBEDDINGS.ID }, true);
     public static final UniqueKey<TokenRecord> TOKEN_PKEY = Internal.createUniqueKey(Token.TOKEN, DSL.name("token_pkey"), new TableField[] { Token.TOKEN.ID }, true);
     public static final UniqueKey<TokenRecord> TOKEN_UUID_KEY = Internal.createUniqueKey(Token.TOKEN, DSL.name("token_uuid_key"), new TableField[] { Token.TOKEN.UUID }, true);
     public static final UniqueKey<UsersRecord> USERS_EMAIL_KEY = Internal.createUniqueKey(Users.USERS, DSL.name("users_email_key"), new TableField[] { Users.USERS.EMAIL }, true);

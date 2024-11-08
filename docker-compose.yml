@@ -1,5 +1,4 @@
 services:
-  # @TODO: Database credentials should be passed as environment variables
   apuopere-backend:
     container_name: apuopere-backend
     environment:
@@ -22,12 +21,19 @@ services:
     volumes:
       - ./logs:/app/logs
     depends_on:
-      apuopere-database:
-        condition: service_healthy
+      - python-embedding-service
+      - apuopere-database
+
+  python-embedding-service:
+    build:
+      context: ./python-embedding-service
+    container_name: python-embedding-service
+    ports:
+      - "5000:5000"
 
   # @TODO: We should use GitHub secrets to store the database credentials
   apuopere-database:
-    image: postgres:15
+    image: ramsrib/pgvector:15
     environment:
       POSTGRES_DB: apuope_db
       POSTGRES_USER: apuope_user
