@@ -88,8 +88,6 @@ public class ChatbotService {
                     dslContext);
         }
 
-        // Comment out lines 93-107 and uncomment line 108 if you can't connect to LLM.
-        // Line 108 will sent mocked answer every time message is sent to LLM.
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + apiKey);
         headers.set("Content-Type", "application/json");
@@ -105,7 +103,6 @@ public class ChatbotService {
 
         JsonNode root = objectMapper.readTree(response.getBody());
         String content = root.path("choices").get(0).path("message").path("content").asText();
-        //String content = "This is an LLM answer!";
 
         MessageRecord llmMessage = conversationRepository.createMessage(conversationId, content, MessageSource.LLM.getValue(),
                 dslContext);
