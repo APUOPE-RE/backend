@@ -106,7 +106,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
-			<version>3.3.3</version>
 		</dependency>
 
 		<dependency>
@@ -114,11 +113,13 @@
 			<artifactId>jjwt-api</artifactId>
 			<version>0.12.6</version>
 		</dependency>
+
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-impl</artifactId>
 			<version>0.12.6</version>
 		</dependency>
+
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-jackson</artifactId>
@@ -131,8 +132,8 @@
 			<id>jooq-codegen</id>
 			<properties>
 				<jdbc>jdbc:postgresql://localhost:5434/apuope_db</jdbc>
-				<db.user>apuope_user</db.user>
-				<db.password>apuope_password</db.password>
+				<db.user>${env.POSTGRES_USER}</db.user>
+				<db.password>${env.POSTGRES_PASSWORD}</db.password>
 			</properties>
 			<build>
 				<plugins>
@@ -188,8 +189,8 @@
 			<id>docker</id>
 			<properties>
 				<jdbc>jdbc:postgresql://localhost:5434/apuope_db</jdbc>
-				<db.user>apuope_user</db.user>
-				<db.password>apuope_password</db.password>
+				<db.user>${env.POSTGRES_USER}</db.user>
+				<db.password>${env.POSTGRES_PASSWORD}</db.password>
 				<maven.test.skip>true</maven.test.skip>
 			</properties>
 			<build>
