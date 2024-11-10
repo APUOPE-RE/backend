@@ -80,15 +80,15 @@ public class TokenRecord extends UpdatableRecordImpl<TokenRecord> {
     /**
      * Setter for <code>apuope.token.valid</code>.
      */
-    public void setValid(boolean value) {
+    public void setValid(Boolean value) {
         set(4, value);
     }
 
     /**
-     * Getter for <code>apuope.token.expiration_time</code>.
+     * Getter for <code>apuope.token.valid</code>.
      */
-    public boolean getValid() {
-        return (boolean) get(4);
+    public Boolean getValid() {
+        return (Boolean) get(4);
     }
 
     // -------------------------------------------------------------------------
@@ -114,13 +114,14 @@ public class TokenRecord extends UpdatableRecordImpl<TokenRecord> {
     /**
      * Create a detached, initialised TokenRecord
      */
-    public TokenRecord(Integer id, Integer accountId, UUID uuid, LocalDateTime expirationTime) {
+    public TokenRecord(Integer id, Integer accountId, UUID uuid, LocalDateTime expirationTime, Boolean valid) {
         super(Token.TOKEN);
 
         setId(id);
         setAccountId(accountId);
         setUuid(uuid);
         setExpirationTime(expirationTime);
+        setValid(valid);
         resetChangedOnNotNull();
     }
 }
