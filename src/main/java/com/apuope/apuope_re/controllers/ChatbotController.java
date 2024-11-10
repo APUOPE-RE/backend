@@ -1,4 +1,3 @@
-
 package com.apuope.apuope_re.controllers;
 
 import com.apuope.apuope_re.dto.ChatRequestData;
@@ -13,6 +12,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 @RestController
 @CrossOrigin
 @RequestMapping("/api")
@@ -26,8 +29,7 @@ public class ChatbotController {
     }
 
     @PostMapping(value = "/chatBot")
-    public ResponseEntity<ResponseData<String>> validateUser(@RequestBody ChatRequestData input) throws JsonProcessingException, JSONException {
-        String questionEmbedding = Arrays.toString(embeddingService.getEmbedding(input.data));
+    public ResponseEntity<ResponseData<String>> validateUser(@RequestBody ChatRequestData input) throws JsonProcessingException{
 
 
         return ResponseEntity.ok(this.chatbotService.sendRequest(input));
