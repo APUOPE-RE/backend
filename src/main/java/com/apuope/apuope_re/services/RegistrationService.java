@@ -14,11 +14,14 @@ import java.util.UUID;
 public class RegistrationService {
     private final DSLContext dslContext;
     private final UserRepository userRepository;
+    private final PasswordHashService passwordHashService;
 
     public RegistrationService(DSLContext dslContext,
-            UserRepository userRepository) {
+                               UserRepository userRepository,
+                               PasswordHashService passwordHashService) {
         this.dslContext = dslContext;
         this.userRepository = userRepository;
+        this.passwordHashService = passwordHashService;
     }
 
     private ResponseData<String> validateRegistrationData(RegistrationData registrationData) {
@@ -46,11 +49,12 @@ public class RegistrationService {
     public ResponseData<String> registerUser(RegistrationData registrationData) {
         ResponseData<String> validatedData = this.validateRegistrationData(registrationData);
 
+
         if (!validatedData.getSuccess()){
             return validatedData;
         }
-        String password = registrationData.getPasswordHash();
-        registrationData.setPasswordHash(PasswordHashService.hashPassword(password));
+
+        registrationData.setPasswordHash(passwordHashService.hashPassword(registrationData.getPasswordHash()));
         return userRepository.createUser(registrationData, this.dslContext);
     }
 
