@@ -29,7 +29,6 @@ services:
   python-embedding-service:
     build:
       context: ./python-embedding-service
-    container_name: python-embedding-service
     ports:
       - "5000:5000"
 

@@ -52,6 +52,7 @@ jobs:
           SPRING_MAIL_PASSWORD: ${{ secrets.SPRING_MAIL_PASSWORD }}
           SPRING_MAIL_HOST: ${{ secrets.SPRING_MAIL_HOST }}
           SPRING_MAIL_PORT: ${{ secrets.SPRING_MAIL_PORT }}
+          EMBEDDING_SERVICE_URL: ${{ secrets.EMBEDDING_SERVICE_URL }}
         run: |
           echo "POSTGRES_URL=${POSTGRES_URL}" >> $GITHUB_ENV
           echo "POSTGRES_USER=${POSTGRES_USER}" >> $GITHUB_ENV
@@ -62,6 +63,7 @@ jobs:
           echo "SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}" >> $GITHUB_ENV
           echo "SPRING_MAIL_HOST=${SPRING_MAIL_HOST}" >> $GITHUB_ENV
           echo "SPRING_MAIL_PORT=${SPRING_MAIL_PORT}" >> $GITHUB_ENV
+          echo "EMBEDDING_SERVICE_URL=${EMBEDDING_SERVICE_URL}" >> $GITHUB_ENV
 
       - name: Start Docker Compose
         run: docker-compose -f docker-compose.yml up -d
