@@ -6,13 +6,12 @@ import org.jooq.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.Array;
-import java.util.Optional;
 
 import static com.apuope.apuope_re.jooq.tables.TextbookEmbeddings.TEXTBOOK_EMBEDDINGS;
 
-public class embeddingRepository {
+public class EmbeddingRepository {
     @Autowired
-    public embeddingRepository(){};
+    public EmbeddingRepository(){};
 
     public Result<Record1<String>> findRelevantChuncks(Array embeddingArray, DSLContext context){
         return context.select(TEXTBOOK_EMBEDDINGS.CHUNK)
