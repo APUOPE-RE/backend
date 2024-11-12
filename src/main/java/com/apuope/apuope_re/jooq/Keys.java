@@ -4,9 +4,13 @@
 package com.apuope.apuope_re.jooq;
 
 
+import com.apuope.apuope_re.jooq.tables.Conversation;
+import com.apuope.apuope_re.jooq.tables.Message;
 import com.apuope.apuope_re.jooq.tables.Session;
 import com.apuope.apuope_re.jooq.tables.Token;
 import com.apuope.apuope_re.jooq.tables.Users;
+import com.apuope.apuope_re.jooq.tables.records.ConversationRecord;
+import com.apuope.apuope_re.jooq.tables.records.MessageRecord;
 import com.apuope.apuope_re.jooq.tables.records.SessionRecord;
 import com.apuope.apuope_re.jooq.tables.records.TokenRecord;
 import com.apuope.apuope_re.jooq.tables.records.UsersRecord;
@@ -29,6 +33,8 @@ public class Keys {
     // UNIQUE and PRIMARY KEY definitions
     // -------------------------------------------------------------------------
 
+    public static final UniqueKey<ConversationRecord> CONVERSATION_PKEY = Internal.createUniqueKey(Conversation.CONVERSATION, DSL.name("conversation_pkey"), new TableField[] { Conversation.CONVERSATION.ID }, true);
+    public static final UniqueKey<MessageRecord> MESSAGE_PKEY = Internal.createUniqueKey(Message.MESSAGE, DSL.name("message_pkey"), new TableField[] { Message.MESSAGE.ID }, true);
     public static final UniqueKey<SessionRecord> SESSION_PKEY = Internal.createUniqueKey(Session.SESSION, DSL.name("session_pkey"), new TableField[] { Session.SESSION.ID }, true);
     public static final UniqueKey<TokenRecord> TOKEN_PKEY = Internal.createUniqueKey(Token.TOKEN, DSL.name("token_pkey"), new TableField[] { Token.TOKEN.ID }, true);
     public static final UniqueKey<TokenRecord> TOKEN_UUID_KEY = Internal.createUniqueKey(Token.TOKEN, DSL.name("token_uuid_key"), new TableField[] { Token.TOKEN.UUID }, true);
@@ -41,6 +47,8 @@ public class Keys {
     // FOREIGN KEY definitions
     // -------------------------------------------------------------------------
 
+    public static final ForeignKey<ConversationRecord, UsersRecord> CONVERSATION__FK_ACCOUNT = Internal.createForeignKey(Conversation.CONVERSATION, DSL.name("fk_account"), new TableField[] { Conversation.CONVERSATION.ACCOUNT_ID }, Keys.USERS_PKEY, new TableField[] { Users.USERS.ID }, true);
+    public static final ForeignKey<MessageRecord, ConversationRecord> MESSAGE__FK_ACCOUNT = Internal.createForeignKey(Message.MESSAGE, DSL.name("fk_account"), new TableField[] { Message.MESSAGE.CONVERSATION_ID }, Keys.CONVERSATION_PKEY, new TableField[] { Conversation.CONVERSATION.ID }, true);
     public static final ForeignKey<SessionRecord, UsersRecord> SESSION__FK_ACCOUNT = Internal.createForeignKey(Session.SESSION, DSL.name("fk_account"), new TableField[] { Session.SESSION.ACCOUNT_ID }, Keys.USERS_PKEY, new TableField[] { Users.USERS.ID }, true);
     public static final ForeignKey<TokenRecord, UsersRecord> TOKEN__FK_ACCOUNT = Internal.createForeignKey(Token.TOKEN, DSL.name("fk_account"), new TableField[] { Token.TOKEN.ACCOUNT_ID }, Keys.USERS_PKEY, new TableField[] { Users.USERS.ID }, true);
 }
