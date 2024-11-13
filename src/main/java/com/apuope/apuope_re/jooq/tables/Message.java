@@ -71,7 +71,7 @@ public class Message extends TableImpl<MessageRecord> {
     /**
      * The column <code>apuope.message.content</code>.
      */
-    public final TableField<MessageRecord, String> CONTENT = createField(DSL.name("content"), SQLDataType.VARCHAR(1000).nullable(false), this, "");
+    public final TableField<MessageRecord, String> CONTENT = createField(DSL.name("content"), SQLDataType.CLOB.nullable(false), this, "");
 
     /**
      * The column <code>apuope.message.source</code>.
