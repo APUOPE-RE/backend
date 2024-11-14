@@ -5,20 +5,24 @@ import com.apuope.apuope_re.dto.ConversationData;
 import com.apuope.apuope_re.dto.MessageData;
 import com.apuope.apuope_re.dto.ResponseData;
 import com.apuope.apuope_re.services.ChatbotService;
+import com.apuope.apuope_re.services.EmbeddingService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;
+import org.json.JSONException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLException;
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @CrossOrigin
 @RequestMapping("/api")
 public class ChatbotController {
     private final ChatbotService chatbotService;
+
+    private EmbeddingService embeddingService;
 
     public ChatbotController(ChatbotService chatbotService) {
         this.chatbotService = chatbotService;
@@ -36,7 +40,7 @@ public class ChatbotController {
     }
 
     @PostMapping(value = "/chatBot")
-    public ResponseEntity<ResponseData<MessageData>> sendRequest(HttpServletRequest request, @RequestBody ChatRequestData input) throws JsonProcessingException {
+    public ResponseEntity<ResponseData<MessageData>> sendRequest(HttpServletRequest request, @RequestBody ChatRequestData input) throws JsonProcessingException, SQLException, JSONException {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION).replace("Bearer ", "");
         return ResponseEntity.ok(chatbotService.sendRequest(token, request, input));
     }
