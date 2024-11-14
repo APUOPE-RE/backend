@@ -73,15 +73,6 @@ public class ChatbotService {
         return conversationRepository.fetchConversationById(conversationId, dslContext);
     }
 
-    public ResponseData<String> deleteConversation(Integer conversationId) {
-        boolean deleted = conversationRepository.deleteConversationById(conversationId, dslContext);
-
-        if (deleted) {
-            return new ResponseData<>(true, "Conversation deleted.");
-        }
-        return new ResponseData<>(false, "Conversation deletion failed.");
-    }
-
     public ConversationRecord startConversation(Integer userId, ChatRequestData request) {
         return conversationRepository.createConversation(userId, request.getChapterId(), "", dslContext);
     }
