@@ -44,4 +44,11 @@ public class ChatbotController {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION).replace("Bearer ", "");
         return ResponseEntity.ok(chatbotService.sendRequest(token, request, input));
     }
+
+    @GetMapping(value = "/deleteConversation/{id}")
+    public ResponseEntity<ResponseData<String>> deleteConversation(@PathVariable("id") Integer conversationId) {
+        ResponseData<String> response = chatbotService.deleteConversation(conversationId);
+
+        return response.getSuccess() ? ResponseEntity.ok(response) : ResponseEntity.internalServerError().body(response);
+    }
 }
