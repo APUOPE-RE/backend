@@ -1,0 +1,2 @@
+ALTER TABLE apuope.message
+ALTER COLUMN content TYPE VARCHAR(2000);

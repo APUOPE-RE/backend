@@ -7,6 +7,7 @@ package com.apuope.apuope_re.jooq;
 import com.apuope.apuope_re.jooq.tables.Conversation;
 import com.apuope.apuope_re.jooq.tables.Message;
 import com.apuope.apuope_re.jooq.tables.Session;
+import com.apuope.apuope_re.jooq.tables.TextbookEmbeddings;
 import com.apuope.apuope_re.jooq.tables.Token;
 import com.apuope.apuope_re.jooq.tables.Users;
 
@@ -14,7 +15,7 @@ import com.apuope.apuope_re.jooq.tables.Users;
 /**
  * Convenience access to all tables in apuope.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes", "this-escape" })
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Tables {
 
     /**
@@ -31,6 +32,11 @@ public class Tables {
      * The table <code>apuope.session</code>.
      */
     public static final Session SESSION = Session.SESSION;
+
+    /**
+     * The table <code>apuope.textbook_embeddings</code>.
+     */
+    public static final TextbookEmbeddings TEXTBOOK_EMBEDDINGS = TextbookEmbeddings.TEXTBOOK_EMBEDDINGS;
 
     /**
      * The table <code>apuope.token</code>.
