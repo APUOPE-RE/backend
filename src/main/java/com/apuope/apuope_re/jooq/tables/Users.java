@@ -6,6 +6,7 @@ package com.apuope.apuope_re.jooq.tables;
 
 import com.apuope.apuope_re.jooq.Apuope;
 import com.apuope.apuope_re.jooq.Keys;
+import com.apuope.apuope_re.jooq.tables.Conversation.ConversationPath;
 import com.apuope.apuope_re.jooq.tables.Session.SessionPath;
 import com.apuope.apuope_re.jooq.tables.Token.TokenPath;
 import com.apuope.apuope_re.jooq.tables.records.UsersRecord;
@@ -179,6 +180,19 @@ public class Users extends TableImpl<UsersRecord> {
     @Override
     public List<UniqueKey<UsersRecord>> getUniqueKeys() {
         return Arrays.asList(Keys.USERS_EMAIL_KEY, Keys.USERS_USERNAME_KEY, Keys.USERS_UUID_KEY);
+    }
+
+    private transient ConversationPath _conversation;
+
+    /**
+     * Get the implicit to-many join path to the
+     * <code>apuope.conversation</code> table
+     */
+    public ConversationPath conversation() {
+        if (_conversation == null)
+            _conversation = new ConversationPath(this, null, Keys.CONVERSATION__FK_ACCOUNT.getInverseKey());
+
+        return _conversation;
     }
 
     private transient SessionPath _session;

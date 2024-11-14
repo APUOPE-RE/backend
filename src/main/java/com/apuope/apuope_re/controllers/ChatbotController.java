@@ -1,15 +1,20 @@
 package com.apuope.apuope_re.controllers;
 
 import com.apuope.apuope_re.dto.ChatRequestData;
+import com.apuope.apuope_re.dto.ConversationData;
+import com.apuope.apuope_re.dto.MessageData;
 import com.apuope.apuope_re.dto.ResponseData;
 import com.apuope.apuope_re.services.ChatbotService;
 import com.apuope.apuope_re.services.EmbeddingService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.json.JSONException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
+import java.util.List;
 
 @RestController
 @CrossOrigin
@@ -23,8 +28,20 @@ public class ChatbotController {
         this.chatbotService = chatbotService;
     }
 
+    @GetMapping(value = "/conversations")
+    public ResponseEntity<List<ConversationData>> fetchAllConversations(HttpServletRequest request) {
+        String token = request.getHeader(HttpHeaders.AUTHORIZATION).replace("Bearer ", "");
+        return ResponseEntity.ok(chatbotService.fetchAllConversations(token, request));
+    }
+
+    @GetMapping(value = "/conversation/{id}")
+    public ResponseEntity<List<MessageData>> fetchConversation(@PathVariable("id") Integer conversationId) {
+        return ResponseEntity.ok(chatbotService.fetchConversation(conversationId));
+    }
+
     @PostMapping(value = "/chatBot")
-    public ResponseEntity<ResponseData<String>> validateUser(@RequestBody ChatRequestData input) throws JsonProcessingException, JSONException, SQLException {
-        return ResponseEntity.ok(this.chatbotService.sendRequest(input));
+    public ResponseEntity<ResponseData<MessageData>> sendRequest(HttpServletRequest request, @RequestBody ChatRequestData input) throws JsonProcessingException, SQLException, JSONException {
+        String token = request.getHeader(HttpHeaders.AUTHORIZATION).replace("Bearer ", "");
+        return ResponseEntity.ok(chatbotService.sendRequest(token, request, input));
     }
 }

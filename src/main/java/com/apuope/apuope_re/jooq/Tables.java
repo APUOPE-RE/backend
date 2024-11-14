@@ -4,6 +4,8 @@
 package com.apuope.apuope_re.jooq;
 
 
+import com.apuope.apuope_re.jooq.tables.Conversation;
+import com.apuope.apuope_re.jooq.tables.Message;
 import com.apuope.apuope_re.jooq.tables.Session;
 import com.apuope.apuope_re.jooq.tables.TextbookEmbeddings;
 import com.apuope.apuope_re.jooq.tables.Token;
@@ -15,6 +17,16 @@ import com.apuope.apuope_re.jooq.tables.Users;
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Tables {
+
+    /**
+     * The table <code>apuope.conversation</code>.
+     */
+    public static final Conversation CONVERSATION = Conversation.CONVERSATION;
+
+    /**
+     * The table <code>apuope.message</code>.
+     */
+    public static final Message MESSAGE = Message.MESSAGE;
 
     /**
      * The table <code>apuope.session</code>.

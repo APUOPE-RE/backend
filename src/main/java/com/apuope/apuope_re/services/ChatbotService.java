@@ -1,10 +1,20 @@
 package com.apuope.apuope_re.services;
 
 import com.apuope.apuope_re.dto.ChatRequestData;
+import com.apuope.apuope_re.dto.ConversationData;
+import com.apuope.apuope_re.dto.MessageData;
 import com.apuope.apuope_re.dto.ResponseData;
+import com.apuope.apuope_re.jooq.tables.records.ConversationRecord;
+import com.apuope.apuope_re.jooq.tables.records.MessageRecord;
+import com.apuope.apuope_re.jooq.tables.records.UsersRecord;
+import com.apuope.apuope_re.repositories.ConversationRepository;
+import com.apuope.apuope_re.repositories.UserRepository;
+import com.apuope.apuope_re.utils.Constants.MessageSource;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
+import org.jooq.DSLContext;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.json.JSONException;
@@ -19,13 +29,20 @@ import org.springframework.web.client.RestTemplate;
 import java.sql.SQLException;
 import java.util.List;
 
+
+import java.util.Collections;
+import java.util.Optional;
+
 @Service
 public class ChatbotService {
+    private final DSLContext dslContext;
+    private final JWTService jwtService;
+    private final ConversationRepository conversationRepository;
+    private final UserRepository userRepository;
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final EmbeddingService embeddingService;
     private final RetrievalService retrievalService;
-
 
     @Value("${llm.api.url}")
     private String apiUrl;
@@ -33,13 +50,52 @@ public class ChatbotService {
     @Value("${llm.api.key}")
     private String apiKey;
 
-    public ChatbotService(EmbeddingService embeddingService, RetrievalService retrievalService) {
+    public ChatbotService(DSLContext dslContext, JWTService jwtService, ConversationRepository conversationRepository,
+                          UserRepository userRepository, EmbeddingService embeddingService, RetrievalService retrievalService) {
+        this.dslContext = dslContext;
+        this.jwtService = jwtService;
+        this.conversationRepository = conversationRepository;
+        this.userRepository = userRepository;
         this.embeddingService = embeddingService;
         this.retrievalService = retrievalService;
     }
 
-    public ResponseData<String> sendRequest(ChatRequestData request) throws JsonProcessingException, JSONException, SQLException {
-        double[] embedding = embeddingService.getEmbedding(request.getData());
+    public List<ConversationData> fetchAllConversations(String token, HttpServletRequest request) {
+        String userEmail = jwtService.extractEmail(token);
+        Optional<UsersRecord> userOpt = userRepository.findVerifiedUserByEmail(userEmail, dslContext);
+        if (userOpt.isPresent()) {
+            return conversationRepository.fetchConversationByAccountId(userOpt.get().getId(), dslContext);
+        }
+        return Collections.emptyList();
+    }
+
+    public List<MessageData> fetchConversation(Integer conversationId) {
+        return conversationRepository.fetchConversationById(conversationId, dslContext);
+    }
+
+    public ConversationRecord startConversation(Integer userId, ChatRequestData request) {
+        return conversationRepository.createConversation(userId, request.getChapterId(), "", dslContext);
+    }
+
+    public ResponseData<MessageData> sendRequest(String token, HttpServletRequest request, ChatRequestData chatRequest) throws JsonProcessingException, JSONException, SQLException {
+        Integer conversationId;
+
+        String userEmail = jwtService.extractEmail(token);
+        Optional<UsersRecord> userOpt = userRepository.findVerifiedUserByEmail(userEmail, dslContext);
+
+        if (userOpt.isPresent() && (chatRequest.getConversationId() == 0 || chatRequest.getConversationId() == null)) {
+            ConversationRecord conversation = startConversation(userOpt.get().getId(), chatRequest);
+            conversationId = conversation.getId();
+
+            conversationRepository.createMessage(conversationId, chatRequest.getData(), MessageSource.USER.getValue(),
+                    dslContext);
+        } else {
+            conversationId = chatRequest.getConversationId();
+            conversationRepository.createMessage(chatRequest.getConversationId(), chatRequest.getData(), MessageSource.USER.getValue(),
+                    dslContext);
+        }
+
+        double[] embedding = embeddingService.getEmbedding(chatRequest.getData());
 
         List<String> promptContext = retrievalService.findRelevantChunks(embedding);
         String context = String.join(" ", promptContext);
@@ -49,7 +105,7 @@ public class ChatbotService {
         headers.set("Content-Type", "application/json");
 
         ObjectNode requestBody = objectMapper.createObjectNode();
-        requestBody.put("model", "llama3.1-8b");
+        requestBody.put("model", "llama2-13b");
 
         ArrayNode messages = requestBody.putArray("messages");
         ObjectNode systemMessage = messages.addObject();
@@ -58,7 +114,7 @@ public class ChatbotService {
 
         ObjectNode userMessage = messages.addObject();
         userMessage.put("role", "user");
-        userMessage.put("content", request.getData());
+        userMessage.put("content", chatRequest.getData());
 
         HttpEntity<String> requestEntity = new HttpEntity<>(objectMapper.writeValueAsString(requestBody), headers);
 
@@ -67,6 +123,12 @@ public class ChatbotService {
         JsonNode root = objectMapper.readTree(response.getBody());
         String content = root.path("choices").get(0).path("message").path("content").asText();
 
-        return new ResponseData<>(true, content);
+        MessageRecord llmMessage = conversationRepository.createMessage(conversationId, content, MessageSource.LLM.getValue(),
+                dslContext);
+
+        MessageData messageData = new MessageData(llmMessage.getConversationId(), llmMessage.getId(),
+                llmMessage.getContent(), llmMessage.getSource(), llmMessage.getDatetime());
+
+        return new ResponseData<>(true, messageData);
     }
 }
