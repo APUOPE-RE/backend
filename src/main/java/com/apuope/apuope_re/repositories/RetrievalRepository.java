@@ -29,7 +29,6 @@ public class RetrievalRepository {
                 .from(TEXTBOOK_EMBEDDINGS)
                 .where(TEXTBOOK_EMBEDDINGS.CHAPTERID.in(chapterIds))
                 .orderBy(similarityField)
-                .limit(5)
                 .fetch();
 
         records.forEach(record -> relevantChunks.add(record.value1()));

@@ -97,9 +97,9 @@ public class ChatbotService {
         }
         double[] embedding = embeddingService.getEmbedding(chatRequest.getData());
 
-        List<Integer> lectureIds = Constants.LectureChapters.getChaptersByLectureId(chatRequest.getLectureId());
+        List<Integer> chapterIds = Constants.LectureChapters.getChaptersByLectureId(chatRequest.getLectureId());
 
-        List<String> promptContext = retrievalService.findRelevantChunks(embedding, lectureIds);
+        List<String> promptContext = retrievalService.findRelevantChunks(embedding, chapterIds);
         String context = String.join(" ", promptContext);
 
         HttpHeaders headers = new HttpHeaders();
@@ -112,7 +112,7 @@ public class ChatbotService {
         ArrayNode messages = requestBody.putArray("messages");
         ObjectNode systemMessage = messages.addObject();
         systemMessage.put("role", "system");
-        systemMessage.put("content", "Context: " + context);
+        systemMessage.put("content", "Context from chapters of the textbook related to selected lecture: " + context);
 
         ObjectNode userMessage = messages.addObject();
         userMessage.put("role", "user");
