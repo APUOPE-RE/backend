@@ -5,14 +5,18 @@ package com.apuope.apuope_re.jooq.tables;
 
 
 import com.apuope.apuope_re.jooq.Apuope;
+import com.apuope.apuope_re.jooq.Indexes;
 import com.apuope.apuope_re.jooq.Keys;
 import com.apuope.apuope_re.jooq.tables.records.TextbookEmbeddingsRecord;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.Identity;
+import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.PlainSQL;
 import org.jooq.QueryPart;
@@ -72,6 +76,11 @@ public class TextbookEmbeddings extends TableImpl<TextbookEmbeddingsRecord> {
     @Deprecated
     public final TableField<TextbookEmbeddingsRecord, Object> EMBEDDING = createField(DSL.name("embedding"), DefaultDataType.getDefaultDataType("\"public\".\"vector\""), this, "");
 
+    /**
+     * The column <code>apuope.textbook_embeddings.chapterid</code>.
+     */
+    public final TableField<TextbookEmbeddingsRecord, Integer> CHAPTERID = createField(DSL.name("chapterid"), SQLDataType.INTEGER, this, "");
+
     private TextbookEmbeddings(Name alias, Table<TextbookEmbeddingsRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
     }
@@ -104,6 +113,11 @@ public class TextbookEmbeddings extends TableImpl<TextbookEmbeddingsRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Apuope.APUOPE;
+    }
+
+    @Override
+    public List<Index> getIndexes() {
+        return Arrays.asList(Indexes.IDX_TEXTBOOK_EMBEDDINGS_CHAPTERID);
     }
 
     @Override

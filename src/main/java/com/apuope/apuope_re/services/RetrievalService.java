@@ -17,7 +17,7 @@ public class RetrievalService {
         this.context = context;
     }
 
-    public List<String> findRelevantChunks(double[] questionEmbedding) throws SQLException {
-        return retrievalRepository.getTextChunk(questionEmbedding, context);
+    public List<String> findRelevantChunks(double[] questionEmbedding, List<Integer> chapterIds) throws SQLException {
+        return retrievalRepository.getTextChunk(questionEmbedding, chapterIds, context);
     }
 }

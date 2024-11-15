@@ -72,6 +72,20 @@ public class TextbookEmbeddingsRecord extends UpdatableRecordImpl<TextbookEmbedd
         return get(2);
     }
 
+    /**
+     * Setter for <code>apuope.textbook_embeddings.chapterid</code>.
+     */
+    public void setChapterid(Integer value) {
+        set(3, value);
+    }
+
+    /**
+     * Getter for <code>apuope.textbook_embeddings.chapterid</code>.
+     */
+    public Integer getChapterid() {
+        return (Integer) get(3);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -95,12 +109,13 @@ public class TextbookEmbeddingsRecord extends UpdatableRecordImpl<TextbookEmbedd
     /**
      * Create a detached, initialised TextbookEmbeddingsRecord
      */
-    public TextbookEmbeddingsRecord(Integer id, String chunk, Object embedding) {
+    public TextbookEmbeddingsRecord(Integer id, String chunk, Object embedding, Integer chapterid) {
         super(TextbookEmbeddings.TEXTBOOK_EMBEDDINGS);
 
         setId(id);
         setChunk(chunk);
         setEmbedding(embedding);
+        setChapterid(chapterid);
         resetChangedOnNotNull();
     }
 }

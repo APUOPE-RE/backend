@@ -17,7 +17,7 @@ import static com.apuope.apuope_re.jooq.tables.TextbookEmbeddings.TEXTBOOK_EMBED
 public class RetrievalRepository {
 
     public RetrievalRepository() {}
-    public List<String> getTextChunk(double[] questionEmbedding, DSLContext context) throws SQLException {
+    public List<String> getTextChunk(double[] questionEmbedding, List<Integer> chapterIds, DSLContext context) throws SQLException {
         List<String> relevantChunks = new ArrayList<>();
 
         String embeddingArrayString = "vector '" + Arrays.toString(questionEmbedding) + "'";
@@ -27,6 +27,7 @@ public class RetrievalRepository {
 
         Result<Record1<String>> records = context.select(TEXTBOOK_EMBEDDINGS.CHUNK)
                 .from(TEXTBOOK_EMBEDDINGS)
+                .where(TEXTBOOK_EMBEDDINGS.CHAPTERID.in(chapterIds))
                 .orderBy(similarityField)
                 .limit(5)
                 .fetch();

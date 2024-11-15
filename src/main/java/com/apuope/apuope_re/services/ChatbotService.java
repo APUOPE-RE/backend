@@ -9,6 +9,7 @@ import com.apuope.apuope_re.jooq.tables.records.MessageRecord;
 import com.apuope.apuope_re.jooq.tables.records.UsersRecord;
 import com.apuope.apuope_re.repositories.ConversationRepository;
 import com.apuope.apuope_re.repositories.UserRepository;
+import com.apuope.apuope_re.utils.Constants;
 import com.apuope.apuope_re.utils.Constants.MessageSource;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -74,7 +75,7 @@ public class ChatbotService {
     }
 
     public ConversationRecord startConversation(Integer userId, ChatRequestData request) {
-        return conversationRepository.createConversation(userId, request.getChapterId(), "", dslContext);
+        return conversationRepository.createConversation(userId, request.getLectureId(), "", dslContext);
     }
 
     public ResponseData<MessageData> sendRequest(String token, HttpServletRequest request, ChatRequestData chatRequest) throws JsonProcessingException, JSONException, SQLException {
@@ -94,10 +95,11 @@ public class ChatbotService {
             conversationRepository.createMessage(chatRequest.getConversationId(), chatRequest.getData(), MessageSource.USER.getValue(),
                     dslContext);
         }
-
         double[] embedding = embeddingService.getEmbedding(chatRequest.getData());
 
-        List<String> promptContext = retrievalService.findRelevantChunks(embedding);
+        List<Integer> lectureIds = Constants.LectureChapters.getChaptersByLectureId(chatRequest.getLectureId());
+
+        List<String> promptContext = retrievalService.findRelevantChunks(embedding, lectureIds);
         String context = String.join(" ", promptContext);
 
         HttpHeaders headers = new HttpHeaders();
