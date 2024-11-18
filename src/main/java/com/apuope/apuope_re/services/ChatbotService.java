@@ -74,6 +74,15 @@ public class ChatbotService {
         return conversationRepository.fetchConversationById(conversationId, dslContext);
     }
 
+    public ResponseData<String> updateConversationTitle(Integer conversationId, String newTitle) {
+        boolean titleUpdated = conversationRepository.updateConversationTitleById(conversationId, dslContext, newTitle)
+
+        if (titleUpdated) {
+            return new ResponseData<>(true, "Conversation title updated.")
+        } 
+        return new ResponseData<>(false, "Conversation title update failed.")
+    }    
+
     public ConversationRecord startConversation(Integer userId, ChatRequestData request) {
         return conversationRepository.createConversation(userId, request.getLectureId(), "", dslContext);
     }

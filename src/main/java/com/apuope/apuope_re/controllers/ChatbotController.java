@@ -44,4 +44,10 @@ public class ChatbotController {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION).replace("Bearer ", "");
         return ResponseEntity.ok(chatbotService.sendRequest(token, request, input));
     }
+
+    @PutMapping(value = "/updateConversationTitle/{id}")
+    public ResponseEntity<ResponseData<String>> updateConversationTitle(@PathVariable("id") Integer conversationId, @RequestBody String newTitle) {
+        ResponseData<String> response = chatbotService.updateConversationTitle(conversationId, newTitle);
+        return response.getSuccess() ? ResponseEntity.ok(response) : ResponseEntity.internalServerError().body(response);
+    }
 }
