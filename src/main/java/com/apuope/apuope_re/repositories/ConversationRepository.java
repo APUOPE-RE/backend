@@ -69,6 +69,15 @@ public class ConversationRepository {
         return findLatestByAccountId(accountId, context);
     }
 
+    public boolean updateConversationTitleById(Integer conversationId, DSLContext context, String newTitle){
+        int affectedRows = context.update(Conversation.CONVERSATION)
+                .set(Conversation.CONVERSATION.SUBJECT, newTitle)
+                .where(Conversation.CONVERSATION.ID.eq(conversationId))
+                .execute();
+                
+        return affectedRows > 0;
+    }
+
     // Message
     public MessageRecord findLatestByConversationId(Integer conversationId, DSLContext context){
         return context.selectFrom(Message.MESSAGE)
