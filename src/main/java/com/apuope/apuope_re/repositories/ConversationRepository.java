@@ -49,19 +49,6 @@ public class ConversationRepository {
                 .fetchInto(MessageData.class);
     }
 
-    public boolean deleteConversationById(Integer conversationId, DSLContext context){
-        int affectedRows = context.delete(Message.MESSAGE)
-                 .where(Message.MESSAGE.CONVERSATION_ID.eq(conversationId))
-                 .execute();
-
-        affectedRows += context.delete(Conversation.CONVERSATION)
-                .where(Conversation.CONVERSATION.ID.eq(conversationId))
-                .execute();
-
-
-        return affectedRows > 0;
-    }
-
     public ConversationRecord findLatestByAccountId(Integer accountId, DSLContext context){
         return context.selectFrom(Conversation.CONVERSATION)
                 .where(Conversation.CONVERSATION.ACCOUNT_ID.eq(accountId))
@@ -80,6 +67,15 @@ public class ConversationRepository {
                 .execute();
 
         return findLatestByAccountId(accountId, context);
+    }
+
+    public boolean updateConversationTitleById(Integer conversationId, DSLContext context, String newTitle){
+        int affectedRows = context.update(Conversation.CONVERSATION)
+                .set(Conversation.CONVERSATION.SUBJECT, newTitle)
+                .where(Conversation.CONVERSATION.ID.eq(conversationId))
+                .execute();
+                
+        return affectedRows > 0;
     }
 
     // Message

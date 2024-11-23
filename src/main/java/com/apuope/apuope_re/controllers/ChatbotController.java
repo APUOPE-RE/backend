@@ -45,10 +45,9 @@ public class ChatbotController {
         return ResponseEntity.ok(chatbotService.sendRequest(token, request, input));
     }
 
-    @GetMapping(value = "/deleteConversation/{id}")
-    public ResponseEntity<ResponseData<String>> deleteConversation(@PathVariable("id") Integer conversationId) {
-        ResponseData<String> response = chatbotService.deleteConversation(conversationId);
-
+    @PutMapping(value = "/updateConversationTitle/{id}")
+    public ResponseEntity<ResponseData<String>> updateConversationTitle(@PathVariable("id") Integer conversationId, @RequestBody String newTitle) {
+        ResponseData<String> response = chatbotService.updateConversationTitle(conversationId, newTitle);
         return response.getSuccess() ? ResponseEntity.ok(response) : ResponseEntity.internalServerError().body(response);
     }
 }

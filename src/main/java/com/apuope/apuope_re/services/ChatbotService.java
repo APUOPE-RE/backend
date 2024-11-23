@@ -9,6 +9,7 @@ import com.apuope.apuope_re.jooq.tables.records.MessageRecord;
 import com.apuope.apuope_re.jooq.tables.records.UsersRecord;
 import com.apuope.apuope_re.repositories.ConversationRepository;
 import com.apuope.apuope_re.repositories.UserRepository;
+import com.apuope.apuope_re.utils.Constants;
 import com.apuope.apuope_re.utils.Constants.MessageSource;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -73,17 +74,17 @@ public class ChatbotService {
         return conversationRepository.fetchConversationById(conversationId, dslContext);
     }
 
-    public ResponseData<String> deleteConversation(Integer conversationId) {
-        boolean deleted = conversationRepository.deleteConversationById(conversationId, dslContext);
+    public ResponseData<String> updateConversationTitle(Integer conversationId, String newTitle) {
+        boolean titleUpdated = conversationRepository.updateConversationTitleById(conversationId, dslContext, newTitle);
 
-        if (deleted) {
-            return new ResponseData<>(true, "Conversation deleted.");
-        }
-        return new ResponseData<>(false, "Conversation deletion failed.");
-    }
+        if (titleUpdated) {
+            return new ResponseData<>(true, "Conversation title updated.");
+        } 
+        return new ResponseData<>(false, "Conversation title update failed.");
+    }    
 
     public ConversationRecord startConversation(Integer userId, ChatRequestData request) {
-        return conversationRepository.createConversation(userId, request.getChapterId(), "", dslContext);
+        return conversationRepository.createConversation(userId, request.getLectureId(), "", dslContext);
     }
 
     public ResponseData<MessageData> sendRequest(String token, HttpServletRequest request, ChatRequestData chatRequest) throws JsonProcessingException, JSONException, SQLException {
@@ -103,10 +104,11 @@ public class ChatbotService {
             conversationRepository.createMessage(chatRequest.getConversationId(), chatRequest.getData(), MessageSource.USER.getValue(),
                     dslContext);
         }
-
         double[] embedding = embeddingService.getEmbedding(chatRequest.getData());
 
-        List<String> promptContext = retrievalService.findRelevantChunks(embedding);
+        List<Integer> chapterIds = Constants.LectureChapters.getChaptersByLectureId(chatRequest.getLectureId());
+
+        List<String> promptContext = retrievalService.findRelevantChunks(embedding, chapterIds);
         String context = String.join(" ", promptContext);
 
         HttpHeaders headers = new HttpHeaders();
@@ -119,7 +121,7 @@ public class ChatbotService {
         ArrayNode messages = requestBody.putArray("messages");
         ObjectNode systemMessage = messages.addObject();
         systemMessage.put("role", "system");
-        systemMessage.put("content", "Context: " + context);
+        systemMessage.put("content", "Context from chapters of the textbook related to selected lecture: " + context);
 
         ObjectNode userMessage = messages.addObject();
         userMessage.put("role", "user");

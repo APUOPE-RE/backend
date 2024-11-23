@@ -55,7 +55,7 @@ public class UserRepository {
     }
 
     public Boolean alterUserVerify(UUID uuid, DSLContext context) {
-        int affectedRows = context.update(Users.USERS)
+        int affectedRows =  context.update(Users.USERS)
                 .set(Users.USERS.VERIFIED, true)
                 .set(Users.USERS.UPDATED, LocalDateTime.now(TIMEZONE))
                 .where(Users.USERS.UUID.eq(uuid)).and(Users.USERS.VERIFIED.eq(false))
@@ -65,7 +65,7 @@ public class UserRepository {
     }
 
     public Boolean alterUserResetPassword(Integer id, String passwordHash, DSLContext context) {
-        int affectedRows = context.update(Users.USERS)
+        int affectedRows =  context.update(Users.USERS)
                 .set(Users.USERS.PASSWORD_HASH, passwordHash)
                 .set(Users.USERS.UPDATED, LocalDateTime.now(TIMEZONE))
                 .where(Users.USERS.ID.eq(id))

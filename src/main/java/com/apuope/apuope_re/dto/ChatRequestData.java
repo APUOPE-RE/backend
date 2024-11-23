@@ -2,12 +2,12 @@ package com.apuope.apuope_re.dto;
 
 public class ChatRequestData {
     public Integer conversationId;
-    public Integer chapterId;
+    public Integer lectureId;
     public String data;
 
-    public ChatRequestData(Integer conversationId, Integer chapterId, String data) {
+    public ChatRequestData(Integer conversationId, Integer lectureId, String data) {
         this.conversationId = conversationId;
-        this.chapterId = chapterId;
+        this.lectureId = lectureId;
         this.data = data;
     }
 
@@ -20,12 +20,12 @@ public class ChatRequestData {
     }
 
 
-    public Integer getChapterId() {
-        return chapterId;
+    public Integer getLectureId() {
+        return lectureId;
     }
 
-    public void setChapterId(Integer chapterId) {
-        this.chapterId = chapterId;
+    public void setLectureId(Integer lectureId) {
+        this.lectureId = lectureId;
     }
 
     public String getData() {
