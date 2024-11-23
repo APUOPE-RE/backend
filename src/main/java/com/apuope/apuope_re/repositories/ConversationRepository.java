@@ -49,6 +49,19 @@ public class ConversationRepository {
                 .fetchInto(MessageData.class);
     }
 
+    public boolean deleteConversationById(Integer conversationId, DSLContext context){
+        int affectedRows = context.delete(Message.MESSAGE)
+                 .where(Message.MESSAGE.CONVERSATION_ID.eq(conversationId))
+                 .execute();
+
+        affectedRows += context.delete(Conversation.CONVERSATION)
+                .where(Conversation.CONVERSATION.ID.eq(conversationId))
+                .execute();
+
+
+        return affectedRows > 0;
+    }
+
     public ConversationRecord findLatestByAccountId(Integer accountId, DSLContext context){
         return context.selectFrom(Conversation.CONVERSATION)
                 .where(Conversation.CONVERSATION.ACCOUNT_ID.eq(accountId))

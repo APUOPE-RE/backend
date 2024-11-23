@@ -30,7 +30,6 @@ import org.springframework.web.client.RestTemplate;
 import java.sql.SQLException;
 import java.util.List;
 
-
 import java.util.Collections;
 import java.util.Optional;
 
@@ -52,7 +51,7 @@ public class ChatbotService {
     private String apiKey;
 
     public ChatbotService(DSLContext dslContext, JWTService jwtService, ConversationRepository conversationRepository,
-                          UserRepository userRepository, EmbeddingService embeddingService, RetrievalService retrievalService) {
+            UserRepository userRepository, EmbeddingService embeddingService, RetrievalService retrievalService) {
         this.dslContext = dslContext;
         this.jwtService = jwtService;
         this.conversationRepository = conversationRepository;
@@ -79,9 +78,18 @@ public class ChatbotService {
 
         if (titleUpdated) {
             return new ResponseData<>(true, "Conversation title updated.");
-        } 
+        }
         return new ResponseData<>(false, "Conversation title update failed.");
-    }    
+    }
+
+    public ResponseData<String> deleteConversation(Integer conversationId) {
+        boolean deleted = conversationRepository.deleteConversationById(conversationId, dslContext);
+
+        if (deleted) {
+            return new ResponseData<>(true, "Conversation deleted.");
+        }
+        return new ResponseData<>(false, "Conversation deletion failed.");
+    }
 
     public ConversationRecord startConversation(Integer userId, ChatRequestData request) {
         return conversationRepository.createConversation(userId, request.getLectureId(), "", dslContext);
