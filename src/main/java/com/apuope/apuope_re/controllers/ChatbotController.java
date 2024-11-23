@@ -40,7 +40,8 @@ public class ChatbotController {
     }
 
     @PostMapping(value = "/chatBot")
-    public ResponseEntity<ResponseData<MessageData>> sendRequest(HttpServletRequest request, @RequestBody ChatRequestData input) throws JsonProcessingException, SQLException, JSONException {
+    public ResponseEntity<ResponseData<MessageData>> sendRequest(HttpServletRequest request, @RequestBody ChatRequestData input)
+            throws JsonProcessingException, SQLException, JSONException {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION).replace("Bearer ", "");
         return ResponseEntity.ok(chatbotService.sendRequest(token, request, input));
     }
@@ -48,6 +49,12 @@ public class ChatbotController {
     @PutMapping(value = "/updateConversationTitle/{id}")
     public ResponseEntity<ResponseData<String>> updateConversationTitle(@PathVariable("id") Integer conversationId, @RequestBody String newTitle) {
         ResponseData<String> response = chatbotService.updateConversationTitle(conversationId, newTitle);
+        return response.getSuccess() ? ResponseEntity.ok(response) : ResponseEntity.internalServerError().body(response);
+    }
+
+    @GetMapping(value = "/deleteConversation/{id}")
+    public ResponseEntity<ResponseData<String>> deleteConversation(@PathVariable("id") Integer conversationId) {
+        ResponseData<String> response = chatbotService.deleteConversation(conversationId);
         return response.getSuccess() ? ResponseEntity.ok(response) : ResponseEntity.internalServerError().body(response);
     }
 }
