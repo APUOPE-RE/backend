@@ -1,9 +1,6 @@
 package com.apuope.apuope_re.controllers;
 
-import com.apuope.apuope_re.dto.ChatRequestData;
-import com.apuope.apuope_re.dto.ConversationData;
-import com.apuope.apuope_re.dto.MessageData;
-import com.apuope.apuope_re.dto.ResponseData;
+import com.apuope.apuope_re.dto.*;
 import com.apuope.apuope_re.services.ChatbotService;
 import com.apuope.apuope_re.services.EmbeddingService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -43,7 +40,7 @@ public class ChatbotController {
     public ResponseEntity<ResponseData<MessageData>> sendRequest(HttpServletRequest request, @RequestBody ChatRequestData input)
             throws JsonProcessingException, SQLException, JSONException {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION).replace("Bearer ", "");
-        return ResponseEntity.ok(chatbotService.sendRequest(token, request, input));
+        return ResponseEntity.ok(chatbotService.sendRequest(token, input));
     }
 
     @PutMapping(value = "/updateConversationTitle/{id}")

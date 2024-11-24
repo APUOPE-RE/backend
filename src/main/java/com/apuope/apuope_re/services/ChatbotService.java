@@ -1,9 +1,6 @@
 package com.apuope.apuope_re.services;
 
-import com.apuope.apuope_re.dto.ChatRequestData;
-import com.apuope.apuope_re.dto.ConversationData;
-import com.apuope.apuope_re.dto.MessageData;
-import com.apuope.apuope_re.dto.ResponseData;
+import com.apuope.apuope_re.dto.*;
 import com.apuope.apuope_re.jooq.tables.records.ConversationRecord;
 import com.apuope.apuope_re.jooq.tables.records.MessageRecord;
 import com.apuope.apuope_re.jooq.tables.records.UsersRecord;
@@ -97,7 +94,7 @@ public class ChatbotService {
         return conversationRepository.createConversation(userId, request.getLectureId(), "", dslContext);
     }
 
-    public ResponseData<MessageData> sendRequest(String token, HttpServletRequest request, ChatRequestData chatRequest) throws JsonProcessingException, JSONException, SQLException {
+    public ResponseData<MessageData> sendRequest(String token, ChatRequestData chatRequest) throws JsonProcessingException, JSONException, SQLException {
         Integer conversationId;
 
         String userEmail = jwtService.extractEmail(token);
@@ -149,8 +146,6 @@ public class ChatbotService {
 
         MessageData messageData = new MessageData(llmMessage.getConversationId(), llmMessage.getId(),
                 llmMessage.getContent(), llmMessage.getSource(), llmMessage.getDatetime());
-
-        quizService.requestQuiz();
 
         return new ResponseData<>(true, messageData);
     }

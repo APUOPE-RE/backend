@@ -6,6 +6,10 @@ package com.apuope.apuope_re.jooq;
 
 import com.apuope.apuope_re.jooq.tables.Conversation;
 import com.apuope.apuope_re.jooq.tables.Message;
+import com.apuope.apuope_re.jooq.tables.MultipleChoiceQuestions;
+import com.apuope.apuope_re.jooq.tables.Quiz;
+import com.apuope.apuope_re.jooq.tables.QuizAnswers;
+import com.apuope.apuope_re.jooq.tables.QuizResult;
 import com.apuope.apuope_re.jooq.tables.Session;
 import com.apuope.apuope_re.jooq.tables.TextbookEmbeddings;
 import com.apuope.apuope_re.jooq.tables.Token;
@@ -41,6 +45,26 @@ public class Apuope extends SchemaImpl {
      * The table <code>apuope.message</code>.
      */
     public final Message MESSAGE = Message.MESSAGE;
+
+    /**
+     * The table <code>apuope.multiple_choice_questions</code>.
+     */
+    public final MultipleChoiceQuestions MULTIPLE_CHOICE_QUESTIONS = MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS;
+
+    /**
+     * The table <code>apuope.quiz</code>.
+     */
+    public final Quiz QUIZ = Quiz.QUIZ;
+
+    /**
+     * The table <code>apuope.quiz_answers</code>.
+     */
+    public final QuizAnswers QUIZ_ANSWERS = QuizAnswers.QUIZ_ANSWERS;
+
+    /**
+     * The table <code>apuope.quiz_result</code>.
+     */
+    public final QuizResult QUIZ_RESULT = QuizResult.QUIZ_RESULT;
 
     /**
      * The table <code>apuope.session</code>.
@@ -80,6 +104,10 @@ public class Apuope extends SchemaImpl {
         return Arrays.asList(
             Conversation.CONVERSATION,
             Message.MESSAGE,
+            MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS,
+            Quiz.QUIZ,
+            QuizAnswers.QUIZ_ANSWERS,
+            QuizResult.QUIZ_RESULT,
             Session.SESSION,
             TextbookEmbeddings.TEXTBOOK_EMBEDDINGS,
             Token.TOKEN,
