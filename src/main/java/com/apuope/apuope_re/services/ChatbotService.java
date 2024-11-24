@@ -43,6 +43,7 @@ public class ChatbotService {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final EmbeddingService embeddingService;
     private final RetrievalService retrievalService;
+    private final QuizService quizService;
 
     @Value("${llm.api.url}")
     private String apiUrl;
@@ -51,13 +52,14 @@ public class ChatbotService {
     private String apiKey;
 
     public ChatbotService(DSLContext dslContext, JWTService jwtService, ConversationRepository conversationRepository,
-            UserRepository userRepository, EmbeddingService embeddingService, RetrievalService retrievalService) {
+            UserRepository userRepository, EmbeddingService embeddingService, RetrievalService retrievalService, QuizService quizService) {
         this.dslContext = dslContext;
         this.jwtService = jwtService;
         this.conversationRepository = conversationRepository;
         this.userRepository = userRepository;
         this.embeddingService = embeddingService;
         this.retrievalService = retrievalService;
+        this.quizService = quizService;
     }
 
     public List<ConversationData> fetchAllConversations(String token, HttpServletRequest request) {
@@ -147,6 +149,8 @@ public class ChatbotService {
 
         MessageData messageData = new MessageData(llmMessage.getConversationId(), llmMessage.getId(),
                 llmMessage.getContent(), llmMessage.getSource(), llmMessage.getDatetime());
+
+        quizService.requestQuiz();
 
         return new ResponseData<>(true, messageData);
     }

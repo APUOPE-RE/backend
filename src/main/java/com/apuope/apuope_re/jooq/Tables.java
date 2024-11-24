@@ -15,7 +15,7 @@ import com.apuope.apuope_re.jooq.tables.Users;
 /**
  * Convenience access to all tables in apuope.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({ "all", "unchecked", "rawtypes", "this-escape" })
 public class Tables {
 
     /**
