@@ -10,18 +10,18 @@ public class QuizResultData {
     public Integer quizId;
     public Integer score;
     public Integer maxScore;
-    public LocalDateTime dateTime;
+    public LocalDateTime datetime;
     public List<QuizAnswerData> quizAnswerDataList = new ArrayList<>();
 
     public QuizResultData() {}
 
-    public QuizResultData(Integer id, Integer accountId, Integer quizId, Integer score, Integer maxScore, LocalDateTime dateTime) {
+    public QuizResultData(Integer id, Integer accountId, Integer quizId, Integer score, Integer maxScore, LocalDateTime datetime) {
         this.id = id;
         this.accountId = accountId;
         this.quizId = quizId;
         this.score = score;
         this.maxScore = maxScore;
-        this.dateTime = dateTime;
+        this.datetime = datetime;
     }
 
     public Integer getId() {
@@ -64,12 +64,12 @@ public class QuizResultData {
         this.maxScore = maxScore;
     }
 
-    public LocalDateTime getDateTime() {
-        return dateTime;
+    public LocalDateTime getDatetime() {
+        return datetime;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime;
+    public void setDatetime(LocalDateTime datetime) {
+        this.datetime = datetime;
     }
 
     public List<QuizAnswerData> getQuizAnswerDataList() {

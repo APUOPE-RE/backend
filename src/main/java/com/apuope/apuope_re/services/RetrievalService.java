@@ -21,7 +21,7 @@ public class RetrievalService {
         return retrievalRepository.getTextChunk(questionEmbedding, chapterIds, context);
     }
 
-    public List<String> getQuizContext(Integer chapterId) throws SQLException {
-        return retrievalRepository.getQuizContext(chapterId, context);
+    public List<String> getQuizContext(Integer lectureId) throws SQLException {
+        return retrievalRepository.getQuizContext(lectureId, context);
     }
 }

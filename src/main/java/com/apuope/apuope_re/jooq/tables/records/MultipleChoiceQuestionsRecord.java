@@ -47,16 +47,16 @@ public class MultipleChoiceQuestionsRecord extends UpdatableRecordImpl<MultipleC
     }
 
     /**
-     * Setter for <code>apuope.multiple_choice_questions.question_id</code>.
+     * Setter for <code>apuope.multiple_choice_questions.question_number</code>.
      */
-    public void setQuestionId(Integer value) {
+    public void setQuestionNumber(Integer value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>apuope.multiple_choice_questions.question_id</code>.
+     * Getter for <code>apuope.multiple_choice_questions.question_number</code>.
      */
-    public Integer getQuestionId() {
+    public Integer getQuestionNumber() {
         return (Integer) get(2);
     }
 
@@ -167,12 +167,12 @@ public class MultipleChoiceQuestionsRecord extends UpdatableRecordImpl<MultipleC
     /**
      * Create a detached, initialised MultipleChoiceQuestionsRecord
      */
-    public MultipleChoiceQuestionsRecord(Integer id, Integer quizId, Integer questionId, String question, String optionA, String optionB, String optionC, String correctOption, Integer points) {
+    public MultipleChoiceQuestionsRecord(Integer id, Integer quizId, Integer questionNumber, String question, String optionA, String optionB, String optionC, String correctOption, Integer points) {
         super(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS);
 
         setId(id);
         setQuizId(quizId);
-        setQuestionId(questionId);
+        setQuestionNumber(questionNumber);
         setQuestion(question);
         setOptionA(optionA);
         setOptionB(optionB);

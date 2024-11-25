@@ -24,17 +24,7 @@ public class QuizRepository {
         return context.select()
                 .from(Quiz.QUIZ)
                 .where(Quiz.QUIZ.ID.eq(quizId))
-                .limit(1)
                 .fetchOneInto(QuizData.class);
-    }
-
-    public QuestionData fetchQuestionByQuestionId(Integer quizId, Integer questionId, DSLContext context){
-        return context.select()
-                .from(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS)
-                .where(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS.QUIZ_ID.eq(quizId))
-                .and(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS.QUESTION_ID.eq(questionId))
-                .limit(1)
-                .fetchOneInto(QuestionData.class);
     }
 
     public QuizData fetchQuizByAccountId(Integer accountId, DSLContext context){
@@ -44,6 +34,14 @@ public class QuizRepository {
                 .orderBy(Quiz.QUIZ.ID.desc())
                 .limit(1)
                 .fetchOneInto(QuizData.class);
+    }
+
+    public QuestionData fetchQuestionByQuestionId(Integer quizId, Integer questionNumber, DSLContext context){
+        return context.select()
+                .from(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS)
+                .where(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS.QUIZ_ID.eq(quizId))
+                .and(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS.QUESTION_NUMBER.eq(questionNumber))
+                .fetchOneInto(QuestionData.class);
     }
 
     public List<QuestionData> fetchQuestionsByQuizId(Integer quizId, DSLContext context){
@@ -65,7 +63,6 @@ public class QuizRepository {
                 .from(QuizResult.QUIZ_RESULT)
                 .where(QuizResult.QUIZ_RESULT.ACCOUNT_ID.eq(accountId)).and(QuizResult.QUIZ_RESULT.QUIZ_ID.eq(quizId))
                 .orderBy(QuizResult.QUIZ_RESULT.ID.desc())
-                .limit(1)
                 .fetchOneInto(QuizResultData.class);
     }
 
@@ -107,7 +104,7 @@ public class QuizRepository {
         context.batch(inputData.stream().map(q ->
                 context.insertInto(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS)
                         .set(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS.QUIZ_ID, quizData.getId())
-                        .set(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS.QUESTION_ID, q.getQuestionId())
+                        .set(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS.QUESTION_NUMBER, q.getQuestionNumber())
                         .set(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS.QUESTION, q.getQuestion())
                         .set(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS.OPTION_A, q.getOptionA())
                         .set(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS.OPTION_B, q.getOptionB())

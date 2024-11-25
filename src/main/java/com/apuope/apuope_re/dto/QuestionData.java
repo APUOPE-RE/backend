@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class QuestionData {
     public Integer id;
-    @JsonProperty("question_id")
-    public Integer questionId;
+    @JsonProperty("question_number")
+    public Integer questionNumber;
     public String question;
     @JsonProperty("option_a")
     public String optionA;
@@ -20,10 +20,10 @@ public class QuestionData {
     public QuestionData() {
     }
 
-    public QuestionData(Integer id, Integer questionId, String question, String optionA, String optionB, String optionC, String correctOption,
+    public QuestionData(Integer id, Integer questionNumber, String question, String optionA, String optionB, String optionC, String correctOption,
             Integer points) {
         this.id = id;
-        this.questionId = questionId;
+        this.questionNumber = questionNumber;
         this.question = question;
         this.optionA = optionA;
         this.optionB = optionB;
@@ -40,12 +40,12 @@ public class QuestionData {
         this.id = id;
     }
 
-    public Integer getQuestionId() {
-        return questionId;
+    public Integer getQuestionNumber() {
+        return questionNumber;
     }
 
-    public void setQuestionId(Integer questionId) {
-        this.questionId = questionId;
+    public void setQuestionNumber(Integer questionNumber) {
+        this.questionNumber = questionNumber;
     }
 
     public String getQuestion() {

@@ -43,5 +43,4 @@ public class QuizController {
             return ResponseEntity.internalServerError().body(responseData.getData());
         }
     }
-
 }

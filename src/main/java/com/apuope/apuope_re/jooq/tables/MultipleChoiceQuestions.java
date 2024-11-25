@@ -69,9 +69,9 @@ public class MultipleChoiceQuestions extends TableImpl<MultipleChoiceQuestionsRe
     public final TableField<MultipleChoiceQuestionsRecord, Integer> QUIZ_ID = createField(DSL.name("quiz_id"), SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
-     * The column <code>apuope.multiple_choice_questions.question_id</code>.
+     * The column <code>apuope.multiple_choice_questions.question_number</code>.
      */
-    public final TableField<MultipleChoiceQuestionsRecord, Integer> QUESTION_ID = createField(DSL.name("question_id"), SQLDataType.INTEGER.nullable(false), this, "");
+    public final TableField<MultipleChoiceQuestionsRecord, Integer> QUESTION_NUMBER = createField(DSL.name("question_number"), SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>apuope.multiple_choice_questions.question</code>.

@@ -1,7 +1,7 @@
 CREATE TABLE apuope.multiple_choice_questions (
     id SERIAL PRIMARY KEY,
     quiz_id INT NOT NULL,
-    question_id INT NOT NULL,
+    question_number INT NOT NULL,
     question VARCHAR(500) NOT NULL,
     option_a VARCHAR(500) NOT NULL,
     option_b VARCHAR(500) NOT NULL,
