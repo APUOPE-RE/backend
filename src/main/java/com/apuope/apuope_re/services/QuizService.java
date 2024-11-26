@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import java.util.Optional;
@@ -52,6 +53,29 @@ public class QuizService {
         this.retrievalService = retrievalService;
     }
 
+    public ResponseData<Object> fetchPreviousQuizzes(String token){
+        try {
+            String userEmail = jwtService.extractEmail(token);
+            Optional<UsersRecord> userOpt = userRepository.findVerifiedUserByEmail(userEmail, dslContext);
+            if (userOpt.isPresent()) {
+                List<QuizData> quizDataList = quizRepository.fetchQuizzesByAccountId(userOpt.get().getId(), dslContext);
+                quizDataList.forEach(quizData -> {
+                    quizData.setQuestionDataList(quizRepository.fetchMultipleChoiceQuestionsByQuizId(quizData.getId(), dslContext));
+                });
+
+                List<QuizResultData> quizResultDataList = quizRepository.fetchQuizResultsByAccountId(userOpt.get().getId(), dslContext);
+                quizResultDataList.forEach(quizResultData -> {
+                    quizResultData.setQuizAnswerDataList(quizRepository.fetchQuizAnswersByQuizResultId(quizResultData.getId(), dslContext));
+                });
+
+                return new ResponseData<>(true, quizDataList.stream().flatMap(quizData -> quizResultDataList.stream().filter(quizResultData -> quizResultData.getQuizId().equals(quizData.getId())).map(quizResultData -> new QuizSummaryData(quizData.getId(), quizData, quizResultData))).toList());
+            }
+            throw new Exception("No user found");
+        } catch(Exception e){
+            return new ResponseData<>(false, "Fetching previous quizzes failed.");
+        }
+    }
+
     private List<QuestionData> mapCorrectOptionFormat(List<QuestionData> questionData){
         questionData.forEach(q -> {
             q.setCorrectOption(switch (q.getCorrectOption().toLowerCase()) {
@@ -64,8 +88,9 @@ public class QuizService {
         return questionData;
     }
 
-    public String requestQuiz(Integer lectureId) throws SQLException, JsonProcessingException {
+    public List<QuestionData> requestQuiz(Integer lectureId) throws SQLException, JsonProcessingException {
         Pattern pattern = Pattern.compile("\\[.*?\\]");
+        List<QuestionData> questionData = new ArrayList<>();
         boolean quizGenerated = false;
         String quizContent = "";
 
@@ -110,10 +135,18 @@ public class QuizService {
 
             if (matcher.find()) {
                 quizContent = matcher.group();
-                quizGenerated = true;
+                ObjectMapper objectMapper = new ObjectMapper();
+                questionData = objectMapper.readValue(quizContent, new TypeReference<List<QuestionData>>() {
+                });
+
+                if (questionData.size() == QUESTION_AMOUNT) {
+                    quizGenerated = true;
+                } else {
+                    questionData.clear();
+                }
             };
         }
-        return quizContent;
+        return questionData;
     }
 
     public ResponseData<Object> generateQuiz(String token, Integer lectureId) throws SQLException, JsonProcessingException {
@@ -124,14 +157,10 @@ public class QuizService {
             if (userOpt.isPresent()) {
                 Integer accountId = userOpt.get().getId();
 
-                String quizContent = requestQuiz(lectureId);
-                ObjectMapper objectMapper = new ObjectMapper();
-                List<QuestionData> questionData = objectMapper.readValue(quizContent, new TypeReference<List<QuestionData>>() {
-                });
-
+                List<QuestionData> questionData = requestQuiz(lectureId);
                 questionData = mapCorrectOptionFormat(questionData);
-                return new ResponseData<>(true, quizRepository.saveQuiz(questionData, accountId, lectureId, dslContext));
 
+                return new ResponseData<>(true, quizRepository.saveQuiz(questionData, accountId, lectureId, dslContext));
             }
             throw new Exception("No user found.");
         } catch (Exception e) {

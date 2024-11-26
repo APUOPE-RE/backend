@@ -36,6 +36,13 @@ public class QuizRepository {
                 .fetchOneInto(QuizData.class);
     }
 
+    public List<QuizData> fetchQuizzesByAccountId(Integer accountId, DSLContext context) {
+        return context.select()
+                .from(Quiz.QUIZ)
+                .where(Quiz.QUIZ.ACCOUNT_ID.eq(accountId))
+                .fetchInto(QuizData.class);
+    }
+
     public QuestionData fetchQuestionByQuestionId(Integer quizId, Integer questionNumber, DSLContext context){
         return context.select()
                 .from(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS)
@@ -44,18 +51,11 @@ public class QuizRepository {
                 .fetchOneInto(QuestionData.class);
     }
 
-    public List<QuestionData> fetchQuestionsByQuizId(Integer quizId, DSLContext context){
+    public List<QuestionData> fetchMultipleChoiceQuestionsByQuizId(Integer quizId, DSLContext context){
         return context.select()
                 .from(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS)
                 .where(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS.QUIZ_ID.eq(quizId))
                 .fetchInto(QuestionData.class);
-    }
-
-    public List<QuizAnswerData> fetchQuizAnswersByQuizResultId(Integer quizResultId, DSLContext context){
-        return context.select()
-                .from(QuizAnswers.QUIZ_ANSWERS)
-                .where(QuizAnswers.QUIZ_ANSWERS.QUIZ_RESULT_ID.eq(quizResultId))
-                .fetchInto(QuizAnswerData.class);
     }
 
     public QuizResultData fetchQuizResultByAccountId(Integer accountId, Integer quizId, DSLContext context){
@@ -64,6 +64,20 @@ public class QuizRepository {
                 .where(QuizResult.QUIZ_RESULT.ACCOUNT_ID.eq(accountId)).and(QuizResult.QUIZ_RESULT.QUIZ_ID.eq(quizId))
                 .orderBy(QuizResult.QUIZ_RESULT.ID.desc())
                 .fetchOneInto(QuizResultData.class);
+    }
+
+    public List<QuizResultData> fetchQuizResultsByAccountId(Integer accountId, DSLContext context) {
+        return context.select()
+                .from(QuizResult.QUIZ_RESULT)
+                .where(QuizResult.QUIZ_RESULT.ACCOUNT_ID.eq(accountId))
+                .fetchInto(QuizResultData.class);
+    }
+
+    public List<QuizAnswerData> fetchQuizAnswersByQuizResultId(Integer quizResultId, DSLContext context) {
+        return context.select()
+                .from(QuizAnswers.QUIZ_ANSWERS)
+                .where(QuizAnswers.QUIZ_ANSWERS.QUIZ_RESULT_ID.eq(quizResultId))
+                .fetchInto(QuizAnswerData.class);
     }
 
     public void saveQuizAnswer(Integer quizResultId, Integer questionId, Integer questionNumber, String answer, boolean correct, Integer points,
@@ -114,7 +128,7 @@ public class QuizRepository {
                 .toArray(Query[]::new))
                 .execute();
 
-        List<QuestionData> questionData = fetchQuestionsByQuizId(quizData.getId(), context);
+        List<QuestionData> questionData = fetchMultipleChoiceQuestionsByQuizId(quizData.getId(), context);
         quizData.setQuestionDataList(questionData);
 
         return quizData;
