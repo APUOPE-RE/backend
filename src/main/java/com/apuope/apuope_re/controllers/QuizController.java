@@ -20,8 +20,8 @@ public class QuizController {
         this.quizService = quizService;
     }
 
-    @GetMapping(value = "/generateQuiz")
-    public ResponseEntity<Object> generateQuiz(HttpServletRequest request, @RequestBody Integer lectureId) throws SQLException, JsonProcessingException {
+    @GetMapping(value = "/generateQuiz/{lectureId}")
+    public ResponseEntity<Object> generateQuiz(HttpServletRequest request, @PathVariable("id") Integer lectureId) throws SQLException, JsonProcessingException {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION).replace("Bearer ", "");
         ResponseData<Object> responseData = quizService.generateQuiz(token, lectureId);
 
