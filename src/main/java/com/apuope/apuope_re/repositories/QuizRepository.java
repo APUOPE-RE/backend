@@ -58,6 +58,13 @@ public class QuizRepository {
                 .fetchInto(QuizAnswerData.class);
     }
 
+    public QuizResultData fetchQuizResultByQuizId(Integer quizId, DSLContext context){
+        return context.select()
+                .from(QuizResult.QUIZ_RESULT)
+                .where(QuizResult.QUIZ_RESULT.QUIZ_ID.eq(quizId))
+                .fetchOneInto(QuizResultData.class);
+    }
+
     public QuizResultData fetchQuizResultByAccountId(Integer accountId, Integer quizId, DSLContext context){
         return context.select()
                 .from(QuizResult.QUIZ_RESULT)
