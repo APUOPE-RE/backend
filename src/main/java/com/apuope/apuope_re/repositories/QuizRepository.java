@@ -90,6 +90,13 @@ public class QuizRepository {
         return fetchQuizResultByAccountId(accountId, quizId, context);
     }
 
+    public void saveQuizScore(Integer quizResultId, Integer score, DSLContext context){
+        context.update(QuizResult.QUIZ_RESULT)
+                .set(QuizResult.QUIZ_RESULT.SCORE, score)
+                .where(QuizResult.QUIZ_RESULT.ID.eq(quizResultId))
+                .execute();
+    }
+
     public QuizData saveQuiz(List<QuestionData> inputData, Integer accountId, Integer lectureId, DSLContext context) {
         Integer maxPoints = inputData.size();
 
