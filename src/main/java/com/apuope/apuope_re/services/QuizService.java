@@ -75,6 +75,25 @@ public class QuizService {
         }
     }
 
+    public ResponseData<Object> fetchPreviousQuiz(String token, Integer quizId){
+        try {
+            String userEmail = jwtService.extractEmail(token);
+            Optional<UsersRecord> userOpt = userRepository.findVerifiedUserByEmail(userEmail, dslContext);
+            if (userOpt.isPresent()) {
+                QuizData quizData = quizRepository.fetchQuizByQuizId(quizId, dslContext);
+                quizData.setQuestionDataList(quizRepository.fetchMultipleChoiceQuestionsByQuizId(quizData.getId(), dslContext));
+
+                QuizResultData quizResultData = quizRepository.fetchQuizResultByQuizId(quizId, dslContext);
+                quizResultData.setQuizAnswerDataList(quizRepository.fetchQuizAnswersByQuizResultId(quizResultData.getId(), dslContext));
+
+                return new ResponseData<>(true, new QuizSummaryData(quizData.getId(), quizData, quizResultData));
+            }
+            throw new Exception("No user found");
+        } catch(Exception e){
+            return new ResponseData<>(false, "Fetching previous quiz failed.");
+        }
+    }
+
     private List<QuestionData> mapCorrectOptionFormat(List<QuestionData> questionData){
         questionData.forEach(q -> {
             q.setCorrectOption(switch (q.getCorrectOption().toLowerCase()) {
