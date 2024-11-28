@@ -20,12 +20,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 public class QuizService {
@@ -125,7 +124,12 @@ public class QuizService {
                 questionData = objectMapper.readValue(quizContent, new TypeReference<List<QuestionData>>() {
                 });
 
-                if (questionData.size() == QUESTION_AMOUNT) {
+                Set<String> uniqueQuestions = new HashSet<>();
+                Set<QuestionData> duplicates = questionData.stream()
+                        .filter(q -> !uniqueQuestions.add(q.getQuestion()))
+                        .collect(Collectors.toSet());
+
+                if (questionData.size() == QUESTION_AMOUNT && duplicates.isEmpty()) {
                     quizGenerated = true;
                 } else {
                     questionData.clear();
@@ -146,7 +150,10 @@ public class QuizService {
                 List<QuestionData> questionData = requestQuiz(lectureId);
                 questionData = mapCorrectOptionFormat(questionData);
 
-                return new ResponseData<>(true, quizRepository.saveQuiz(questionData, accountId, lectureId, dslContext));
+                QuizData quizData = quizRepository.saveQuiz(questionData, accountId, lectureId, dslContext);
+                quizData.getQuestionDataList().sort(Comparator.comparingInt(QuestionData::getQuestionNumber));
+
+                return new ResponseData<>(true, quizData);
             }
             throw new Exception("User not found.");
         } catch (Exception e) {
@@ -162,9 +169,9 @@ public class QuizService {
                 Integer accountId = userOpt.get().getId();
 
                 QuizData quizData = quizRepository.fetchQuizByQuizId(quizSubmitData.getQuizId(), dslContext);
-                var quizResult = quizRepository.saveQuizResult(
+                QuizResultData quizResultData = quizRepository.saveQuizResult(
                         accountId, quizSubmitData.getQuizId(),quizData.getMaxPoints(), dslContext);
-                Integer points = 0;
+                Integer score = 0;
 
                 for (QuizSubmitAnswerData answer : quizSubmitData.getQuestionAnswerDataList()) {
                     QuestionData questionData = quizRepository.fetchQuestionByQuestionId(
@@ -172,16 +179,17 @@ public class QuizService {
 
                     boolean correctAnswer = questionData.getCorrectOption().equals(answer.getAnswer());
 
-                    quizRepository.saveQuizAnswer(quizResult.getId(), questionData.getId(), answer.getQuestionNumber(), answer.getAnswer(),
+                    quizRepository.saveQuizAnswer(quizResultData.getId(), questionData.getId(), answer.getQuestionNumber(), answer.getAnswer(),
                             correctAnswer, correctAnswer
                                     ? 1 : 0,
                             dslContext);
-                    points += correctAnswer ? 1 : 0;
+                    score += correctAnswer ? 1 : 0;
                 }
-                quizResult.setQuizAnswerDataList(quizRepository.fetchQuizAnswersByQuizResultId(quizResult.getId(), dslContext));
-                quizResult.setScore(points);
+                quizRepository.saveQuizScore(quizResultData.getId(), score, dslContext);
+                quizResultData.setQuizAnswerDataList(quizRepository.fetchQuizAnswersByQuizResultId(quizResultData.getId(), dslContext));
+                quizResultData.setScore(score);
 
-                return new ResponseData<>(true, quizResult);
+                return new ResponseData<>(true, quizResultData);
             }
             throw new Exception("User not found.");
         } catch (Exception e){
