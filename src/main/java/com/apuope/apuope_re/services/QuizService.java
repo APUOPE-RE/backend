@@ -64,6 +64,15 @@ public class QuizService {
         return questionData;
     }
 
+    public QuizSummaryData fetchQuizSummaryData(Integer quizId){
+        QuizData quizData = quizRepository.fetchQuizByQuizId(quizId, dslContext);
+        quizData.setQuestionDataList(quizRepository.fetchQuestionsByQuizId(quizId, dslContext));
+        QuizResultData quizResultData = quizRepository.fetchQuizResultByQuizId(quizId, dslContext);
+        quizResultData.setQuizAnswerDataList(quizRepository.fetchQuizAnswersByQuizResultId(quizResultData.getId(), dslContext));
+
+        return new QuizSummaryData(quizData.getId(), quizData, quizResultData);
+    }
+
     public List<QuestionData> requestQuiz(Integer lectureId) throws SQLException, JsonProcessingException {
         Pattern pattern = Pattern.compile("\\[.*?\\]");
         List<QuestionData> questionData = new ArrayList<>();
@@ -146,7 +155,7 @@ public class QuizService {
 
                 return new ResponseData<>(true, quizData);
             }
-            throw new Exception("No user found.");
+            throw new Exception("User not found.");
         } catch (Exception e) {
             return new ResponseData<>(false, "Quiz generation failed. Please try again.");
         }
@@ -182,7 +191,7 @@ public class QuizService {
 
                 return new ResponseData<>(true, quizResultData);
             }
-            throw new Exception("No user found.");
+            throw new Exception("User not found.");
         } catch (Exception e){
             return new ResponseData<>(false, "Validating and saving quiz answers failed.");
         }
