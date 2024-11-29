@@ -49,11 +49,11 @@ public class MessageData {
         this.source = source;
     }
 
-    public LocalDateTime getData() {
+    public LocalDateTime getDate() {
         return timeStamp;
     }
 
-    public void setData(LocalDateTime timeStamp) {
+    public void setDate(LocalDateTime timeStamp) {
         this.timeStamp = timeStamp;
     }
 }

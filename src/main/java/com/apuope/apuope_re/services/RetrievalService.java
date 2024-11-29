@@ -20,4 +20,8 @@ public class RetrievalService {
     public List<String> findRelevantChunks(double[] questionEmbedding, List<Integer> chapterIds) throws SQLException {
         return retrievalRepository.getTextChunk(questionEmbedding, chapterIds, context);
     }
+
+    public List<String> getQuizContext(Integer lectureId) throws SQLException {
+        return retrievalRepository.getQuizContext(lectureId, context);
+    }
 }

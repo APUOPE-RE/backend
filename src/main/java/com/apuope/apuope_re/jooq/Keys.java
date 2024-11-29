@@ -6,12 +6,20 @@ package com.apuope.apuope_re.jooq;
 
 import com.apuope.apuope_re.jooq.tables.Conversation;
 import com.apuope.apuope_re.jooq.tables.Message;
+import com.apuope.apuope_re.jooq.tables.MultipleChoiceQuestions;
+import com.apuope.apuope_re.jooq.tables.Quiz;
+import com.apuope.apuope_re.jooq.tables.QuizAnswers;
+import com.apuope.apuope_re.jooq.tables.QuizResult;
 import com.apuope.apuope_re.jooq.tables.Session;
 import com.apuope.apuope_re.jooq.tables.TextbookEmbeddings;
 import com.apuope.apuope_re.jooq.tables.Token;
 import com.apuope.apuope_re.jooq.tables.Users;
 import com.apuope.apuope_re.jooq.tables.records.ConversationRecord;
 import com.apuope.apuope_re.jooq.tables.records.MessageRecord;
+import com.apuope.apuope_re.jooq.tables.records.MultipleChoiceQuestionsRecord;
+import com.apuope.apuope_re.jooq.tables.records.QuizAnswersRecord;
+import com.apuope.apuope_re.jooq.tables.records.QuizRecord;
+import com.apuope.apuope_re.jooq.tables.records.QuizResultRecord;
 import com.apuope.apuope_re.jooq.tables.records.SessionRecord;
 import com.apuope.apuope_re.jooq.tables.records.TextbookEmbeddingsRecord;
 import com.apuope.apuope_re.jooq.tables.records.TokenRecord;
@@ -28,7 +36,7 @@ import org.jooq.impl.Internal;
  * A class modelling foreign key relationships and constraints of tables in
  * apuope.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({ "all", "unchecked", "rawtypes", "this-escape" })
 public class Keys {
 
     // -------------------------------------------------------------------------
@@ -37,6 +45,10 @@ public class Keys {
 
     public static final UniqueKey<ConversationRecord> CONVERSATION_PKEY = Internal.createUniqueKey(Conversation.CONVERSATION, DSL.name("conversation_pkey"), new TableField[] { Conversation.CONVERSATION.ID }, true);
     public static final UniqueKey<MessageRecord> MESSAGE_PKEY = Internal.createUniqueKey(Message.MESSAGE, DSL.name("message_pkey"), new TableField[] { Message.MESSAGE.ID }, true);
+    public static final UniqueKey<MultipleChoiceQuestionsRecord> MULTIPLE_CHOICE_QUESTIONS_PKEY = Internal.createUniqueKey(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS, DSL.name("multiple_choice_questions_pkey"), new TableField[] { MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS.ID }, true);
+    public static final UniqueKey<QuizRecord> QUIZ_PKEY = Internal.createUniqueKey(Quiz.QUIZ, DSL.name("quiz_pkey"), new TableField[] { Quiz.QUIZ.ID }, true);
+    public static final UniqueKey<QuizAnswersRecord> QUIZ_ANSWERS_PKEY = Internal.createUniqueKey(QuizAnswers.QUIZ_ANSWERS, DSL.name("quiz_answers_pkey"), new TableField[] { QuizAnswers.QUIZ_ANSWERS.ID }, true);
+    public static final UniqueKey<QuizResultRecord> QUIZ_RESULT_PKEY = Internal.createUniqueKey(QuizResult.QUIZ_RESULT, DSL.name("quiz_result_pkey"), new TableField[] { QuizResult.QUIZ_RESULT.ID }, true);
     public static final UniqueKey<SessionRecord> SESSION_PKEY = Internal.createUniqueKey(Session.SESSION, DSL.name("session_pkey"), new TableField[] { Session.SESSION.ID }, true);
     public static final UniqueKey<TextbookEmbeddingsRecord> TEXTBOOK_EMBEDDINGS_PKEY = Internal.createUniqueKey(TextbookEmbeddings.TEXTBOOK_EMBEDDINGS, DSL.name("textbook_embeddings_pkey"), new TableField[] { TextbookEmbeddings.TEXTBOOK_EMBEDDINGS.ID }, true);
     public static final UniqueKey<TokenRecord> TOKEN_PKEY = Internal.createUniqueKey(Token.TOKEN, DSL.name("token_pkey"), new TableField[] { Token.TOKEN.ID }, true);
@@ -52,6 +64,12 @@ public class Keys {
 
     public static final ForeignKey<ConversationRecord, UsersRecord> CONVERSATION__FK_ACCOUNT = Internal.createForeignKey(Conversation.CONVERSATION, DSL.name("fk_account"), new TableField[] { Conversation.CONVERSATION.ACCOUNT_ID }, Keys.USERS_PKEY, new TableField[] { Users.USERS.ID }, true);
     public static final ForeignKey<MessageRecord, ConversationRecord> MESSAGE__FK_ACCOUNT = Internal.createForeignKey(Message.MESSAGE, DSL.name("fk_account"), new TableField[] { Message.MESSAGE.CONVERSATION_ID }, Keys.CONVERSATION_PKEY, new TableField[] { Conversation.CONVERSATION.ID }, true);
+    public static final ForeignKey<MultipleChoiceQuestionsRecord, QuizRecord> MULTIPLE_CHOICE_QUESTIONS__FK_QUIZ = Internal.createForeignKey(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS, DSL.name("fk_quiz"), new TableField[] { MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS.QUIZ_ID }, Keys.QUIZ_PKEY, new TableField[] { Quiz.QUIZ.ID }, true);
+    public static final ForeignKey<QuizRecord, UsersRecord> QUIZ__FK_ACCOUNT = Internal.createForeignKey(Quiz.QUIZ, DSL.name("fk_account"), new TableField[] { Quiz.QUIZ.ACCOUNT_ID }, Keys.USERS_PKEY, new TableField[] { Users.USERS.ID }, true);
+    public static final ForeignKey<QuizAnswersRecord, MultipleChoiceQuestionsRecord> QUIZ_ANSWERS__FK_MULTIPLE_CHOICE_QUESTIONS = Internal.createForeignKey(QuizAnswers.QUIZ_ANSWERS, DSL.name("fk_multiple_choice_questions"), new TableField[] { QuizAnswers.QUIZ_ANSWERS.QUESTION_ID }, Keys.MULTIPLE_CHOICE_QUESTIONS_PKEY, new TableField[] { MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS.ID }, true);
+    public static final ForeignKey<QuizAnswersRecord, QuizResultRecord> QUIZ_ANSWERS__FK_QUIZ_RESULT = Internal.createForeignKey(QuizAnswers.QUIZ_ANSWERS, DSL.name("fk_quiz_result"), new TableField[] { QuizAnswers.QUIZ_ANSWERS.QUIZ_RESULT_ID }, Keys.QUIZ_RESULT_PKEY, new TableField[] { QuizResult.QUIZ_RESULT.ID }, true);
+    public static final ForeignKey<QuizResultRecord, UsersRecord> QUIZ_RESULT__FK_ACCOUNT = Internal.createForeignKey(QuizResult.QUIZ_RESULT, DSL.name("fk_account"), new TableField[] { QuizResult.QUIZ_RESULT.ACCOUNT_ID }, Keys.USERS_PKEY, new TableField[] { Users.USERS.ID }, true);
+    public static final ForeignKey<QuizResultRecord, QuizRecord> QUIZ_RESULT__FK_QUIZ = Internal.createForeignKey(QuizResult.QUIZ_RESULT, DSL.name("fk_quiz"), new TableField[] { QuizResult.QUIZ_RESULT.QUIZ_ID }, Keys.QUIZ_PKEY, new TableField[] { Quiz.QUIZ.ID }, true);
     public static final ForeignKey<SessionRecord, UsersRecord> SESSION__FK_ACCOUNT = Internal.createForeignKey(Session.SESSION, DSL.name("fk_account"), new TableField[] { Session.SESSION.ACCOUNT_ID }, Keys.USERS_PKEY, new TableField[] { Users.USERS.ID }, true);
     public static final ForeignKey<TokenRecord, UsersRecord> TOKEN__FK_ACCOUNT = Internal.createForeignKey(Token.TOKEN, DSL.name("fk_account"), new TableField[] { Token.TOKEN.ACCOUNT_ID }, Keys.USERS_PKEY, new TableField[] { Users.USERS.ID }, true);
 }

@@ -6,6 +6,10 @@ package com.apuope.apuope_re.jooq;
 
 import com.apuope.apuope_re.jooq.tables.Conversation;
 import com.apuope.apuope_re.jooq.tables.Message;
+import com.apuope.apuope_re.jooq.tables.MultipleChoiceQuestions;
+import com.apuope.apuope_re.jooq.tables.Quiz;
+import com.apuope.apuope_re.jooq.tables.QuizAnswers;
+import com.apuope.apuope_re.jooq.tables.QuizResult;
 import com.apuope.apuope_re.jooq.tables.Session;
 import com.apuope.apuope_re.jooq.tables.TextbookEmbeddings;
 import com.apuope.apuope_re.jooq.tables.Token;
@@ -15,7 +19,7 @@ import com.apuope.apuope_re.jooq.tables.Users;
 /**
  * Convenience access to all tables in apuope.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({ "all", "unchecked", "rawtypes", "this-escape" })
 public class Tables {
 
     /**
@@ -27,6 +31,26 @@ public class Tables {
      * The table <code>apuope.message</code>.
      */
     public static final Message MESSAGE = Message.MESSAGE;
+
+    /**
+     * The table <code>apuope.multiple_choice_questions</code>.
+     */
+    public static final MultipleChoiceQuestions MULTIPLE_CHOICE_QUESTIONS = MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS;
+
+    /**
+     * The table <code>apuope.quiz</code>.
+     */
+    public static final Quiz QUIZ = Quiz.QUIZ;
+
+    /**
+     * The table <code>apuope.quiz_answers</code>.
+     */
+    public static final QuizAnswers QUIZ_ANSWERS = QuizAnswers.QUIZ_ANSWERS;
+
+    /**
+     * The table <code>apuope.quiz_result</code>.
+     */
+    public static final QuizResult QUIZ_RESULT = QuizResult.QUIZ_RESULT;
 
     /**
      * The table <code>apuope.session</code>.

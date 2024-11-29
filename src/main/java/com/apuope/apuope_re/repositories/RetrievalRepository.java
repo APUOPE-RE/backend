@@ -34,4 +34,16 @@ public class RetrievalRepository {
         records.forEach(record -> relevantChunks.add(record.value1()));
         return relevantChunks;
     }
+
+    public List<String> getQuizContext(Integer chapterId, DSLContext context) throws SQLException {
+        List<String> relevantChunks = new ArrayList<>();
+
+        Result<Record1<String>> records = context.select(TEXTBOOK_EMBEDDINGS.CHUNK)
+                .from(TEXTBOOK_EMBEDDINGS)
+                .where(TEXTBOOK_EMBEDDINGS.CHAPTERID.eq(chapterId))
+                .fetch();
+
+        records.forEach(record -> relevantChunks.add(record.value1()));
+        return relevantChunks;
+    }
 }
