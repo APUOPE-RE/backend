@@ -51,6 +51,13 @@ public class QuizRepository {
                 .fetchOneInto(QuestionData.class);
     }
 
+    public List<QuestionData> fetchQuestionsByQuizId(Integer quizId, DSLContext context){
+        return context.select()
+                .from(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS)
+                .where(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS.QUIZ_ID.eq(quizId))
+                .fetchInto(QuestionData.class);
+    }
+
     public List<QuestionData> fetchMultipleChoiceQuestionsByQuizId(Integer quizId, DSLContext context){
         return context.select()
                 .from(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS)

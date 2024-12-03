@@ -22,6 +22,7 @@ services:
       - "8080:8080"
     volumes:
       - ./logs:/app/logs
+      - ./src/main/resources/templates:/app/images
     depends_on:
       - python-embedding-service
       - apuopere-database
