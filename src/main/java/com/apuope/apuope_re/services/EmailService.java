@@ -49,7 +49,7 @@ public class EmailService {
             String htmlContent = "Thank you for creating an account with APUOPE-RE learning " +
                     "assistant!<br>" + "Please verify your account to complete your registration" + ".<br>" + "Simply click the link below to " +
                     "verify your account:<br><br>" + "<a" + " href=\"" + appUrl + "login?token=" + uuid + "\">Verify Your " + "Account</a><br><br>" +
-                    "If following URL into your browser: " + "http://localhost:3000/login?token=" + uuid + "<br><br>" +
+                    "If following URL into your browser: " + "http://130.230.52.194:443/login?token=" + uuid + "<br><br>" +
                     "If you did not sign up for an account with us, please ignore " + "this email" + ".<br><br>" + "Thank you,<br>" +
                     "APUOPE-RE Team";
 

@@ -121,7 +121,7 @@ public class ChatbotService {
         headers.set("Content-Type", "application/json");
 
         ObjectNode requestBody = objectMapper.createObjectNode();
-        requestBody.put("model", "llama2-13b");
+        requestBody.put("model", "llama3.1-8b");
 
         ArrayNode messages = requestBody.putArray("messages");
         ObjectNode systemMessage = messages.addObject();
