@@ -28,41 +28,46 @@ public class ResetPasswordService {
         this.tokenRepository = tokenRepository;
     }
 
-   public TokenRecord generateEmailToken(String email){
-        try {
-            Optional<UsersRecord> user = userRepository.findByEmail(email, dslContext);
+   public ResponseData<Object> generateEmailToken(String email){
+       try {
+           UsersRecord user = userRepository.findByEmail(email, dslContext);
 
-            if (user.isPresent()) {
-                TokenData tokenData = new TokenData(user.get().getId(), UUID.randomUUID());
+            if (user != null) {
+                TokenData tokenData = new TokenData(user.getId(), UUID.randomUUID());
                 ResponseData<String> response = tokenRepository.createToken(tokenData, dslContext);
 
                 if (response.getSuccess()) {
-                    return tokenRepository.findByAccountId(user.get().getId(), dslContext);
+                    return new ResponseData<>(true, tokenRepository.findByAccountId(user.getId(), dslContext));
                 }
+                return new ResponseData<>(false, "");
             }
-            return null;
+            return new ResponseData<>(false, "");
         } catch (Exception e) {
-            return null;
+           return new ResponseData<>(false, "");
         }
     }
 
-    public ResponseData<String> resetPassword(ResetPasswordData resetPasswordData) {
-        TokenRecord token = tokenRepository.findByUuid(resetPasswordData.getUuid(), dslContext);
+    public ResponseData<Object> resetPassword(ResetPasswordData resetPasswordData) {
+        try {
+            TokenRecord token = tokenRepository.findByUuid(resetPasswordData.getUuid(), dslContext);
 
-        if (LocalDateTime.now(TIMEZONE).isBefore(token.getExpirationTime())) {
-            if (!token.getValid()) {
-                return new ResponseData<>(false, "This reset password request has already been completed. Request a new link if needed.");
-            }
-            String hashedPassword = PasswordHashService.hashPassword(resetPasswordData.getPassword());
-            boolean success = userRepository.alterUserResetPassword(token.getAccountId(), hashedPassword, dslContext);
+            if (LocalDateTime.now(TIMEZONE).isBefore(token.getExpirationTime())) {
+                if (!token.getValid()) {
+                    return new ResponseData<>(false, "This reset password request has already been completed. Request a new link if needed.");
+                }
+                String hashedPassword = PasswordHashService.hashPassword(resetPasswordData.getPassword());
+                boolean success = userRepository.alterUserResetPassword(token.getAccountId(), hashedPassword, dslContext);
 
-            if (success) {
-                tokenRepository.invalidateToken(token.getId(), dslContext);
-                return new ResponseData<>(true, "Password reset successfully.");
+                if (success) {
+                    tokenRepository.invalidateToken(token.getId(), dslContext);
+                    return new ResponseData<>(true, "Password reset successfully.");
+                }
+                // This should be never reached, but response is good to be here just for sure.
+                return new ResponseData<>(false, "No rows affected.");
             }
-            // This should be never reached, but response is good to be here just for sure.
-            return new ResponseData<>(false, "No rows affected.");
+            return new ResponseData<>(false, "Reset password link is expired.");
+        } catch (Exception e){
+            return new ResponseData<>(false, "Resetting password failed. Please, try again.");
         }
-        return new ResponseData<>(false, "Reset password link is expired.");
     }
 }

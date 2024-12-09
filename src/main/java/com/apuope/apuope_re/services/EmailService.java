@@ -3,8 +3,6 @@ package com.apuope.apuope_re.services;
 import com.apuope.apuope_re.dto.ResponseData;
 import com.apuope.apuope_re.jooq.tables.records.TokenRecord;
 import com.apuope.apuope_re.jooq.tables.records.UsersRecord;
-import com.apuope.apuope_re.repositories.UserRepository;
-import org.jooq.DSLContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -13,7 +11,6 @@ import org.springframework.stereotype.Service;
 import jakarta.mail.*;
 import jakarta.mail.internet.*;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.mail.javamail.JavaMailSender;
@@ -27,44 +24,42 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    private final DSLContext dslContext;
-    private final UserRepository userRepository;
+    private final UserCredentialsService userCredentialsService;
 
-    public EmailService(DSLContext dslContext, UserRepository userRepository) {
-        this.dslContext = dslContext;
-        this.userRepository = userRepository;
+    public EmailService(UserCredentialsService userCredentialsService) {
+        this.userCredentialsService = userCredentialsService;
     }
 
-    public ResponseData<String> sendVerification(String to) throws MessagingException {
-        Optional<UsersRecord> userByEmail = userRepository.findByEmail(to, this.dslContext);
+    public ResponseData<Object> sendVerification(String to) throws MessagingException {
+        try {
+            var response = userCredentialsService.checkAccountExists(to);
 
-        if (userByEmail.isPresent()) {
-            UUID uuid = userByEmail.get().getUuid();
+            if (response.getSuccess()) {
+                UsersRecord user = (UsersRecord) response.getData();
+                UUID uuid = user.getUuid();
 
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper mimeMessage = new MimeMessageHelper(message, true);
+                MimeMessage message = mailSender.createMimeMessage();
+                MimeMessageHelper mimeMessage = new MimeMessageHelper(message, true);
 
-            mimeMessage.setTo(to);
-            mimeMessage.setSubject("Verify your APUOPE-RE account");
-            String htmlContent = "Thank you for creating an account with APUOPE-RE learning " +
-                    "assistant!<br>" + "Please verify your account to complete your registration" + ".<br>" + "Simply click the link below to " +
-                    "verify your account:<br><br>" + "<a" + " href=\"" + appUrl + "login?token=" + uuid + "\">Verify Your " + "Account</a><br><br>" +
-                    "If following URL into your browser: " + "http://localhost:3000/login?token=" + uuid + "<br><br>" +
-                    "If you did not sign up for an account with us, please ignore " + "this email" + ".<br><br>" + "Thank you,<br>" +
-                    "APUOPE-RE Team";
+                mimeMessage.setTo(to);
+                mimeMessage.setSubject("Verify your APUOPE-RE account");
+                String htmlContent = "Thank you for creating an account with APUOPE-RE learning " + "assistant!<br>" + "Please verify your account to complete your registration" + ".<br>" + "Simply click the link below to " + "verify your account:<br><br>" + "<a" + " href=\"" + appUrl + "login?token=" + uuid + "\">Verify Your " + "Account</a><br><br>" + "If following URL into your browser: " + "http://localhost:3000/login?token=" + uuid + "<br><br>" + "If you did not sign up for an account with us, please ignore " + "this email" + ".<br><br>" + "Thank you,<br>" + "APUOPE-RE Team";
 
-            mimeMessage.setText(htmlContent, true);
-            mimeMessage.setFrom(apuopeMail); // Optional, depending on the setup
+                mimeMessage.setText(htmlContent, true);
+                mimeMessage.setFrom(apuopeMail); // Optional, depending on the setup
 
-            mailSender.send(message);
+                mailSender.send(message);
 
-            return new ResponseData<>(true, "Mail sent successfully!");
-        } else {
-            return new ResponseData<>(false,"No user with given email found from database.");
+                return new ResponseData<>(true, "Mail sent successfully!");
+            } else {
+                return response;
+            }
+        } catch (Exception e) {
+            return new ResponseData<>(false, "Sending verification email failed. Please, try registering again.");
         }
     }
 
-    public ResponseData<String> sendResetPasswordLink(TokenRecord token,
+    public ResponseData<Object> sendResetPasswordLink(TokenRecord token,
     String email) throws MessagingException {
         try{
             UUID uuid = token.getUuid();
@@ -87,7 +82,7 @@ public class EmailService {
 
             return new ResponseData<>(true, "Mail sent successfully!");
         } catch (Exception e) {
-            return new ResponseData<>(false, "Error when sending password reset mail.");
+            return new ResponseData<>(false, "Sending password reset link failed.");
         }
 
     }

@@ -21,26 +21,23 @@ public class QuizController {
     }
 
     @GetMapping(value = "/generateQuiz/{lectureId}")
-    public ResponseEntity<Object> generateQuiz(HttpServletRequest request, @PathVariable("lectureId") Integer lectureId) throws SQLException, JsonProcessingException {
+    public ResponseEntity<ResponseData<Object>> generateQuiz(HttpServletRequest request, @PathVariable("lectureId") Integer lectureId) throws SQLException,
+            JsonProcessingException {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION).replace("Bearer ", "");
         ResponseData<Object> responseData = quizService.generateQuiz(token, lectureId);
 
         if (responseData.getSuccess()) {
-            return ResponseEntity.ok(responseData.getData());
+            return ResponseEntity.ok(responseData);
         } else {
-            return ResponseEntity.internalServerError().body(responseData.getData());
+            return ResponseEntity.internalServerError().body(responseData);
         }
     }
 
     @PostMapping(value = "/submitQuiz")
-    public ResponseEntity<Object> submitQuiz(HttpServletRequest request, @RequestBody QuizSubmitData input){
+    public ResponseEntity<ResponseData<Object>> submitQuiz(HttpServletRequest request, @RequestBody QuizSubmitData input) {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION).replace("Bearer ", "");
         ResponseData<Object> responseData = quizService.validateQuizAnswers(token, input);
 
-        if (responseData.getSuccess()) {
-            return ResponseEntity.ok(responseData.getData());
-        } else {
-            return ResponseEntity.internalServerError().body(responseData.getData());
-        }
+        return responseData.getSuccess() ? ResponseEntity.ok(responseData) : ResponseEntity.internalServerError().body(responseData);
     }
 }

@@ -15,7 +15,8 @@ public class LogInController {
     private LogInService logInService;
 
     @PostMapping(value = "/login")
-    public ResponseEntity<ResponseData<String>> validateUser(@RequestBody UserCredentials input) {
-        return ResponseEntity.ok(logInService.validateUser(input));
+    public ResponseEntity<ResponseData<Object>> validateUser(@RequestBody UserCredentials input) {
+        var response = logInService.validateUser(input);
+        return response.getSuccess() ? ResponseEntity.ok(response) : ResponseEntity.internalServerError().body(response);
     }
 }

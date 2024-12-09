@@ -1,5 +1,6 @@
 package com.apuope.apuope_re.repositories;
 
+import com.apuope.apuope_re.dto.QuizData;
 import com.apuope.apuope_re.dto.RegistrationData;
 import com.apuope.apuope_re.dto.ResponseData;
 import com.apuope.apuope_re.jooq.tables.Session;
@@ -20,25 +21,28 @@ public class UserRepository {
     @Autowired
     public UserRepository(){};
 
-    public Optional<UsersRecord> findVerifiedUserByEmail(String email, DSLContext context){
+    public UsersRecord findVerifiedUserByEmail(String email, DSLContext context){
         return context.selectFrom(Users.USERS)
                 .where(Users.USERS.EMAIL.eq(email).and(Users.USERS.VERIFIED.eq(true)))
-                .fetchOptional();
+                .limit(1)
+                .fetchOneInto(UsersRecord.class);
     }
 
-    public Optional<UsersRecord> findByEmail(String email, DSLContext context) {
+    public UsersRecord findByEmail(String email, DSLContext context) {
         return context.selectFrom(Users.USERS)
                 .where(Users.USERS.EMAIL.eq(email))
-                .fetchOptional();
+                .limit(1)
+                .fetchOneInto(UsersRecord.class);
     }
 
-    public Optional<UsersRecord> findByUsername(String username, DSLContext context) {
+    public UsersRecord findByUsername(String username, DSLContext context) {
         return context.selectFrom(Users.USERS)
                 .where(Users.USERS.USERNAME.eq(username))
-                .fetchOptional();
+                .limit(1)
+                .fetchOneInto(UsersRecord.class);
     }
 
-    public ResponseData<String> createUser(RegistrationData registrationData, DSLContext context) {
+    public ResponseData<Object> createUser(RegistrationData registrationData, DSLContext context) {
         try {
             context.insertInto(Users.USERS)
                     .set(Users.USERS.USERNAME, registrationData.getUsername())
