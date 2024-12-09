@@ -28,7 +28,7 @@ public class ChatbotController {
     @GetMapping(value = "/conversations")
     public ResponseEntity<List<ConversationData>> fetchAllConversations(HttpServletRequest request) {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION).replace("Bearer ", "");
-        return ResponseEntity.ok(chatbotService.fetchAllConversations(token, request));
+        return ResponseEntity.ok(chatbotService.fetchAllConversations(token));
     }
 
     @GetMapping(value = "/conversation/{id}")
