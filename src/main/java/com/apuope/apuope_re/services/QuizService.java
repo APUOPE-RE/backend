@@ -152,7 +152,6 @@ public class QuizService {
                 QuizData quizData = quizRepository.saveQuiz(questionData, accountId, lectureId, dslContext);
                 quizData.getQuestionDataList().sort(Comparator.comparingInt(QuestionData::getQuestionNumber));
 
-                quizData.getQuestionDataList().forEach(q -> q.setCorrectOption(""));
                 return new ResponseData<>(true, quizData);
             }
             return response;
