@@ -6,16 +6,18 @@ public class QuizAnswerData {
     public Integer questionId;
     public Integer questionNumber;
     public String answer;
+    public String correctOption;
     public boolean correct;
     public Integer points;
 
-    public QuizAnswerData(Integer id, Integer quizResultId, Integer questionId, Integer questionNumber, String answer, boolean correct,
-            Integer points) {
+    public QuizAnswerData(Integer id, Integer quizResultId, Integer questionId, Integer questionNumber, String answer,
+            boolean correct, Integer points) {
         this.id = id;
         this.quizResultId = quizResultId;
         this.questionId = questionId;
         this.questionNumber = questionNumber;
         this.answer = answer;
+        this.correctOption = "";
         this.correct = correct;
         this.points = points;
     }
@@ -58,6 +60,14 @@ public class QuizAnswerData {
 
     public void setAnswer(String answer) {
         this.answer = answer;
+    }
+
+    public String getCorrectOption() {
+        return correctOption;
+    }
+
+    public void setCorrectOption(String correctOption) {
+        this.correctOption = correctOption;
     }
 
     public boolean isCorrect() {

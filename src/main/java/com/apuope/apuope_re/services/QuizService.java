@@ -152,6 +152,7 @@ public class QuizService {
                 QuizData quizData = quizRepository.saveQuiz(questionData, accountId, lectureId, dslContext);
                 quizData.getQuestionDataList().sort(Comparator.comparingInt(QuestionData::getQuestionNumber));
 
+                quizData.getQuestionDataList().forEach(q -> q.setCorrectOption(""));
                 return new ResponseData<>(true, quizData);
             }
             return response;
@@ -164,9 +165,9 @@ public class QuizService {
         try {
             String userEmail = jwtService.extractEmail(token);
             var response = userCredentialsService.checkAccountExists(userEmail);
-
             if (response.getSuccess()) {
                 UsersRecord user = (UsersRecord) response.getData();
+                Map<Integer, String> correctOptions = new HashMap<>();
 
                 QuizData quizData = quizRepository.fetchQuizByQuizId(quizSubmitData.getQuizId(), dslContext);
                 QuizResultData quizResultData = quizRepository.saveQuizResult(user.getId(), quizSubmitData.getQuizId(), quizData.getMaxPoints(), dslContext);
@@ -176,12 +177,14 @@ public class QuizService {
                     QuestionData questionData = quizRepository.fetchQuestionByQuestionId(quizSubmitData.getQuizId(), answer.getQuestionNumber(), dslContext);
 
                     boolean correctAnswer = questionData.getCorrectOption().equals(answer.getAnswer());
+                    correctOptions.put(answer.getQuestionNumber(), questionData.getCorrectOption());
 
                     quizRepository.saveQuizAnswer(quizResultData.getId(), questionData.getId(), answer.getQuestionNumber(), answer.getAnswer(), correctAnswer, correctAnswer ? 1 : 0, dslContext);
                     score += correctAnswer ? 1 : 0;
                 }
                 quizRepository.saveQuizScore(quizResultData.getId(), score, dslContext);
                 quizResultData.setQuizAnswerDataList(quizRepository.fetchQuizAnswersByQuizResultId(quizResultData.getId(), dslContext));
+                quizResultData.getQuizAnswerDataList().forEach(q -> q.setCorrectOption(correctOptions.get(q.getQuestionNumber())));
                 quizResultData.setScore(score);
 
                 return new ResponseData<>(true, quizResultData);
