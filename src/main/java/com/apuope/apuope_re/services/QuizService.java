@@ -54,21 +54,23 @@ public class QuizService {
     public ResponseData<Object> fetchPreviousQuizzes(String token){
         try {
             String userEmail = jwtService.extractEmail(token);
-            Optional<UsersRecord> userOpt = userRepository.findVerifiedUserByEmail(userEmail, dslContext);
-            if (userOpt.isPresent()) {
-                List<QuizData> quizDataList = quizRepository.fetchQuizzesByAccountId(userOpt.get().getId(), dslContext);
+            var response = userCredentialsService.checkAccountExists(userEmail);
+
+            if (response.getSuccess()) {
+                UsersRecord user = (UsersRecord) response.getData();
+                List<QuizData> quizDataList = quizRepository.fetchQuizzesByAccountId(user.getId(), dslContext);
                 quizDataList.forEach(quizData -> {
                     quizData.setQuestionDataList(quizRepository.fetchMultipleChoiceQuestionsByQuizId(quizData.getId(), dslContext));
                 });
 
-                List<QuizResultData> quizResultDataList = quizRepository.fetchQuizResultsByAccountId(userOpt.get().getId(), dslContext);
+                List<QuizResultData> quizResultDataList = quizRepository.fetchQuizResultsByAccountId(user.getId(), dslContext);
                 quizResultDataList.forEach(quizResultData -> {
                     quizResultData.setQuizAnswerDataList(quizRepository.fetchQuizAnswersByQuizResultId(quizResultData.getId(), dslContext));
                 });
 
                 return new ResponseData<>(true, quizDataList.stream().flatMap(quizData -> quizResultDataList.stream().filter(quizResultData -> quizResultData.getQuizId().equals(quizData.getId())).map(quizResultData -> new QuizSummaryData(quizData.getId(), quizData, quizResultData))).toList());
             }
-            throw new Exception("No user found");
+            return response;
         } catch(Exception e){
             return new ResponseData<>(false, "Fetching previous quizzes failed.");
         }
@@ -77,8 +79,9 @@ public class QuizService {
     public ResponseData<Object> fetchPreviousQuiz(String token, Integer quizId){
         try {
             String userEmail = jwtService.extractEmail(token);
-            Optional<UsersRecord> userOpt = userRepository.findVerifiedUserByEmail(userEmail, dslContext);
-            if (userOpt.isPresent()) {
+            var response = userCredentialsService.checkAccountExists(userEmail);
+
+            if (response.getSuccess()) {
                 QuizData quizData = quizRepository.fetchQuizByQuizId(quizId, dslContext);
                 quizData.setQuestionDataList(quizRepository.fetchMultipleChoiceQuestionsByQuizId(quizData.getId(), dslContext));
 
@@ -87,7 +90,7 @@ public class QuizService {
 
                 return new ResponseData<>(true, new QuizSummaryData(quizData.getId(), quizData, quizResultData));
             }
-            throw new Exception("No user found");
+            return response;
         } catch(Exception e){
             return new ResponseData<>(false, "Fetching previous quiz failed.");
         }
