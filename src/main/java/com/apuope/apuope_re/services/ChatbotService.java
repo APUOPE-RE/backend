@@ -11,7 +11,6 @@ import com.apuope.apuope_re.utils.Constants.MessageSource;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletRequest;
 import org.jooq.DSLContext;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -59,7 +58,7 @@ public class ChatbotService {
         this.userCredentialsService = userCredentialsService;
     }
 
-    public List<ConversationData> fetchAllConversations(String token, HttpServletRequest request) {
+    public List<ConversationData> fetchAllConversations(String token) {
         String userEmail = jwtService.extractEmail(token);
         var response = userCredentialsService.checkAccountExists(userEmail);
         if (response.getSuccess()) {

@@ -40,4 +40,29 @@ public class QuizController {
 
         return responseData.getSuccess() ? ResponseEntity.ok(responseData) : ResponseEntity.internalServerError().body(responseData);
     }
+
+    @GetMapping(value = "/fetchPreviousQuizzes")
+    public ResponseEntity<Object> fetchPreviousQuizzes(HttpServletRequest request) throws SQLException, JsonProcessingException {
+        String token = request.getHeader(HttpHeaders.AUTHORIZATION).replace("Bearer ", "");
+        ResponseData<Object> responseData = quizService.fetchPreviousQuizzes(token);
+
+        if (responseData.getSuccess()) {
+            return ResponseEntity.ok(responseData.getData());
+        } else {
+            return ResponseEntity.internalServerError().body(responseData.getData());
+        }
+    }
+
+    @GetMapping(value = "/fetchPreviousQuiz/{quizId}")
+    public ResponseEntity<Object> fetchPreviousQuiz(HttpServletRequest request, @PathVariable("quizId") Integer quizId) throws SQLException,
+            JsonProcessingException {
+        String token = request.getHeader(HttpHeaders.AUTHORIZATION).replace("Bearer ", "");
+        ResponseData<Object> responseData = quizService.fetchPreviousQuiz(token, quizId);
+
+        if (responseData.getSuccess()) {
+            return ResponseEntity.ok(responseData.getData());
+        } else {
+            return ResponseEntity.internalServerError().body(responseData.getData());
+        }
+    }
 }

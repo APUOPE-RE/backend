@@ -3,6 +3,7 @@ package com.apuope.apuope_re.services;
 import com.apuope.apuope_re.dto.*;
 import com.apuope.apuope_re.jooq.tables.records.UsersRecord;
 import com.apuope.apuope_re.repositories.QuizRepository;
+import com.apuope.apuope_re.repositories.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -50,7 +51,49 @@ public class QuizService {
         this.userCredentialsService = userCredentialsService;
     }
 
-    private List<QuestionData> mapCorrectOptionFormat(List<QuestionData> questionData) {
+    public ResponseData<Object> fetchPreviousQuizzes(String token){
+        try {
+            String userEmail = jwtService.extractEmail(token);
+            Optional<UsersRecord> userOpt = userRepository.findVerifiedUserByEmail(userEmail, dslContext);
+            if (userOpt.isPresent()) {
+                List<QuizData> quizDataList = quizRepository.fetchQuizzesByAccountId(userOpt.get().getId(), dslContext);
+                quizDataList.forEach(quizData -> {
+                    quizData.setQuestionDataList(quizRepository.fetchMultipleChoiceQuestionsByQuizId(quizData.getId(), dslContext));
+                });
+
+                List<QuizResultData> quizResultDataList = quizRepository.fetchQuizResultsByAccountId(userOpt.get().getId(), dslContext);
+                quizResultDataList.forEach(quizResultData -> {
+                    quizResultData.setQuizAnswerDataList(quizRepository.fetchQuizAnswersByQuizResultId(quizResultData.getId(), dslContext));
+                });
+
+                return new ResponseData<>(true, quizDataList.stream().flatMap(quizData -> quizResultDataList.stream().filter(quizResultData -> quizResultData.getQuizId().equals(quizData.getId())).map(quizResultData -> new QuizSummaryData(quizData.getId(), quizData, quizResultData))).toList());
+            }
+            throw new Exception("No user found");
+        } catch(Exception e){
+            return new ResponseData<>(false, "Fetching previous quizzes failed.");
+        }
+    }
+
+    public ResponseData<Object> fetchPreviousQuiz(String token, Integer quizId){
+        try {
+            String userEmail = jwtService.extractEmail(token);
+            Optional<UsersRecord> userOpt = userRepository.findVerifiedUserByEmail(userEmail, dslContext);
+            if (userOpt.isPresent()) {
+                QuizData quizData = quizRepository.fetchQuizByQuizId(quizId, dslContext);
+                quizData.setQuestionDataList(quizRepository.fetchMultipleChoiceQuestionsByQuizId(quizData.getId(), dslContext));
+
+                QuizResultData quizResultData = quizRepository.fetchQuizResultByQuizId(quizId, dslContext);
+                quizResultData.setQuizAnswerDataList(quizRepository.fetchQuizAnswersByQuizResultId(quizResultData.getId(), dslContext));
+
+                return new ResponseData<>(true, new QuizSummaryData(quizData.getId(), quizData, quizResultData));
+            }
+            throw new Exception("No user found");
+        } catch(Exception e){
+            return new ResponseData<>(false, "Fetching previous quiz failed.");
+        }
+    }
+
+    private List<QuestionData> mapCorrectOptionFormat(List<QuestionData> questionData){
         questionData.forEach(q -> {
             q.setCorrectOption(switch (q.getCorrectOption().toLowerCase()) {
                 case "a", "optiona", "option a" -> "option_a";
