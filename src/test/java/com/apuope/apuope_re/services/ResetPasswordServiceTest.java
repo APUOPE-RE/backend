@@ -85,8 +85,8 @@ public class ResetPasswordServiceTest {
 
     @Test
     void testGenerateEmailTokenFailure() {
-        TokenRecord result = (TokenRecord) resetPasswordService.generateEmailToken(TEST_EMAIL2).getData();
-        assertNull(result);
+        ResponseData<Object> result = resetPasswordService.generateEmailToken(TEST_EMAIL2);
+        assertFalse(result.getSuccess(), "");
     }
 
     @Test
