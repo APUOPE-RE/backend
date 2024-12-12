@@ -15,41 +15,32 @@ public class RegistrationService {
     private final DSLContext dslContext;
     private final UserRepository userRepository;
     private final PasswordHashService passwordHashService;
+    private final UserCredentialsService userCredentialsService;
 
     public RegistrationService(DSLContext dslContext,
                                UserRepository userRepository,
-                               PasswordHashService passwordHashService) {
+                               PasswordHashService passwordHashService, UserCredentialsService userCredentialsService) {
         this.dslContext = dslContext;
         this.userRepository = userRepository;
         this.passwordHashService = passwordHashService;
+        this.userCredentialsService = userCredentialsService;
     }
 
-    private ResponseData<String> validateRegistrationData(RegistrationData registrationData) {
-        Optional<UsersRecord> userByEmail =
-                userRepository.findByEmail(registrationData.getEmail(), this.dslContext);
-
-        if (userByEmail.isPresent()) {
-            return new ResponseData<>(false, "User already exist for " +
-                    "given" +
-                    " email.");
+    private ResponseData<Object> validateRegistrationData(RegistrationData registrationData) {
+        ResponseData<Object> responseEmail  = userCredentialsService.emailNotFound(registrationData.getEmail());
+        if (!responseEmail.getSuccess()) {
+            return responseEmail;
         }
 
-        Optional<UsersRecord> userByUsername =
-                userRepository.findByUsername(registrationData.getUsername(),
-                        this.dslContext);
-
-        if (userByUsername.isPresent()) {
-            return new ResponseData<>(false, "User already exist for " +
-                    "given" +
-                    " username.");
+        ResponseData<Object> responseUsername  = userCredentialsService.usernameNotFound(registrationData.getUsername());
+        if (!responseUsername.getSuccess()) {
+            return responseUsername;
         }
-        return new ResponseData<String>(true, "");
+        return new ResponseData<>(true, "");
     }
 
-    public ResponseData<String> registerUser(RegistrationData registrationData) {
-        ResponseData<String> validatedData = this.validateRegistrationData(registrationData);
-
-
+    public ResponseData<Object> registerUser(RegistrationData registrationData) {
+        ResponseData<Object> validatedData = this.validateRegistrationData(registrationData);
         if (!validatedData.getSuccess()){
             return validatedData;
         }
@@ -58,12 +49,12 @@ public class RegistrationService {
         return userRepository.createUser(registrationData, this.dslContext);
     }
 
-    public ResponseData<String> verifyUser(UUID uuid){
+    public ResponseData<Object> verifyUser(UUID uuid){
         boolean response = userRepository.alterUserVerify(uuid, dslContext);
 
         if (response){
             return new ResponseData<>(true, "User verified");
         }
-        return new ResponseData<>(false, "User verification failed");
+        return new ResponseData<>(false, "User verification failed.");
     }
 }

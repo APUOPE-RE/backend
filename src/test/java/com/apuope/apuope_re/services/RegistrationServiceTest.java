@@ -51,35 +51,35 @@ public class RegistrationServiceTest {
     void testEmailAlreadyExists() {
         RegistrationData registrationData = new RegistrationData(TEST_EMAIL1, TEST_USERNAME1,
                 TEST_PASSWORD);
-        ResponseData<String> result = registrationService.registerUser(registrationData);
-        assertFalse(result.getSuccess(), "User already exist for given email.");
+        ResponseData<Object> result = registrationService.registerUser(registrationData);
+        assertFalse(result.getSuccess(), "Account already exists for given email.");
     }
 
     @Test
     void testUsernameAlreadyExists() {
         RegistrationData registrationData = new RegistrationData(TEST_EMAIL2, TEST_USERNAME1,
                 TEST_PASSWORD);
-        ResponseData<String> result = registrationService.registerUser(registrationData);
-        assertFalse(result.getSuccess(), "User already exist for given username.");
+        ResponseData<Object> result = registrationService.registerUser(registrationData);
+        assertFalse(result.getSuccess(), "Account already exists for given username.");
     }
 
     @Test
     void testRegistrationSuccess() {
         RegistrationData registrationData = new RegistrationData(TEST_EMAIL2, TEST_USERNAME2,
                 TEST_PASSWORD);
-        ResponseData<String> response = registrationService.registerUser(registrationData);
+        ResponseData<Object> response = registrationService.registerUser(registrationData);
         assertTrue(response.getSuccess(), "User added successfully.");
     }
 
     @Test
     void testEmailSuccess() throws MessagingException {
-        ResponseData<String> response = emailService.sendVerification(TEST_EMAIL1);
+        ResponseData<Object> response = emailService.sendVerification(TEST_EMAIL1);
         assertTrue(response.getSuccess(), "Mail sent successfully!");
     }
 
     @Test
     void testEmailFailure() throws MessagingException {
-        ResponseData<String> response = emailService.sendVerification(TEST_EMAIL_NON_EXISTING);
-        assertFalse(response.getSuccess(), "No user with given email found from database.");
+        ResponseData<Object> response = emailService.sendVerification(TEST_EMAIL_NON_EXISTING);
+        assertFalse(response.getSuccess(), "Sending verification email failed. Please, try registering again.");
     }
 }

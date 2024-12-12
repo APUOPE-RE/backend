@@ -8,9 +8,9 @@ import java.util.Collection;
 import java.util.Optional;
 
 public class UserPrinciple implements UserDetails {
-    private final Optional<UsersRecord> usersRecord;
+    private final UsersRecord usersRecord;
 
-    public UserPrinciple(Optional<UsersRecord> usersRecord) {
+    public UserPrinciple(UsersRecord usersRecord) {
         this.usersRecord = usersRecord;
     }
 
@@ -21,12 +21,12 @@ public class UserPrinciple implements UserDetails {
 
     @Override
     public String getPassword() {
-        return usersRecord.map(UsersRecord::getPasswordHash).orElse(null);
+        return usersRecord.getPasswordHash();
     }
 
     @Override
     public String getUsername() {
-        return usersRecord.map(UsersRecord::getEmail).orElse(null);
+        return usersRecord.getUsername();
     }
 
     @Override

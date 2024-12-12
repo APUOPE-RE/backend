@@ -22,10 +22,9 @@ public class ApuopeUserDetailService implements UserDetailsService {
         this.dslContext = dslContext;
     }
 
-
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<UsersRecord> usersRecord = userRepository.findByEmail(email, dslContext);
+        UsersRecord usersRecord = userRepository.findByEmail(email, dslContext);
         return new UserPrinciple(usersRecord);
     }
 }

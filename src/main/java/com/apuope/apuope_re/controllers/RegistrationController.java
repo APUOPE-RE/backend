@@ -21,16 +21,18 @@ public class RegistrationController {
     private EmailService emailService;
 
     @PostMapping(value = "/register")
-    public ResponseEntity<ResponseData<String>> validateUser(@RequestBody RegistrationData input) throws MessagingException {
-        ResponseData<String> response = registrationService.registerUser(input);
+    public ResponseEntity<ResponseData<Object>> validateUser(@RequestBody RegistrationData input) throws MessagingException {
+        ResponseData<Object> response = registrationService.registerUser(input);
         if (response.getSuccess()) {
-            return ResponseEntity.ok(emailService.sendVerification(input.getEmail()));
+            var emailServiceResponse = emailService.sendVerification(input.getEmail());
+            return emailServiceResponse.getSuccess() ? ResponseEntity.ok(emailServiceResponse) : ResponseEntity.internalServerError().body(emailServiceResponse);
         }
-        return ResponseEntity.ok(response);
+        return ResponseEntity.internalServerError().body(response);
     }
 
     @GetMapping(value = "/verify/{uuid}")
-    public ResponseEntity<ResponseData<String>> verifyAccount(@PathVariable("uuid") UUID uuid) {
-        return ResponseEntity.ok(registrationService.verifyUser(uuid));
+    public ResponseEntity<ResponseData<Object>> verifyAccount(@PathVariable("uuid") UUID uuid) {
+        ResponseData<Object> response = registrationService.verifyUser(uuid);
+        return response.getSuccess() ? ResponseEntity.ok(response) : ResponseEntity.internalServerError().body(response);
     }
 }

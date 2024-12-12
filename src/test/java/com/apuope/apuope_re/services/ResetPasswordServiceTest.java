@@ -74,10 +74,10 @@ public class ResetPasswordServiceTest {
 
     @Test
     void testGenerateEmailTokenSuccess() {
-        Optional<UsersRecord> user = userRepository.findByEmail(TEST_EMAIL1, dslContext);
-        if (user.isPresent()) {
-            TokenRecord result = resetPasswordService.generateEmailToken(TEST_EMAIL1);
-            assertEquals(user.get().getId(), result.getAccountId());
+        UsersRecord user = userRepository.findByEmail(TEST_EMAIL1, dslContext);
+        if (user != null) {
+            TokenRecord result = (TokenRecord) resetPasswordService.generateEmailToken(TEST_EMAIL1).getData();
+            assertEquals(user.getId(), result.getAccountId());
         } else{
             Assertions.fail("User should be found from db.");
         }
@@ -85,8 +85,8 @@ public class ResetPasswordServiceTest {
 
     @Test
     void testGenerateEmailTokenFailure() {
-        TokenRecord result = resetPasswordService.generateEmailToken(TEST_EMAIL2);
-        assertNull(result);
+        ResponseData<Object> result = resetPasswordService.generateEmailToken(TEST_EMAIL2);
+        assertFalse(result.getSuccess(), "");
     }
 
     @Test
@@ -94,7 +94,7 @@ public class ResetPasswordServiceTest {
         UsersRecord user = TestDataGenerator.findByEmail(dslContext, TEST_EMAIL1);
         TokenRecord token = tokenRepository.findByAccountId(user.getId(), dslContext);
 
-        ResponseData<String> response = emailService.sendResetPasswordLink(token, TEST_EMAIL1);
+        ResponseData<Object> response = emailService.sendResetPasswordLink(token, TEST_EMAIL1);
         assertTrue(response.getSuccess(), "Mail sent successfully!");
     }
 
@@ -103,7 +103,7 @@ public class ResetPasswordServiceTest {
         TokenRecord token = TestDataGenerator.fetchExpiredToken(dslContext);
         ResetPasswordData data = new ResetPasswordData(token.getUuid(), TEST_PASSWORD1);
 
-        ResponseData<String> response = resetPasswordService.resetPassword(data);
+        ResponseData<Object> response = resetPasswordService.resetPassword(data);
         assertFalse(response.getSuccess(), "Reset password link is expired.");
     }
 
@@ -112,7 +112,7 @@ public class ResetPasswordServiceTest {
         TokenRecord token = TestDataGenerator.fetchInvalidToken(dslContext);
         ResetPasswordData data = new ResetPasswordData(token.getUuid(), TEST_PASSWORD1);
 
-        ResponseData<String> response = resetPasswordService.resetPassword(data);
+        ResponseData<Object> response = resetPasswordService.resetPassword(data);
         assertFalse(response.getSuccess(), "This reset password request has already been completed. Request a new link if needed.");
     }
 
@@ -121,7 +121,7 @@ public class ResetPasswordServiceTest {
         TokenRecord token = TestDataGenerator.fetchUnexpiredAndValidToken(dslContext);
         ResetPasswordData data = new ResetPasswordData(token.getUuid(), TEST_PASSWORD2);
 
-        ResponseData<String> response = resetPasswordService.resetPassword(data);
+        ResponseData<Object> response = resetPasswordService.resetPassword(data);
         assertTrue(response.getSuccess(), "Password reset successfully.");
     }
 }

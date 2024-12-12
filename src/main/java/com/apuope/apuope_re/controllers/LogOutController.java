@@ -16,8 +16,9 @@ public class LogOutController {
     private LogOutService logOutService;
 
     @GetMapping(value = "/logout")
-    public ResponseEntity<ResponseData<String>> logoutUser(HttpServletRequest request) {
+    public ResponseEntity<ResponseData<Object>> logoutUser(HttpServletRequest request) {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION).replace("Bearer ", "");
-        return ResponseEntity.ok(logOutService.handleLogout(token, request));
+        var response = logOutService.handleLogout(token);
+        return response.getSuccess() ? ResponseEntity.ok(response) : ResponseEntity.internalServerError().body(response);
     }
 }

@@ -37,10 +37,11 @@ public class ChatbotController {
     }
 
     @PostMapping(value = "/chatBot")
-    public ResponseEntity<ResponseData<MessageData>> sendRequest(HttpServletRequest request, @RequestBody ChatRequestData input)
+    public ResponseEntity<ResponseData<Object>> sendRequest(HttpServletRequest request, @RequestBody ChatRequestData input)
             throws JsonProcessingException, SQLException, JSONException {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION).replace("Bearer ", "");
-        return ResponseEntity.ok(chatbotService.sendRequest(token, input));
+        var response = chatbotService.sendRequest(token, input);
+        return response.getSuccess() ? ResponseEntity.ok(response) : ResponseEntity.internalServerError().body(response);
     }
 
     @PutMapping(value = "/updateConversationTitle/{id}")

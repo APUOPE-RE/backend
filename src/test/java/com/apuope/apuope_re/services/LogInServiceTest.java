@@ -42,14 +42,14 @@ public class LogInServiceTest {
     @Test
     void testLoginSuccess() {
         UserCredentials userCredentials = new UserCredentials(TEST_EMAIL1, TEST_PASSWORD);
-        ResponseData<String> result = logInService.validateUser(userCredentials);
-        assertTrue(result.getSuccess(), "Login successful");
+        ResponseData<Object> result = logInService.validateUser(userCredentials);
+        assertTrue(result.getSuccess());
     }
 
     @Test
     void testLoginFailure() {
         UserCredentials userCredentials = new UserCredentials(TEST_EMAIL2, TEST_PASSWORD);
-        ResponseData<String>  result = logInService.validateUser(userCredentials);
-        assertFalse(result.getSuccess(), "Login unsuccessful");
+        ResponseData<Object>  result = logInService.validateUser(userCredentials);
+        assertFalse(result.getSuccess(), "Logging in failed. Please, try again.");
     }
 }

@@ -20,18 +20,19 @@ public class ResetPasswordController {
     private EmailService emailService;
 
     @PostMapping(value = "/sendResetPasswordLink")
-    public ResponseEntity<ResponseData<String>> sendResetPasswordLink(@RequestBody String email) throws MessagingException {
-        TokenRecord response = resetPasswordService.generateEmailToken(email);
-        if (response != null) {
-            return ResponseEntity.ok(emailService.sendResetPasswordLink(response, email));
+    public ResponseEntity<ResponseData<Object>> sendResetPasswordLink(@RequestBody String email) throws MessagingException {
+        ResponseData<Object> response = resetPasswordService.generateEmailToken(email);
+        if (response.getSuccess()) {
+            TokenRecord token = (TokenRecord) response.getData();
+            var responseLink = emailService.sendResetPasswordLink(token, email);
+            return responseLink.getSuccess() ? ResponseEntity.ok(responseLink) : ResponseEntity.internalServerError().body(responseLink);
         }
-        return ResponseEntity
-                .internalServerError()
-                .body(new ResponseData<>(false, "Error when creating email token."));
+        return ResponseEntity.internalServerError().body(response);
     }
 
     @PostMapping(value = "/resetPassword")
-    public ResponseEntity<ResponseData<String>> resetPassword(@RequestBody ResetPasswordData input) {
-        return ResponseEntity.ok(resetPasswordService.resetPassword(input));
+    public ResponseEntity<ResponseData<Object>> resetPassword(@RequestBody ResetPasswordData input) {
+        ResponseData<Object> response = resetPasswordService.resetPassword(input);
+        return response.getSuccess() ? ResponseEntity.ok(response) : ResponseEntity.internalServerError().body(response);
     }
 }
