@@ -230,7 +230,11 @@ public class QuizService {
                 }
                 quizRepository.saveQuizScore(quizResultData.getId(), score, dslContext);
                 quizResultData.setQuizAnswerDataList(quizRepository.fetchQuizAnswersByQuizResultId(quizResultData.getId(), dslContext));
-                quizResultData.getQuizAnswerDataList().forEach(q -> q.setCorrectOption(correctOptions.get(q.getQuestionNumber())));
+                quizResultData.getQuizAnswerDataList().forEach(a -> {
+                    int answerNumber = a.getQuestionNumber();
+                    String correctOption = correctOptions.get(answerNumber);
+                    a.setCorrectOption(correctOption);
+                });
                 quizResultData.setScore(score);
 
                 return new ResponseData<>(true, quizResultData);
