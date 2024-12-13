@@ -24,6 +24,14 @@ public class UserCredentialsService {
         return new ResponseData<>(false, "Invalid credentials. Please, try again.");
     }
 
+    public ResponseData<Object> checkUnverifiedAccountExists(String email) {
+        UsersRecord user = userRepository.findByEmail(email, this.dslContext);
+        if (user != null){
+            return new ResponseData<>(true, user);
+        }
+        return new ResponseData<>(false, "Invalid credentials. Please, try again.");
+    }
+
     public ResponseData<Object> emailNotFound(String email) {
         UsersRecord user = userRepository.findByEmail(email, this.dslContext);
         if (user != null){
