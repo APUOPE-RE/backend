@@ -35,12 +35,12 @@ public class RetrievalRepository {
         return relevantChunks;
     }
 
-    public List<String> getQuizContext(Integer chapterId, DSLContext context) throws SQLException {
+    public List<String> getQuizContext(List<Integer> chapterIds, DSLContext context) throws SQLException {
         List<String> relevantChunks = new ArrayList<>();
 
         Result<Record1<String>> records = context.select(TEXTBOOK_EMBEDDINGS.CHUNK)
                 .from(TEXTBOOK_EMBEDDINGS)
-                .where(TEXTBOOK_EMBEDDINGS.CHAPTERID.eq(chapterId))
+                .where(TEXTBOOK_EMBEDDINGS.CHAPTERID.in(chapterIds))
                 .fetch();
 
         records.forEach(record -> relevantChunks.add(record.value1()));

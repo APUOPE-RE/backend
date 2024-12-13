@@ -32,7 +32,7 @@ public class EmailService {
 
     public ResponseData<Object> sendVerification(String to) throws MessagingException {
         try {
-            var response = userCredentialsService.checkAccountExists(to);
+            var response = userCredentialsService.checkUnverifiedAccountExists(to);
 
             if (response.getSuccess()) {
                 UsersRecord user = (UsersRecord) response.getData();
@@ -43,7 +43,7 @@ public class EmailService {
 
                 mimeMessage.setTo(to);
                 mimeMessage.setSubject("Verify your APUOPE-RE account");
-                String htmlContent = "Thank you for creating an account with APUOPE-RE learning " + "assistant!<br>" + "Please verify your account to complete your registration" + ".<br>" + "Simply click the link below to " + "verify your account:<br><br>" + "<a" + " href=\"" + appUrl + "login?token=" + uuid + "\">Verify Your " + "Account</a><br><br>" + "If following URL into your browser: " + "http://localhost:3000/login?token=" + uuid + "<br><br>" + "If you did not sign up for an account with us, please ignore " + "this email" + ".<br><br>" + "Thank you,<br>" + "APUOPE-RE Team";
+                String htmlContent = "Thank you for creating an account with APUOPE-RE learning " + "assistant!<br>" + "Please verify your account to complete your registration" + ".<br>" + "Simply click the link below to " + "verify your account:<br><br>" + "<a" + " href=\"" + appUrl + "login?token=" + uuid + "\">Verify Your " + "Account</a><br><br>" + "If you did not sign up for an account with us, please ignore " + "this email" + ".<br><br>" + "Thank you,<br>" + "APUOPE-RE Team";
 
                 mimeMessage.setText(htmlContent, true);
                 mimeMessage.setFrom(apuopeMail); // Optional, depending on the setup

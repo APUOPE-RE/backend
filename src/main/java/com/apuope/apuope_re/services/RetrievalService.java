@@ -1,6 +1,7 @@
 package com.apuope.apuope_re.services;
 
 import com.apuope.apuope_re.repositories.RetrievalRepository;
+import com.apuope.apuope_re.utils.Constants;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,7 @@ public class RetrievalService {
     }
 
     public List<String> getQuizContext(Integer lectureId) throws SQLException {
-        return retrievalRepository.getQuizContext(lectureId, context);
+        List<Integer> chapterIds = Constants.LectureChapters.getChaptersByLectureId(lectureId);
+        return retrievalRepository.getQuizContext(chapterIds, context);
     }
 }

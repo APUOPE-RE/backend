@@ -15,6 +15,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY embedding_service.py .
 
-EXPOSE 5000
-
 CMD ["python", "embedding_service.py"]
