@@ -36,6 +36,7 @@ public class RegistrationService {
         if (!responseUsername.getSuccess()) {
             return responseUsername;
         }
+
         return new ResponseData<>(true, "");
     }
 
