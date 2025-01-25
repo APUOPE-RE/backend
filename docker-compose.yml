@@ -25,12 +25,16 @@ services:
     depends_on:
       - python-embedding-service
       - apuopere-database
+    networks:
+      - backend_default
 
   python-embedding-service:
     build:
       context: ./python-embedding-service
     ports:
       - "5000:5000"
+    networks:
+      - backend_default
 
   apuopere-database:
     image: ramsrib/pgvector:15
@@ -47,6 +51,13 @@ services:
       retries: 5
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend_default
 
 volumes:
   postgres_data:
+
+networks:
+  backend_default:
+    external: true
+    name: backend_default

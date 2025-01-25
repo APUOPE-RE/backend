@@ -125,12 +125,12 @@
 			<artifactId>jjwt-jackson</artifactId>
 			<version>0.12.6</version>
 		</dependency>
-        <dependency>
-            <groupId>com.vaadin.external.google</groupId>
-            <artifactId>android-json</artifactId>
-            <version>0.0.20131108.vaadin1</version>
-            <scope>compile</scope>
-        </dependency>
+		<dependency>
+			<groupId>com.vaadin.external.google</groupId>
+			<artifactId>android-json</artifactId>
+			<version>0.0.20131108.vaadin1</version>
+			<scope>compile</scope>
+		</dependency>
 		<dependency>
 			<groupId>com.openhtmltopdf</groupId>
 			<artifactId>openhtmltopdf-pdfbox</artifactId>
@@ -151,15 +151,15 @@
 			<artifactId>freemarker</artifactId>
 			<version>2.3.32</version>
 		</dependency>
-    </dependencies>
+	</dependencies>
 
 	<profiles>
 		<profile>
 			<id>jooq-codegen</id>
 			<properties>
 				<jdbc>jdbc:postgresql://localhost:5434/apuope_db</jdbc>
-				<db.user>${env.POSTGRES_USER}</db.user>
-				<db.password>${env.POSTGRES_PASSWORD}</db.password>
+				<db.user>apuope_user</db.user>
+				<db.password>apuope_password</db.password>
 			</properties>
 			<build>
 				<plugins>
@@ -190,8 +190,8 @@
 									<jdbc>
 										<driver>org.postgresql.Driver</driver>
 										<url>jdbc:postgresql://localhost:5434/apuope_db</url>
-										<user>${env.POSTGRES_USER}</user>
-										<password>${env.POSTGRES_PASSWORD}</password>
+										<user>apuope_user</user>
+										<password>apuope_password</password>
 									</jdbc>
 									<generator>
 										<name>org.jooq.codegen.JavaGenerator</name>
@@ -215,8 +215,8 @@
 			<id>docker</id>
 			<properties>
 				<jdbc>jdbc:postgresql://localhost:5434/apuope_db</jdbc>
-				<db.user>${env.POSTGRES_USER}</db.user>
-				<db.password>${env.POSTGRES_PASSWORD}</db.password>
+				<db.user>apuope_user</db.user>
+				<db.password>apuope_password</db.password>
 				<maven.test.skip>true</maven.test.skip>
 			</properties>
 			<build>
