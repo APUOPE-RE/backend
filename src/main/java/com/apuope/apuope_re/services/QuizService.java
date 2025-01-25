@@ -172,7 +172,6 @@ public class QuizService {
                     if (questionData.size() == QUESTION_AMOUNT && duplicates.isEmpty()) {
                         quizGenerated = true;
                     } else {
-                        questionData.clear();
                     }
                 }
             }
