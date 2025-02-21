@@ -104,6 +104,20 @@ public class QuizResultRecord extends UpdatableRecordImpl<QuizResultRecord> {
         return (LocalDateTime) get(5);
     }
 
+    /**
+     * Setter for <code>apuope.quiz_result.difficulty</code>.
+     */
+    public void setDifficulty(String value) {
+        set(6, value);
+    }
+
+    /**
+     * Getter for <code>apuope.quiz_result.difficulty</code>.
+     */
+    public String getDifficulty() {
+        return (String) get(6);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -127,7 +141,7 @@ public class QuizResultRecord extends UpdatableRecordImpl<QuizResultRecord> {
     /**
      * Create a detached, initialised QuizResultRecord
      */
-    public QuizResultRecord(Integer id, Integer accountId, Integer quizId, Integer score, Integer maxScore, LocalDateTime datetime) {
+    public QuizResultRecord(Integer id, Integer accountId, Integer quizId, Integer score, Integer maxScore, LocalDateTime datetime, String difficulty) {
         super(QuizResult.QUIZ_RESULT);
 
         setId(id);
@@ -136,6 +150,7 @@ public class QuizResultRecord extends UpdatableRecordImpl<QuizResultRecord> {
         setScore(score);
         setMaxScore(maxScore);
         setDatetime(datetime);
+        setDifficulty(difficulty);
         resetChangedOnNotNull();
     }
 }

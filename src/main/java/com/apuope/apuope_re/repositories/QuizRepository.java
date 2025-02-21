@@ -43,6 +43,14 @@ public class QuizRepository {
                 .fetchInto(QuizData.class);
     }
 
+    public List<QuizResultData> determineDifficultyLevel(Integer accountId, DSLContext context) {
+        return context.select()
+                .from(QuizResult.QUIZ_RESULT)
+                .where(QuizResult.QUIZ_RESULT.ACCOUNT_ID.eq(accountId))
+                .orderBy(QuizResult.QUIZ_RESULT.ID.desc())
+                .fetchInto(QuizResultData.class);
+    }
+
     public QuestionData fetchQuestionByQuestionId(Integer quizId, Integer questionNumber, DSLContext context){
         return context.select()
                 .from(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS)

@@ -3,7 +3,6 @@ package com.apuope.apuope_re.services;
 import com.apuope.apuope_re.dto.*;
 import com.apuope.apuope_re.jooq.tables.records.UsersRecord;
 import com.apuope.apuope_re.repositories.QuizRepository;
-import com.apuope.apuope_re.repositories.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -49,6 +48,30 @@ public class QuizService {
         this.quizRepository = quizRepository;
         this.retrievalService = retrievalService;
         this.userCredentialsService = userCredentialsService;
+    }
+
+    public String determineDifficultyLevel(Integer accountId) {
+        List<QuizResultData> quizzes = quizRepository.determineDifficultyLevel(accountId, dslContext);
+        if (quizzes.isEmpty()) {
+            return "Beginner";
+        }
+        double avgScore = quizzes.stream()
+                .limit(5)
+                .mapToInt(QuizResultData::getScore)
+                .average()
+                .orElse(0.0);
+        quizzes.stream()
+                .limit(5)
+                .mapToInt(QuizResultData::getScore)
+                .forEach(System.out::println);
+
+        System.out.println(" the avgScore: " + avgScore);
+
+
+        if (avgScore == 0.0) return "Beginner";
+        if (avgScore < 4) return "Beginner";
+        if (avgScore < 8) return "Intermediate";
+        return "Advanced";
     }
 
     public ResponseData<Object> fetchPreviousQuizzes(String token){
@@ -121,16 +144,25 @@ public class QuizService {
         }
     }
 
-    public List<QuestionData> requestQuiz(Integer lectureId) throws Exception {
+    public List<QuestionData> requestQuiz(Integer lectureId, Integer accountId) throws Exception {
         try {
             Pattern pattern = Pattern.compile("\\[.*?\\]");
             List<QuestionData> questionData = new ArrayList<>();
             boolean quizGenerated = false;
             String quizContent = "";
 
+            String difficultyLevel = determineDifficultyLevel(accountId);
+            System.out.println("the difficulty is: " + difficultyLevel);
+            String difficultyInstructions = switch (difficultyLevel) {
+                case "Beginner" -> "Make the quiz simpler with more direct questions.";
+                case "Intermediate" -> "Make the quiz moderately challenging.";
+                case "Advanced" -> "Make the quiz more difficult with tricky and conceptual questions.";
+                default -> "";
+            };
+
             // Request new quiz if previously generated didn't match validation
             while (!quizGenerated) {
-                var instructions = "Strictly obey there rules. " + "Create a quiz based on lecture " + lectureId + ". " + "Quiz should have " + QUESTION_AMOUNT + " questions. " + "Each question has three options: option_a, option_b and option_c. " + "The correct_option must " + "strictly point to the " + "correct value, e.g. option_a. " + "The value of question_id is always the position of the " + "question in the test. " + "Each question and option must be maximum 500 " + "characters. " + "Each correct answer " + "is " + "equal to one point. " + "Generated quiz should be in JSON format. " + "Here is an example, how the quiz in " + "JSON " + "format should strictly be. " + "This example quiz has two questions (example quiz don't need to be provided " + "back): " + "[{\"id\": " + "1, \"question_number\": 1,\"question\": \"question here\",\"option_a\": \"answer option a\",\"option_b\": \"answer option b\"," + "\"option_c\": \"answer option c\",\"correct_option\": \"choice_a\",\"points\": 1},{\"id\": 2, \"question_number\": 2, " + "\"question\": \"question here\",\"option_a\": \"answer option a\",\"option_b\": \"answer option b\",\"option_c\": \"answer option c\",\"correct_option\": \"choice_a\",\"points\": 1}]";
+                var instructions = "Strictly obey there rules. " + "Create a quiz based on lecture " + lectureId + ". " + "The quiz should be " + difficultyLevel.toLowerCase() + " level. " + difficultyInstructions + "Quiz should have " + QUESTION_AMOUNT + " questions. " + "Each question has three options: option_a, option_b and option_c. " + "The correct_option must " + "strictly point to the " + "correct value, e.g. option_a. " + "The value of question_id is always the position of the " + "question in the test. " + "Each question and option must be maximum 500 " + "characters. " + "Each correct answer " + "is " + "equal to one point. " + "Generated quiz should be in JSON format. " + "Here is an example, how the quiz in " + "JSON " + "format should strictly be. " + "This example quiz has two questions (example quiz don't need to be provided " + "back): " + "[{\"id\": " + "1, \"question_number\": 1,\"question\": \"question here\",\"option_a\": \"answer option a\",\"option_b\": \"answer option b\"," + "\"option_c\": \"answer option c\",\"correct_option\": \"choice_a\",\"points\": 1},{\"id\": 2, \"question_number\": 2, " + "\"question\": \"question here\",\"option_a\": \"answer option a\",\"option_b\": \"answer option b\",\"option_c\": \"answer option c\",\"correct_option\": \"choice_a\",\"points\": 1}]";
 
                 List<String> promptContext = retrievalService.getQuizContext(lectureId);
                 String context = String.join(" ", promptContext);
@@ -191,7 +223,7 @@ public class QuizService {
                 UsersRecord user = (UsersRecord) response.getData();
                 Integer accountId = user.getId();
 
-                List<QuestionData> questionData = requestQuiz(lectureId);
+                List<QuestionData> questionData = requestQuiz(lectureId, accountId);
                 questionData = mapCorrectOptionFormat(questionData);
 
                 QuizData quizData = quizRepository.saveQuiz(questionData, accountId, lectureId, dslContext);

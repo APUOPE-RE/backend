@@ -90,6 +90,11 @@ public class QuizResult extends TableImpl<QuizResultRecord> {
      */
     public final TableField<QuizResultRecord, LocalDateTime> DATETIME = createField(DSL.name("datetime"), SQLDataType.LOCALDATETIME(6), this, "");
 
+    /**
+     * The column <code>apuope.quiz_result.difficulty</code>.
+     */
+    public final TableField<QuizResultRecord, String> DIFFICULTY = createField(DSL.name("difficulty"), SQLDataType.VARCHAR(20).nullable(false).defaultValue(DSL.field(DSL.raw("'Intermediate'::character varying"), SQLDataType.VARCHAR)), this, "");
+
     private QuizResult(Name alias, Table<QuizResultRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
     }
