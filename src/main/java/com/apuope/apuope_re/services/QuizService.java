@@ -162,7 +162,26 @@ public class QuizService {
 
             // Request new quiz if previously generated didn't match validation
             while (!quizGenerated) {
-                var instructions = "Strictly obey there rules. " + "Create a quiz based on lecture " + lectureId + ". " + "The quiz should be " + difficultyLevel.toLowerCase() + " level. " + difficultyInstructions + "Quiz should have " + QUESTION_AMOUNT + " questions. " + "Each question has three options: option_a, option_b and option_c. " + "The correct_option must " + "strictly point to the " + "correct value, e.g. option_a. " + "The value of question_id is always the position of the " + "question in the test. " + "Each question and option must be maximum 500 " + "characters. " + "Each correct answer " + "is " + "equal to one point. " + "Generated quiz should be in JSON format. " + "Here is an example, how the quiz in " + "JSON " + "format should strictly be. " + "This example quiz has two questions (example quiz don't need to be provided " + "back): " + "[{\"id\": " + "1, \"question_number\": 1,\"question\": \"question here\",\"option_a\": \"answer option a\",\"option_b\": \"answer option b\"," + "\"option_c\": \"answer option c\",\"correct_option\": \"choice_a\",\"points\": 1},{\"id\": 2, \"question_number\": 2, " + "\"question\": \"question here\",\"option_a\": \"answer option a\",\"option_b\": \"answer option b\",\"option_c\": \"answer option c\",\"correct_option\": \"choice_a\",\"points\": 1}]";
+                var instructions = "Strictly obey there rules. "
+                        + "Create a quiz based on lecture "
+                        + lectureId + ". " + "The quiz should be "
+                        + difficultyLevel.toLowerCase() + " level. "
+                        + difficultyInstructions
+                        + "The 'source' field must include the **exact paragraph text** and not just the chapter or section number. "
+                        + "The 'source' field must include at maximum 100 characters. "
+                        + "Quiz should have "
+                        + QUESTION_AMOUNT + " questions. "
+                        + "Each question has three options: option_a, option_b and option_c. "
+                        + "The correct_option must " + "strictly point to the "
+                        + "correct value, e.g. option_a. "
+                        + "The value of question_id is always the position of the "
+                        + "question in the test. " + "Each question and option must be maximum 500 "
+                        + "characters. " + "Each correct answer " + "is " + "equal to one point. "
+                        + "Generated quiz should be in JSON format. "
+                        + "Here is an example, how the quiz in " + "JSON "
+                        + "format should strictly be. "
+                        + "This example quiz has two questions (example quiz don't need to be provided "
+                        + "back): " + "[{\"id\": " + "1, \"question_number\": 1,\"question\": \"question here\",\"option_a\": \"answer option a\",\"option_b\": \"answer option b\"," + "\"option_c\": \"answer option c\",\"correct_option\": \"choice_a\",\"points\": 1},{\"id\": 2, \"question_number\": 2, " + "\"question\": \"question here\",\"option_a\": \"answer option a\",\"option_b\": \"answer option b\",\"option_c\": \"answer option c\",\"correct_option\": \"choice_a\",\"points\": 1}]";
 
                 List<String> promptContext = retrievalService.getQuizContext(lectureId);
                 String context = String.join(" ", promptContext);
@@ -203,6 +222,7 @@ public class QuizService {
 
                     if (questionData.size() == QUESTION_AMOUNT && duplicates.isEmpty()) {
                         quizGenerated = true;
+                        questionData.forEach(q -> System.out.println("Question: " + q.getQuestion() ));
                     } else {
                     }
                 }
