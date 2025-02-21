@@ -16,6 +16,7 @@ public class QuestionData {
     @JsonProperty("correct_option")
     public String correctOption;
     public Integer points;
+    public String source;
 
 
     public QuestionData() {
@@ -31,6 +32,13 @@ public class QuestionData {
         this.optionC = optionC;
         this.correctOption = correctOption;
         this.points = points;
+        this.source = source;
+    }
+    public String getSource() {
+        return source;
+    }
+    public void setSource(String source) {
+        this.source = source;
     }
 
     public Integer getId() {

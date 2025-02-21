@@ -222,7 +222,7 @@ public class QuizService {
 
                     if (questionData.size() == QUESTION_AMOUNT && duplicates.isEmpty()) {
                         quizGenerated = true;
-                        questionData.forEach(q -> System.out.println("Question: " + q.getQuestion() ));
+                        questionData.forEach(q -> System.out.println("Source: " + q.getSource() ));
                     } else {
                     }
                 }
