@@ -153,7 +153,8 @@ public class QuizRepository {
                         .set(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS.OPTION_B, q.getOptionB())
                         .set(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS.OPTION_C, q.getOptionC())
                         .set(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS.CORRECT_OPTION, q.getCorrectOption())
-                        .set(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS.POINTS, ONE_POINT))
+                        .set(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS.POINTS, ONE_POINT)
+                        .set(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS.SOURCE, q.getSource()))
                 .toArray(Query[]::new))
                 .execute();
 

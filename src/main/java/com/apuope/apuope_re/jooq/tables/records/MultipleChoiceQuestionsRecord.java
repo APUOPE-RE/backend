@@ -144,6 +144,20 @@ public class MultipleChoiceQuestionsRecord extends UpdatableRecordImpl<MultipleC
         return (Integer) get(8);
     }
 
+    /**
+     * Setter for <code>apuope.multiple_choice_questions.source</code>.
+     */
+    public void setSource(String value) {
+        set(9, value);
+    }
+
+    /**
+     * Getter for <code>apuope.multiple_choice_questions.source</code>.
+     */
+    public String getSource() {
+        return (String) get(9);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -167,7 +181,7 @@ public class MultipleChoiceQuestionsRecord extends UpdatableRecordImpl<MultipleC
     /**
      * Create a detached, initialised MultipleChoiceQuestionsRecord
      */
-    public MultipleChoiceQuestionsRecord(Integer id, Integer quizId, Integer questionNumber, String question, String optionA, String optionB, String optionC, String correctOption, Integer points) {
+    public MultipleChoiceQuestionsRecord(Integer id, Integer quizId, Integer questionNumber, String question, String optionA, String optionB, String optionC, String correctOption, Integer points, String source) {
         super(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS);
 
         setId(id);
@@ -179,6 +193,7 @@ public class MultipleChoiceQuestionsRecord extends UpdatableRecordImpl<MultipleC
         setOptionC(optionC);
         setCorrectOption(correctOption);
         setPoints(points);
+        setSource(source);
         resetChangedOnNotNull();
     }
 }

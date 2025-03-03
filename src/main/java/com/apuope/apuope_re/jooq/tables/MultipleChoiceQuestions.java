@@ -103,6 +103,11 @@ public class MultipleChoiceQuestions extends TableImpl<MultipleChoiceQuestionsRe
      */
     public final TableField<MultipleChoiceQuestionsRecord, Integer> POINTS = createField(DSL.name("points"), SQLDataType.INTEGER.nullable(false), this, "");
 
+    /**
+     * The column <code>apuope.multiple_choice_questions.source</code>.
+     */
+    public final TableField<MultipleChoiceQuestionsRecord, String> SOURCE = createField(DSL.name("source"), SQLDataType.VARCHAR(500), this, "");
+
     private MultipleChoiceQuestions(Name alias, Table<MultipleChoiceQuestionsRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
     }
