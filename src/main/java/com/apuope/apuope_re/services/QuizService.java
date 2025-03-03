@@ -168,7 +168,7 @@ public class QuizService {
                         + difficultyLevel.toLowerCase() + " level. "
                         + difficultyInstructions
                         + "The 'source' field must include the **exact paragraph text** and not just the chapter or section number. "
-                        + "The 'source' field must include at maximum 100 characters. "
+                        + "example of the 'source' Chapter 7, Page 139: 'Quality attributes are properties of the system that describe how well it does something.' "
                         + "Quiz should have "
                         + QUESTION_AMOUNT + " questions. "
                         + "Each question has three options: option_a, option_b and option_c. "
@@ -181,7 +181,9 @@ public class QuizService {
                         + "Here is an example, how the quiz in " + "JSON "
                         + "format should strictly be. "
                         + "This example quiz has two questions (example quiz don't need to be provided "
-                        + "back): " + "[{\"id\": " + "1, \"question_number\": 1,\"question\": \"question here\",\"option_a\": \"answer option a\",\"option_b\": \"answer option b\"," + "\"option_c\": \"answer option c\",\"correct_option\": \"choice_a\",\"points\": 1},{\"id\": 2, \"question_number\": 2, " + "\"question\": \"question here\",\"option_a\": \"answer option a\",\"option_b\": \"answer option b\",\"option_c\": \"answer option c\",\"correct_option\": \"choice_a\",\"points\": 1}]";
+                        + "back): " + "[{\"id\": " + "1, \"question_number\": 1,\"question\": \"question here\",\"option_a\": \"answer option a\",\"option_b\": \"answer option b\","
+                        + "\"option_c\": \"answer option c\",\"correct_option\": \"choice_a\",\"points\": 1,\"source\": \"source here.\"},{\"id\": 2, \"question_number\": 2, "
+                        + "\"question\": \"question here\",\"option_a\": \"answer option a\",\"option_b\": \"answer option b\",\"option_c\": \"answer option c\",\"correct_option\": \"choice_a\",\"points\": 1,\"source\": \"source here.\"}]";
 
                 List<String> promptContext = retrievalService.getQuizContext(lectureId);
                 String context = String.join(" ", promptContext);

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class RetrievalService {
@@ -24,4 +25,14 @@ public class RetrievalService {
     public List<String> getQuizContext(Integer lectureId) throws SQLException {
         return retrievalRepository.getQuizContext(lectureId, context);
     }
+
+//    public CompletableFuture<List<String>> getQuizContext(Integer lectureId, DSLContext context) {
+//        return CompletableFuture.supplyAsync(() -> {
+//            try {
+//                return retrievalRepository.getQuizContext(lectureId, context);
+//            } catch (SQLException e) {
+//                throw new RuntimeException(e);
+//            }
+//        });
+//    }
 }

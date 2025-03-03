@@ -38,10 +38,16 @@ public class RetrievalRepository {
     public List<String> getQuizContext(Integer chapterId, DSLContext context) throws SQLException {
         List<String> relevantChunks = new ArrayList<>();
 
-        Result<Record1<String>> records = context.select(TEXTBOOK_EMBEDDINGS.CHUNK)
+        Result<Record1<String>> records = context.select(DSL.substring(TEXTBOOK_EMBEDDINGS.CHUNK, 1, 200)) // Fetch only first 200 chars
                 .from(TEXTBOOK_EMBEDDINGS)
                 .where(TEXTBOOK_EMBEDDINGS.CHAPTERID.eq(chapterId))
                 .fetch();
+
+//        Result<Record1<String>> records = context.select(TEXTBOOK_EMBEDDINGS.CHUNK)
+//                .from(TEXTBOOK_EMBEDDINGS)
+//                .where(TEXTBOOK_EMBEDDINGS.CHAPTERID.eq(chapterId))
+//                .limit(10)
+//                .fetch();
 
         records.forEach(record -> relevantChunks.add(record.value1()));
         return relevantChunks;
