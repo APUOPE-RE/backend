@@ -33,6 +33,22 @@ public class QuizController {
         }
     }
 
+
+    @GetMapping(value = "/generateTrueOrFalseQuiz/{lectureId}")
+    public ResponseEntity<ResponseData<Object>> generateTrueOrFalseQuiz(HttpServletRequest request, @PathVariable("lectureId") Integer lectureId) throws SQLException,
+            JsonProcessingException {
+        String token = request.getHeader(HttpHeaders.AUTHORIZATION).replace("Bearer ", "");
+        ResponseData<Object> responseData = quizService.generateTrueOrFalseQuiz(token, lectureId);
+
+        if (responseData.getSuccess()) {
+            return ResponseEntity.ok(responseData);
+        } else {
+            return ResponseEntity.internalServerError().body(responseData);
+        }
+    }
+
+
+
     @PostMapping(value = "/submitQuiz")
     public ResponseEntity<ResponseData<Object>> submitQuiz(HttpServletRequest request, @RequestBody QuizSubmitData input) {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION).replace("Bearer ", "");

@@ -297,4 +297,128 @@ public class QuizService {
             return new ResponseData<>(false, "Validating and saving quiz answers failed. It is recommended to take a screen capture to save quiz " + "results.");
         }
     }
+
+
+    public List<QuestionDataTrueAndFalse> requestTrueOrFalseQuiz(Integer lectureId, Integer accountId) throws Exception {
+        try {
+            Pattern pattern = Pattern.compile("\\[.*?\\]");
+            List<QuestionDataTrueAndFalse> QuestionDataTrueAndFalse = new ArrayList<>();
+            boolean quizGenerated = false;
+            String quizContent = "";
+
+            String difficultyLevel = determineDifficultyLevel(accountId);
+            System.out.println("The difficulty is: " + difficultyLevel);
+            String difficultyInstructions = switch (difficultyLevel) {
+                case "Beginner" -> "Make the quiz simpler with clear and direct true/false questions.";
+                case "Intermediate" -> "Make the quiz moderately challenging with tricky statements.";
+                case "Advanced" -> "Make the quiz more difficult with nuanced or conceptual true/false questions.";
+                default -> "";
+            };
+
+            while (!quizGenerated) {
+                var instructions = "Strictly obey these rules. "
+                        + "Create a True or False quiz based on lecture " + lectureId + ". "
+                        + "The quiz should be " + difficultyLevel.toLowerCase() + " level. " + difficultyInstructions
+                        + "Quiz should have " + QUESTION_AMOUNT + " true/false questions. "
+                        + "Each question has only two options: 'true' or 'false'. "
+                        + "The correct_option must strictly be 'true' or 'false'. "
+                        + "The value of question_id is always the position of the question in the test. "
+                        + "Each question must be a maximum of 500 characters. "
+                        + "Each correct answer is equal to one point. "
+                        + "Generated quiz should be in JSON format. "
+                        + "Here is an example of how the quiz JSON format should strictly be: "
+                        + "[{\"id\": 1, \"question_number\": 1, \"question\": \"The sun rises in the west.\", "
+                        + "\"option_a\": \"true\", \"option_b\": \"false\", \"correct_option\": \"false\", "
+                        + "\"points\": 1},"
+                        + "{\"id\": 2, \"question_number\": 2, \"question\": \"Water boils at 100°C at sea level.\", "
+                        + "\"option_a\": \"true\", \"option_b\": \"false\", \"correct_option\": \"true\", "
+                        + "\"points\": 1}]";
+
+                List<String> promptContext = retrievalService.getQuizContext(lectureId);
+                String context = String.join(" ", promptContext);
+
+                HttpHeaders headers = new HttpHeaders();
+                headers.set("Authorization", "Bearer " + apiKey);
+                headers.set("Content-Type", "application/json");
+
+                ObjectNode requestBody = objectMapper.createObjectNode();
+                requestBody.put("model", "llama2-13b");
+                ArrayNode messages = requestBody.putArray("messages");
+
+                ObjectNode systemMessage = messages.addObject();
+                systemMessage.put("role", "system");
+                systemMessage.put("content", "Context from chapters of the textbook related to the selected lecture: " + context);
+
+                ObjectNode userMessage = messages.addObject();
+                userMessage.put("role", "user");
+                userMessage.put("content", instructions);
+
+                HttpEntity<String> requestEntity = new HttpEntity<>(objectMapper.writeValueAsString(requestBody), headers);
+                ResponseEntity<String> response = restTemplate.exchange(apiUrl, HttpMethod.POST, requestEntity, String.class);
+
+                JsonNode root = objectMapper.readTree(response.getBody());
+                String content = root.path("choices").get(0).path("message").path("content").asText();
+                quizContent = content.trim().replaceAll("\\n", "");
+
+                Matcher matcher = pattern.matcher(quizContent);
+                if (matcher.find()) {
+                    quizContent = matcher.group();
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    QuestionDataTrueAndFalse = objectMapper.readValue(quizContent, new TypeReference<List<QuestionDataTrueAndFalse>>() {});
+
+                    Set<String> uniqueQuestions = new HashSet<>();
+                    Set<QuestionDataTrueAndFalse> duplicates = QuestionDataTrueAndFalse.stream().filter(q -> !uniqueQuestions.add(q.getQuestion())).collect(Collectors.toSet());
+
+                    if (QuestionDataTrueAndFalse.size() == QUESTION_AMOUNT && duplicates.isEmpty()) {
+                        quizGenerated = true;
+                    }
+                }
+            }
+            return QuestionDataTrueAndFalse;
+        } catch (Exception e) {
+            throw new Exception("Error when requesting True/False quiz data from LLM.", e);
+        }
+    }
+
+
+    private List<QuestionDataTrueAndFalse> mapCorrectOptionTrueOrFalseFormat(List<QuestionDataTrueAndFalse> QuestionDataTrueAndFalse){
+        QuestionDataTrueAndFalse.forEach(q -> {
+            q.setCorrectOption(switch (q.getCorrectOption().toLowerCase()) {
+                case "a", "optiona", "option a" -> "option_a";
+                case "b", "optionb", "option b" -> "option_b";
+                default -> q.getCorrectOption();
+            });
+        });
+        return QuestionDataTrueAndFalse;
+    }
+
+
+
+    public ResponseData<Object> generateTrueOrFalseQuiz(String token, Integer lectureId) {
+        try {
+            String userEmail = jwtService.extractEmail(token);
+            var response = userCredentialsService.checkAccountExists(userEmail);
+
+            if (response.getSuccess()) {
+                UsersRecord user = (UsersRecord) response.getData();
+                Integer accountId = user.getId();
+                System.out.println("in the service 1");
+
+                List<QuestionDataTrueAndFalse> QuestionDataTrueAndFalse = requestTrueOrFalseQuiz(lectureId, accountId);
+                QuestionDataTrueAndFalse = mapCorrectOptionTrueOrFalseFormat(QuestionDataTrueAndFalse);
+                System.out.println("in the service 2");
+                // need to be handled
+//                QuizData quizData = quizRepository.saveQuiz(QuestionDataTrueAndFalse, accountId, lectureId, dslContext);
+//                quizData.getQuestionDataList().sort(Comparator.comparingInt(QuestionData::getQuestionNumber));
+//
+//                quizData.getQuestionDataList().forEach(q -> q.setCorrectOption(""));
+//                return new ResponseData<>(true, quizData);
+                System.out.println("QuestionDataTrueAndFalse:" + QuestionDataTrueAndFalse);
+                return new ResponseData<>(true, QuestionDataTrueAndFalse);
+            }
+            return response;
+        } catch (Exception e) {
+            return new ResponseData<>(false, "Quiz generation failed. Please, try again.");
+        }
+    }
 }
