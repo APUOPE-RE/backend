@@ -8,6 +8,7 @@ import com.apuope.apuope_re.jooq.Apuope;
 import com.apuope.apuope_re.jooq.Keys;
 import com.apuope.apuope_re.jooq.tables.MultipleChoiceQuestions.MultipleChoiceQuestionsPath;
 import com.apuope.apuope_re.jooq.tables.QuizResult.QuizResultPath;
+import com.apuope.apuope_re.jooq.tables.TrueFalseQuestions.TrueFalseQuestionsPath;
 import com.apuope.apuope_re.jooq.tables.Users.UsersPath;
 import com.apuope.apuope_re.jooq.tables.records.QuizRecord;
 
@@ -197,6 +198,19 @@ public class Quiz extends TableImpl<QuizRecord> {
             _quizResult = new QuizResultPath(this, null, Keys.QUIZ_RESULT__FK_QUIZ.getInverseKey());
 
         return _quizResult;
+    }
+
+    private transient TrueFalseQuestionsPath _trueFalseQuestions;
+
+    /**
+     * Get the implicit to-many join path to the
+     * <code>apuope.true_false_questions</code> table
+     */
+    public TrueFalseQuestionsPath trueFalseQuestions() {
+        if (_trueFalseQuestions == null)
+            _trueFalseQuestions = new TrueFalseQuestionsPath(this, null, Keys.TRUE_FALSE_QUESTIONS__FK_QUIZ.getInverseKey());
+
+        return _trueFalseQuestions;
     }
 
     @Override

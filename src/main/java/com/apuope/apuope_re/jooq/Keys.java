@@ -13,6 +13,7 @@ import com.apuope.apuope_re.jooq.tables.QuizResult;
 import com.apuope.apuope_re.jooq.tables.Session;
 import com.apuope.apuope_re.jooq.tables.TextbookEmbeddings;
 import com.apuope.apuope_re.jooq.tables.Token;
+import com.apuope.apuope_re.jooq.tables.TrueFalseQuestions;
 import com.apuope.apuope_re.jooq.tables.Users;
 import com.apuope.apuope_re.jooq.tables.records.ConversationRecord;
 import com.apuope.apuope_re.jooq.tables.records.MessageRecord;
@@ -23,6 +24,7 @@ import com.apuope.apuope_re.jooq.tables.records.QuizResultRecord;
 import com.apuope.apuope_re.jooq.tables.records.SessionRecord;
 import com.apuope.apuope_re.jooq.tables.records.TextbookEmbeddingsRecord;
 import com.apuope.apuope_re.jooq.tables.records.TokenRecord;
+import com.apuope.apuope_re.jooq.tables.records.TrueFalseQuestionsRecord;
 import com.apuope.apuope_re.jooq.tables.records.UsersRecord;
 
 import org.jooq.ForeignKey;
@@ -53,6 +55,7 @@ public class Keys {
     public static final UniqueKey<TextbookEmbeddingsRecord> TEXTBOOK_EMBEDDINGS_PKEY = Internal.createUniqueKey(TextbookEmbeddings.TEXTBOOK_EMBEDDINGS, DSL.name("textbook_embeddings_pkey"), new TableField[] { TextbookEmbeddings.TEXTBOOK_EMBEDDINGS.ID }, true);
     public static final UniqueKey<TokenRecord> TOKEN_PKEY = Internal.createUniqueKey(Token.TOKEN, DSL.name("token_pkey"), new TableField[] { Token.TOKEN.ID }, true);
     public static final UniqueKey<TokenRecord> TOKEN_UUID_KEY = Internal.createUniqueKey(Token.TOKEN, DSL.name("token_uuid_key"), new TableField[] { Token.TOKEN.UUID }, true);
+    public static final UniqueKey<TrueFalseQuestionsRecord> TRUE_FALSE_QUESTIONS_PKEY = Internal.createUniqueKey(TrueFalseQuestions.TRUE_FALSE_QUESTIONS, DSL.name("true_false_questions_pkey"), new TableField[] { TrueFalseQuestions.TRUE_FALSE_QUESTIONS.ID }, true);
     public static final UniqueKey<UsersRecord> USERS_EMAIL_KEY = Internal.createUniqueKey(Users.USERS, DSL.name("users_email_key"), new TableField[] { Users.USERS.EMAIL }, true);
     public static final UniqueKey<UsersRecord> USERS_PKEY = Internal.createUniqueKey(Users.USERS, DSL.name("users_pkey"), new TableField[] { Users.USERS.ID }, true);
     public static final UniqueKey<UsersRecord> USERS_USERNAME_KEY = Internal.createUniqueKey(Users.USERS, DSL.name("users_username_key"), new TableField[] { Users.USERS.USERNAME }, true);
@@ -72,4 +75,5 @@ public class Keys {
     public static final ForeignKey<QuizResultRecord, QuizRecord> QUIZ_RESULT__FK_QUIZ = Internal.createForeignKey(QuizResult.QUIZ_RESULT, DSL.name("fk_quiz"), new TableField[] { QuizResult.QUIZ_RESULT.QUIZ_ID }, Keys.QUIZ_PKEY, new TableField[] { Quiz.QUIZ.ID }, true);
     public static final ForeignKey<SessionRecord, UsersRecord> SESSION__FK_ACCOUNT = Internal.createForeignKey(Session.SESSION, DSL.name("fk_account"), new TableField[] { Session.SESSION.ACCOUNT_ID }, Keys.USERS_PKEY, new TableField[] { Users.USERS.ID }, true);
     public static final ForeignKey<TokenRecord, UsersRecord> TOKEN__FK_ACCOUNT = Internal.createForeignKey(Token.TOKEN, DSL.name("fk_account"), new TableField[] { Token.TOKEN.ACCOUNT_ID }, Keys.USERS_PKEY, new TableField[] { Users.USERS.ID }, true);
+    public static final ForeignKey<TrueFalseQuestionsRecord, QuizRecord> TRUE_FALSE_QUESTIONS__FK_QUIZ = Internal.createForeignKey(TrueFalseQuestions.TRUE_FALSE_QUESTIONS, DSL.name("fk_quiz"), new TableField[] { TrueFalseQuestions.TRUE_FALSE_QUESTIONS.QUIZ_ID }, Keys.QUIZ_PKEY, new TableField[] { Quiz.QUIZ.ID }, true);
 }

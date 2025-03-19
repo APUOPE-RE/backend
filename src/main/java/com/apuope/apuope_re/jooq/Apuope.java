@@ -13,6 +13,7 @@ import com.apuope.apuope_re.jooq.tables.QuizResult;
 import com.apuope.apuope_re.jooq.tables.Session;
 import com.apuope.apuope_re.jooq.tables.TextbookEmbeddings;
 import com.apuope.apuope_re.jooq.tables.Token;
+import com.apuope.apuope_re.jooq.tables.TrueFalseQuestions;
 import com.apuope.apuope_re.jooq.tables.Users;
 
 import java.util.Arrays;
@@ -82,6 +83,11 @@ public class Apuope extends SchemaImpl {
     public final Token TOKEN = Token.TOKEN;
 
     /**
+     * The table <code>apuope.true_false_questions</code>.
+     */
+    public final TrueFalseQuestions TRUE_FALSE_QUESTIONS = TrueFalseQuestions.TRUE_FALSE_QUESTIONS;
+
+    /**
      * The table <code>apuope.users</code>.
      */
     public final Users USERS = Users.USERS;
@@ -111,6 +117,7 @@ public class Apuope extends SchemaImpl {
             Session.SESSION,
             TextbookEmbeddings.TEXTBOOK_EMBEDDINGS,
             Token.TOKEN,
+            TrueFalseQuestions.TRUE_FALSE_QUESTIONS,
             Users.USERS
         );
     }

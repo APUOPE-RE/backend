@@ -15,6 +15,9 @@ public class QuestionDataTrueAndFalse {
     public String correctOption;
     public Integer points;
 
+    public QuestionDataTrueAndFalse() {
+    }
+
     public QuestionDataTrueAndFalse(Integer id, Integer questionNumber, String question, String optionA, String optionB, String correctOption, Integer points) {
         this.id = id;
         this.questionNumber = questionNumber;

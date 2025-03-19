@@ -57,6 +57,16 @@ public class QuizController {
         return responseData.getSuccess() ? ResponseEntity.ok(responseData) : ResponseEntity.internalServerError().body(responseData);
     }
 
+
+    @PostMapping(value = "/submitTrueOrFalseQuiz")
+    public ResponseEntity<ResponseData<Object>> submitTrueOrFalseQuiz(HttpServletRequest request, @RequestBody QuizSubmitData input) {
+        String token = request.getHeader(HttpHeaders.AUTHORIZATION).replace("Bearer ", "");
+        ResponseData<Object> responseData = quizService.validateTrueOrFalseQuizAnswers(token, input);
+
+        return responseData.getSuccess() ? ResponseEntity.ok(responseData) : ResponseEntity.internalServerError().body(responseData);
+    }
+
+
     @GetMapping(value = "/fetchPreviousQuizzes")
     public ResponseEntity<Object> fetchPreviousQuizzes(HttpServletRequest request) throws SQLException, JsonProcessingException {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION).replace("Bearer ", "");

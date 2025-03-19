@@ -275,10 +275,57 @@ public class QuizService {
                 for (QuizSubmitAnswerData answer : quizSubmitData.getQuestionAnswerDataList()) {
                     QuestionData questionData = quizRepository.fetchQuestionByQuestionId(quizSubmitData.getQuizId(), answer.getQuestionNumber(), dslContext);
 
+
                     boolean correctAnswer = questionData.getCorrectOption().equals(answer.getAnswer());
                     correctOptions.put(answer.getQuestionNumber(), questionData.getCorrectOption());
 
                     quizRepository.saveQuizAnswer(quizResultData.getId(), questionData.getId(), answer.getQuestionNumber(), answer.getAnswer(), correctAnswer, correctAnswer ? 1 : 0, dslContext);
+                    score += correctAnswer ? 1 : 0;
+                }
+                quizRepository.saveQuizScore(quizResultData.getId(), score, dslContext);
+                quizResultData.setQuizAnswerDataList(quizRepository.fetchQuizAnswersByQuizResultId(quizResultData.getId(), dslContext));
+                quizResultData.getQuizAnswerDataList().forEach(a -> {
+                    int answerNumber = a.getQuestionNumber();
+                    String correctOption = correctOptions.get(answerNumber);
+                    a.setCorrectOption(correctOption);
+                });
+                quizResultData.setScore(score);
+
+                return new ResponseData<>(true, quizResultData);
+            }
+            return response;
+        } catch (Exception e) {
+            return new ResponseData<>(false, "Validating and saving quiz answers failed. It is recommended to take a screen capture to save quiz " + "results.");
+        }
+    }
+
+    public ResponseData<Object> validateTrueOrFalseQuizAnswers(String token, QuizSubmitData quizSubmitData) {
+        try {
+            String userEmail = jwtService.extractEmail(token);
+            var response = userCredentialsService.checkAccountExists(userEmail);
+            if (response.getSuccess()) {
+                UsersRecord user = (UsersRecord) response.getData();
+                Map<Integer, String> correctOptions = new HashMap<>();
+
+                QuizData quizData = quizRepository.fetchQuizByQuizId(quizSubmitData.getQuizId(), dslContext);
+                QuizResultData quizResultData = quizRepository.saveQuizResult(user.getId(), quizSubmitData.getQuizId(), quizData.getMaxPoints(), dslContext);
+                Integer score = 0;
+
+                for (QuizSubmitAnswerData answer : quizSubmitData.getQuestionAnswerDataList()) {
+                    QuestionDataTrueAndFalse questionDataTrueAndFalse = quizRepository.fetchQuestionByQuestionIdForTrueOrFalse(quizSubmitData.getQuizId(), answer.getQuestionNumber(), dslContext);
+
+
+                    String userAnswer = answer.getAnswer().trim();
+                    if (userAnswer.equalsIgnoreCase("option_a")) {
+                        userAnswer = "true";
+                    } else if (userAnswer.equalsIgnoreCase("option_b")) {
+                        userAnswer = "false";
+                    }
+
+                    boolean correctAnswer = questionDataTrueAndFalse.getCorrectOption().trim().equalsIgnoreCase(userAnswer);
+                    correctOptions.put(answer.getQuestionNumber(), questionDataTrueAndFalse.getCorrectOption());
+
+                    quizRepository.saveQuizAnswer(quizResultData.getId(), questionDataTrueAndFalse.getId(), answer.getQuestionNumber(), answer.getAnswer(), correctAnswer, correctAnswer ? 1 : 0, dslContext);
                     score += correctAnswer ? 1 : 0;
                 }
                 quizRepository.saveQuizScore(quizResultData.getId(), score, dslContext);
@@ -326,13 +373,18 @@ public class QuizService {
                         + "Each question must be a maximum of 500 characters. "
                         + "Each correct answer is equal to one point. "
                         + "Generated quiz should be in JSON format. "
-                        + "Here is an example of how the quiz JSON format should strictly be: "
-                        + "[{\"id\": 1, \"question_number\": 1, \"question\": \"The sun rises in the west.\", "
+                        + "Here is an example, how the quiz in " + "JSON "
+                        + "format should strictly be. "
+                        + "This example quiz has two questions (example quiz don't need to be provided "
+                        + "back): "
+                        + "[{\"id\": 1, \"question_number\": 1, \"question\": \"question here\", "
                         + "\"option_a\": \"true\", \"option_b\": \"false\", \"correct_option\": \"false\", "
                         + "\"points\": 1},"
-                        + "{\"id\": 2, \"question_number\": 2, \"question\": \"Water boils at 100°C at sea level.\", "
+                        + "{\"id\": 2, \"question_number\": 2, \"question\": \"question here\", "
                         + "\"option_a\": \"true\", \"option_b\": \"false\", \"correct_option\": \"true\", "
                         + "\"points\": 1}]";
+
+
 
                 List<String> promptContext = retrievalService.getQuizContext(lectureId);
                 String context = String.join(" ", promptContext);
@@ -359,6 +411,8 @@ public class QuizService {
                 JsonNode root = objectMapper.readTree(response.getBody());
                 String content = root.path("choices").get(0).path("message").path("content").asText();
                 quizContent = content.trim().replaceAll("\\n", "");
+
+                System.out.println("quizContent is: " + quizContent);
 
                 Matcher matcher = pattern.matcher(quizContent);
                 if (matcher.find()) {
@@ -402,19 +456,17 @@ public class QuizService {
             if (response.getSuccess()) {
                 UsersRecord user = (UsersRecord) response.getData();
                 Integer accountId = user.getId();
-                System.out.println("in the service 1");
 
-                List<QuestionDataTrueAndFalse> QuestionDataTrueAndFalse = requestTrueOrFalseQuiz(lectureId, accountId);
-                QuestionDataTrueAndFalse = mapCorrectOptionTrueOrFalseFormat(QuestionDataTrueAndFalse);
-                System.out.println("in the service 2");
-                // need to be handled
-//                QuizData quizData = quizRepository.saveQuiz(QuestionDataTrueAndFalse, accountId, lectureId, dslContext);
-//                quizData.getQuestionDataList().sort(Comparator.comparingInt(QuestionData::getQuestionNumber));
-//
-//                quizData.getQuestionDataList().forEach(q -> q.setCorrectOption(""));
-//                return new ResponseData<>(true, quizData);
-                System.out.println("QuestionDataTrueAndFalse:" + QuestionDataTrueAndFalse);
-                return new ResponseData<>(true, QuestionDataTrueAndFalse);
+                List<QuestionDataTrueAndFalse> questionDataTrueAndFalse = requestTrueOrFalseQuiz(lectureId, accountId);
+                questionDataTrueAndFalse = mapCorrectOptionTrueOrFalseFormat(questionDataTrueAndFalse);
+
+                QuizData quizData = quizRepository.saveTrueOrFalseQuiz(questionDataTrueAndFalse, accountId, lectureId, dslContext);
+
+                quizData.getQuestionDataTrueAndFalseList().sort(Comparator.comparingInt(QuestionDataTrueAndFalse::getQuestionNumber));
+
+                quizData.getQuestionDataTrueAndFalseList().forEach(q -> q.setCorrectOption(""));
+
+                return new ResponseData<>(true, quizData);
             }
             return response;
         } catch (Exception e) {

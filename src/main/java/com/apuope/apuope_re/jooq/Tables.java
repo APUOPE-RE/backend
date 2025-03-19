@@ -13,6 +13,7 @@ import com.apuope.apuope_re.jooq.tables.QuizResult;
 import com.apuope.apuope_re.jooq.tables.Session;
 import com.apuope.apuope_re.jooq.tables.TextbookEmbeddings;
 import com.apuope.apuope_re.jooq.tables.Token;
+import com.apuope.apuope_re.jooq.tables.TrueFalseQuestions;
 import com.apuope.apuope_re.jooq.tables.Users;
 
 
@@ -66,6 +67,11 @@ public class Tables {
      * The table <code>apuope.token</code>.
      */
     public static final Token TOKEN = Token.TOKEN;
+
+    /**
+     * The table <code>apuope.true_false_questions</code>.
+     */
+    public static final TrueFalseQuestions TRUE_FALSE_QUESTIONS = TrueFalseQuestions.TRUE_FALSE_QUESTIONS;
 
     /**
      * The table <code>apuope.users</code>.

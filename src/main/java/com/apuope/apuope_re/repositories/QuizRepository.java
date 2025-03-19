@@ -59,6 +59,14 @@ public class QuizRepository {
                 .fetchOneInto(QuestionData.class);
     }
 
+    public QuestionDataTrueAndFalse fetchQuestionByQuestionIdForTrueOrFalse(Integer quizId, Integer questionNumber, DSLContext context){
+        return context.select()
+                .from(TrueFalseQuestions.TRUE_FALSE_QUESTIONS)
+                .where(TrueFalseQuestions.TRUE_FALSE_QUESTIONS.QUIZ_ID.eq(quizId))
+                .and(TrueFalseQuestions.TRUE_FALSE_QUESTIONS.QUESTION_NUMBER.eq(questionNumber))
+                .fetchOneInto(QuestionDataTrueAndFalse.class);
+    }
+
     public List<QuestionData> fetchQuestionsByQuizId(Integer quizId, DSLContext context){
         return context.select()
                 .from(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS)
@@ -71,6 +79,13 @@ public class QuizRepository {
                 .from(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS)
                 .where(MultipleChoiceQuestions.MULTIPLE_CHOICE_QUESTIONS.QUIZ_ID.eq(quizId))
                 .fetchInto(QuestionData.class);
+    }
+
+    public List<QuestionDataTrueAndFalse> fetchTrueOrFalseQuestionsByQuizId(Integer quizId, DSLContext context){
+        return context.select()
+                .from(TrueFalseQuestions.TRUE_FALSE_QUESTIONS)
+                .where(TrueFalseQuestions.TRUE_FALSE_QUESTIONS.QUIZ_ID.eq(quizId))
+                .fetchInto(QuestionDataTrueAndFalse.class);
     }
 
     public QuizResultData fetchQuizResultByQuizId(Integer quizId, DSLContext context){
@@ -160,6 +175,36 @@ public class QuizRepository {
 
         List<QuestionData> questionData = fetchMultipleChoiceQuestionsByQuizId(quizData.getId(), context);
         quizData.setQuestionDataList(questionData);
+
+        return quizData;
+    }
+
+    public QuizData saveTrueOrFalseQuiz(List<QuestionDataTrueAndFalse> inputData, Integer accountId, Integer lectureId, DSLContext context) {
+        Integer maxPoints = inputData.size();
+
+        context.insertInto(Quiz.QUIZ)
+                .set(Quiz.QUIZ.ACCOUNT_ID, accountId)
+                .set(Quiz.QUIZ.LECTURE_ID, lectureId)
+                .set(Quiz.QUIZ.MAX_POINTS, maxPoints)
+                .execute();
+
+        QuizData quizData = fetchQuizByAccountId(accountId, context);
+
+        context.batch(inputData.stream().map(q ->
+                                context.insertInto(TrueFalseQuestions.TRUE_FALSE_QUESTIONS)
+                                        .set(TrueFalseQuestions.TRUE_FALSE_QUESTIONS.QUIZ_ID, quizData.getId())
+                                        .set(TrueFalseQuestions.TRUE_FALSE_QUESTIONS.QUESTION_NUMBER, q.getQuestionNumber())
+                                        .set(TrueFalseQuestions.TRUE_FALSE_QUESTIONS.QUESTION, q.getQuestion())
+                                        .set(TrueFalseQuestions.TRUE_FALSE_QUESTIONS.OPTION_A, q.getOptionA())
+                                        .set(TrueFalseQuestions.TRUE_FALSE_QUESTIONS.OPTION_B, q.getOptionB())
+                                        .set(TrueFalseQuestions.TRUE_FALSE_QUESTIONS.CORRECT_OPTION, q.getCorrectOption())
+                                        .set(TrueFalseQuestions.TRUE_FALSE_QUESTIONS.POINTS, ONE_POINT)
+                                        )
+                        .toArray(Query[]::new))
+                .execute();
+
+        List<QuestionDataTrueAndFalse> questionDataTrueAndFalse = fetchTrueOrFalseQuestionsByQuizId(quizData.getId(), context);
+        quizData.setQuestionDataTrueAndFalseList(questionDataTrueAndFalse);
 
         return quizData;
     }

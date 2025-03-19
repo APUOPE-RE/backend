@@ -9,6 +9,8 @@ public class QuizData {
     public Integer lectureId;
     public Integer maxPoints;
     public List<QuestionData> questionDataList = new ArrayList<>();
+    public List<QuestionDataTrueAndFalse> questionDataTrueAndFalseList = new ArrayList<>();
+
 
     public QuizData(Integer id, Integer accountId, Integer lectureId, Integer maxPoints) {
         this.id = id;
@@ -16,6 +18,7 @@ public class QuizData {
         this.lectureId = lectureId;
         this.maxPoints = maxPoints;
     }
+
 
     public Integer getId() {
         return id;
@@ -55,5 +58,13 @@ public class QuizData {
 
     public void setQuestionDataList(List<QuestionData> questionDataList) {
         this.questionDataList = questionDataList;
+    }
+
+    public List<QuestionDataTrueAndFalse> getQuestionDataTrueAndFalseList() {
+        return questionDataTrueAndFalseList;
+    }
+
+    public void setQuestionDataTrueAndFalseList(List<QuestionDataTrueAndFalse> questionDataTrueAndFalseList) {
+        this.questionDataTrueAndFalseList = questionDataTrueAndFalseList;
     }
 }
